@@ -1,0 +1,160 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>طباعة فاتورة #{{ invoice.id }}</title>
+  <style>
+    /* تحسين الطباعة */
+    @media print {
+      .no-print {
+        display: none;
+      }
+      .invoice-container {
+        box-shadow: none;
+        border: none;
+      }
+    }
+
+    /* إعدادات الخطوط والتنسيقات العامة */
+    body {
+      font-family: 'Arial', sans-serif;
+      direction: rtl;
+      margin: 0;
+      padding: 20px;
+      background-color: #f8f9fa;
+    }
+
+    .invoice-container {
+      background: #fff;
+      padding: 20px;
+      max-width: 1000px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    .header {
+      text-align: center;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .header img {
+      max-width: 120px;
+      margin-bottom: 10px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: #007bff;
+      font-size: 24px;
+    }
+
+    .invoice-details {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      font-size: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+      color: #555;
+    }
+
+    /* زر الطباعة */
+    .print-button {
+      display: block;
+      width: 15%;
+      text-align: center;
+      margin: 20px auto;
+      padding: 10px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .print-button:hover {
+      background: #0056b3;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="invoice-container">
+  <!-- الشعار والعنوان -->
+  <div class="header">
+    <img src="{% static 'images/logo.png' %}" alt="شعار الشركة">
+    {% comment %} <h1>فاتورة رقم {{ invoice.id }}</h1> {% endcomment %}
+    <p>تاريخ الإنشاء: {{ invoice.datetime }}</p>
+  </div>
+
+  <!-- بيانات الفاتورة -->
+  <div class="invoice-details">
+    <p><strong>بطاقة الوزن:</strong> {{ invoice.weight_card }}</p>
+    <p><strong>المادة:</strong> {{ invoice.material }}</p>
+  </div>
+
+  <!-- جدول الوزن -->
+  <table>
+    <thead>
+      <tr>
+        <th>رقم الفاتوره</th>
+        <th>الوزن الفارغ</th>
+        <th>الوزن المحمل</th>
+        <th>الوزن الصافي</th>
+        <th>الكمية</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ invoice.id }}</td>
+        <td>{{ invoice.empty_weight }} كجم</td>
+        <td>{{ invoice.loaded_weight }} كجم</td>
+        <td><strong>{{ invoice.net_weight }} كجم</strong></td>
+        <td>{{ invoice.quantity }} كجم</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- قسم التوقيع -->
+  <div class="footer">
+    <p>تمت مراجعة الفاتورة والتأكد من صحة البيانات</p>
+    <p>التوقيع: _______________</p>
+    <p>جميع الحقوق محفوظة © {{ invoice.company_name }}</p>
+  </div>
+</div>
+
+<!-- زر الطباعة -->
+<button class="print-button no-print" onclick="window.print()">🖨 طباعة الفاتورة</button>
+
+</body>
+</html>

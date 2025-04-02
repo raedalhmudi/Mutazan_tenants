@@ -1,0 +1,6 @@
+{% comment %} {% extends "admin/change_form.html" %}
+
+{% block content %}
+    {{ weight_display|safe }}  {# يعرض العداد فوق الفورم #}
+    {{ block.super }}  {# يعرض باقي محتوى النموذج كالمعتاد #}
+{% endblock %} {% endcomment %}

@@ -1,0 +1,11 @@
+ {% comment %} {% extends "admin/base.html" %}
+
+ {% block extrastyle %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/admin.css' %}">
+{% endblock %}  
+{% block header %}
+    <div class="navbar-brand">
+        <img src="{{ user.image.url }}" alt="{{ user.username }}" class="rounded-circle" width="30" height="30">
+        <span>{{ user.username }}</span>
+    </div>
+{% endblock %} {% endcomment %}

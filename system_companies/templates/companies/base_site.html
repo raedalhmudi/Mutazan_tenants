@@ -1,0 +1,10 @@
+{% comment %} {% extends "admin/base_site.html" %}
+
+{% block sidebar %}
+    {{ block.super }}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'company_list' %}">
+            <i class="fas fa-building"></i> سجل الشركات
+        </a>
+    </li>
+{% endblock %} {% endcomment %}

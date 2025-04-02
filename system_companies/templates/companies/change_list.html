@@ -1,0 +1,9 @@
+{% extends "admin/change_list.html" %}
+{% block content %}
+{{ block.super }}
+<div style="margin: 20px 0;">
+    <a href="{% url 'update_device_statuses' %}" class="button">
+        تحديث جميع الحالات
+    </a>
+</div>
+{% endblock %}

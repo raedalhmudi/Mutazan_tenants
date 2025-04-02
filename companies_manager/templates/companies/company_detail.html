@@ -1,0 +1,186 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<style>
+    .table-container {
+        max-height: 500px;
+        overflow-y: auto;
+        border: 2px solid #ccc;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        padding: 10px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    thead {
+        position: sticky;
+        top: 0;
+        background-color: #e0e0e0;
+        z-index: 10;
+    }
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f1f1f1;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2>{{ company.name }}</h2>
+
+    <!-- إضافة أزرار التقارير -->
+    <div class="mb-3">
+        <h4>تقارير العمل</h4>
+        <button class="btn btn-info" id="daily-report">تقرير يومي</button>
+        <button class="btn btn-info" id="weekly-report">تقرير أسبوعي</button>
+        <button class="btn btn-info" id="monthly-report">تقرير شهري</button>
+        <button id="print-report" class="btn btn-success">🖨️ طباعة التقرير</button>
+    </div>
+
+    <!-- حقول إدخال التقرير الأسبوعي -->
+    <div id="weekly-fields" style="display: none;">
+        <label for="from-date">من تاريخ:</label>
+        <input type="date" id="from-date" class="form-control">
+        <label for="to-date">إلى تاريخ:</label>
+        <input type="date" id="to-date" class="form-control">
+        {% comment %} <button class="btn btn-primary mt-2" id="filter-weekly">عرض التقرير</button> {% endcomment %}
+    </div>
+
+    <!-- اختيار الشهر للتقرير الشهري -->
+    <div id="monthly-fields" style="display: none;">
+        <label for="month-select">اختر الشهر:</label>
+        <select id="month-select" class="form-control">
+            <option value="1">يناير</option>
+            <option value="2">فبراير</option>
+            <option value="3">مارس</option>
+            <option value="4">أبريل</option>
+            <option value="5">مايو</option>
+            <option value="6">يونيو</option>
+            <option value="7">يوليو</option>
+            <option value="8">أغسطس</option>
+            <option value="9">سبتمبر</option>
+            <option value="10">أكتوبر</option>
+            <option value="11">نوفمبر</option>
+            <option value="12">ديسمبر</option>
+        </select>
+        {% comment %} <button class="btn btn-primary mt-2" id="filter-monthly">عرض التقرير</button> {% endcomment %}
+    </div>
+
+    <!-- زر جلب بيانات الشركة -->
+    <button id="fetch-data" class="btn btn-primary">🔄 جلب بيانات الشركة</button>
+    <span id="fetch-status" style="margin-left: 10px; font-weight: bold;"></span>
+
+    <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="weight-cards-tab" data-toggle="tab" href="#weight-cards" role="tab" aria-controls="weight-cards" aria-selected="true">بطاقات الوزن المنقولة</a>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="weight-cards" role="tabpanel" aria-labelledby="weight-cards-tab">
+            <table class="table" border="1">
+                <thead>
+                    <tr>
+                        <th>رقم اللوحة</th>
+                        <th>الوزن الفارغ</th>
+                        <th>الوزن المحمل</th>
+                        <th>الوزن الصافي</th>
+                        <th>اسم السائق</th>
+                        <th>تاريخ الدخول</th>
+                        <th>تاريخ الخروج</th>
+                        <th>المادة</th>
+                        <th>حالة البطاقة</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    {% for card in transferred_cards %}
+                    <tr>
+                        <td>{{ card.plate_number }}</td>
+                        <td>{{ card.empty_weight }}</td>
+                        <td>{{ card.loaded_weight }}</td>
+                        <td>{{ card.net_weight }}</td>
+                        <td>{{ card.driver_name }}</td>
+                        <td>{{ card.entry_date }}</td>
+                        <td>{{ card.exit_date }}</td>
+                        <td>{{ card.material }}</td>
+                        <td>{{ card.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- زر الطباعة -->
+
+</div>
+
+<!-- كود JavaScript لاستدعاء API -->
+<script>
+    document.getElementById("fetch-data").addEventListener("click", function() {
+        let fetchStatus = document.getElementById("fetch-status");
+        fetchStatus.textContent = "⏳ جاري جلب البيانات...";
+    
+        let companyId = "{{ company.id }}";  // جلب ID الشركة من القالب
+    
+        fetch(`/companies/${companyId}/fetch-data/`)  // استدعاء API مع تمرير ID
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "success") {
+                fetchStatus.textContent = "✅ تم جلب البيانات بنجاح!";
+                
+                // تحديث الجدول بالبيانات الجديدة
+                let tableBody = document.getElementById("table-body");
+                tableBody.innerHTML = "";  // مسح البيانات القديمة
+                data.cards.forEach(card => {
+                    let row = `
+                        <tr>
+                            <td>${card.plate_number}</td>
+                            <td>${card.empty_weight}</td>
+                            <td>${card.loaded_weight}</td>
+                            <td>${card.net_weight}</td>
+                            <td>${card.driver_name}</td>
+                            <td>${card.entry_date}</td>
+                            <td>${card.exit_date}</td>
+                            <td>${card.material}</td>
+                            <td>${card.status}</td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            } else {
+                fetchStatus.textContent = "❌ فشل في جلب البيانات!";
+            }
+        })
+        .catch(error => {
+            fetchStatus.textContent = "❌ خطأ في الاتصال!";
+            console.error(error);
+        });
+    });
+    document.getElementById("daily-report").addEventListener("click", function() {
+        document.getElementById("weekly-fields").style.display = "none";
+        document.getElementById("monthly-fields").style.display = "none";
+    });
+    
+    document.getElementById("weekly-report").addEventListener("click", function() {
+        document.getElementById("weekly-fields").style.display = "block";
+        document.getElementById("monthly-fields").style.display = "none";
+    });
+    
+    document.getElementById("monthly-report").addEventListener("click", function() {
+        document.getElementById("weekly-fields").style.display = "none";
+        document.getElementById("monthly-fields").style.display = "block";
+    });
+    
+    document.getElementById("print-report").addEventListener("click", function() {
+        window.print();
+    });
+    </script>
+    
+
+{% endblock %}

@@ -1,0 +1,56 @@
+{% comment %} <!-- نموذج النافذة المنبثقة -->
+<div id="credentialsModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>إدخال بيانات الاعتماد</h2>
+        <form id="credentialsForm">
+            <label for="username">اسم المستخدم:</label>
+            <input type="text" id="username" name="username">
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" name="password">
+            <button type="submit">حفظ</button>
+        </form>
+    </div>
+</div>
+
+<!-- نموذج إضافة الجهاز -->
+<form method="post" id="deviceForm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" id="saveButton">حفظ</button>
+</form>
+
+<!-- JavaScript -->
+<script>
+    document.getElementById('deviceForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // منع الإرسال التلقائي للنموذج
+
+        // التحقق مما إذا كانت الكاميرا تتطلب بيانات اعتماد
+        const requiresCredentials = document.getElementById('id_requires_credentials').checked;
+
+        if (requiresCredentials) {
+            // عرض النافذة المنبثقة
+            document.getElementById('credentialsModal').style.display = 'block';
+        } else {
+            // إرسال النموذج مباشرة إذا لم تكن هناك حاجة لبيانات الاعتماد
+            document.getElementById('deviceForm').submit();
+        }
+    });
+
+    // إرسال بيانات الاعتماد عند حفظ النافذة المنبثقة
+    document.getElementById('credentialsForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // منع الإرسال التلقائي للنموذج
+
+        // تعبئة حقول اسم المستخدم وكلمة المرور المخفية
+        document.getElementById('id_username').value = document.getElementById('username').value;
+        document.getElementById('id_password').value = document.getElementById('password').value;
+
+        // إرسال النموذج الرئيسي
+        document.getElementById('deviceForm').submit();
+    });
+
+    // إغلاق النافذة المنبثقة عند النقر على الزر "X"
+    document.querySelector('.close').addEventListener('click', function() {
+        document.getElementById('credentialsModal').style.display = 'none';
+    });
+</script> {% endcomment %}

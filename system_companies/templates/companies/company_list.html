@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        {% for company in companies %}
+        <div class="col-md-4">
+            <a href="{% url 'company_detail' company.id %}" style="text-decoration: none;"> 
+                <div class="card text-center shadow-lg">
+                    <div class="card-header bg-primary text-white">
+                        <h5>{{ company.name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <img src="{{ company.logo.url }}" class="rounded-circle" width="100" height="100" alt="Logo">
+                        <div class="row mt-3">
+                            <div class="col">
+                                <h6>{{ company.trucks }}</h6>
+                                <p>الشاحنات</p>
+                            </div>
+                            <div class="col">
+                                <h6>{{ company.violations }}</h6>
+                                <p>المخالفات</p>
+                            </div>
+                            <div class="col">
+                                <h6>{{ company.invoices }}</h6>
+                                <p>الفواتير</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+/* تحسين تصميم الشريط الجانبي في Django Admin */
+
+/* تغيير لون خلفية الشريط الجانبي */
+#nav-sidebar {
+    background: linear-gradient(135deg, #2c3e50, #34495e);
+    flex: 0 0 300px;
+    left: -301px;
+    margin-left: -301px;
+    border-right: 2px solid #1abc9c;
+    box-shadow: 3px 0 10px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease-in-out;
+}
+
+/* عند فتح الشريط الجانبي */
+.main.shifted > #nav-sidebar {
+    margin-left: 0;
+    visibility: visible;
+}
+
+/* تحسين زر إظهار/إخفاء القائمة */
+.toggle-nav-sidebar {
+    background-color: #1abc9c;
+    color: white;
+    border-radius: 5px;
+    width: 35px;
+    height: 35px;
+    transition: background-color 0.3s ease-in-out;
+}
+.toggle-nav-sidebar:hover {
+    background-color: #16a085;
+}
+
+/* تحسين النصوص داخل القائمة الجانبية */
+#nav-sidebar .module th,
+#nav-sidebar .module caption {
+    color: white;
+    font-weight: bold;
+    padding-left: 20px;
+}
+
+/* تأثيرات سلسة عند التحويل بين الفتح والإغلاق */
+.main > #nav-sidebar + .content {
+    max-width: calc(100% - 35px);
+}
+.main.shifted > #nav-sidebar + .content {
+    max-width: calc(100% - 320px);
+}
+
+/* دعم RTL (العربية) */
+[dir="rtl"] #nav-sidebar {
+    left: auto;
+    right: -301px;
+    margin-right: -301px;
+}
+[dir="rtl"] .main.shifted > #nav-sidebar {
+    margin-right: 0;
+}
+
+/* تحسين البحث داخل الشريط الجانبي */
+#nav-filter {
+    border: 1px solid #1abc9c;
+    background-color: #2c3e50;
+    color: white;
+    border-radius: 5px;
+}
+#nav-filter:focus {
+    border-color: #16a085;
+}
+
+/* تحسين تصميم العنصر النشط في القائمة */
+#nav-sidebar .current-model {
+    background: #1abc9c;
+    color: white;
+    font-weight: bold;
+}
+
+/* تحسين مظهر القائمة عند الشاشات الصغيرة */
+@media (max-width: 767px) {
+    #nav-sidebar, #toggle-nav-sidebar {
+        display: none;
+    }
+    .main > #nav-sidebar + .content,
+    .main.shifted > #nav-sidebar + .content {
+        max-width: 100%;
+    }
+}
