@@ -1,0 +1,172 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ report_title }}</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .company-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .report-title {
+            font-size: 20px;
+            margin-top: 10px;
+            color: #3498db;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 5px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .no-print {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .print-button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            body {
+                padding: 0;
+            }
+        }
+      </style>
+    </head>
+    <body>
+        <div class="header">
+            <div class="company-name">{{ company.company_name }}</div>
+            <div class="report-title">{{ report_title }}</div>
+            <div>تاريخ الطباعة: {% now "Y-m-d H:i" %}</div>
+        </div>
+    
+        <table>
+            <thead>
+                <tr>
+                    {% if data_type == 'weight_cards' %}
+                        <th>#</th>
+                        <th>رقم اللوحة</th>
+                        <th>الوزن الفارغ</th>
+                        <th>الوزن المحمل</th>
+                        <th>الوزن الصافي</th>
+                        <th>اسم السائق</th>
+                        <th>تاريخ الدخول</th>
+                        <th>تاريخ الخروج</th>
+                        <th>المادة</th>
+                        <th>الكميه</th>
+                        <th>الحالة</th>
+                    {% else %}
+                        <th>#</th>
+                        <th>رقم اللوحة</th>
+                        <th>نوع المخالفة</th>
+                        <th>تاريخ المخالفة</th>
+                        <th>الكاميرا</th>
+                        <th>العملية</th>
+                        <th>بطاقة الوزن</th>
+                        <th>الحالة</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for card in transferred_cards %}
+                <tr>
+                    {% if data_type == 'weight_cards' %}
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ card.plate_number|default:'' }}</td>
+                        <td>{{ card.empty_weight|default:'' }}</td>
+                        <td>{{ card.loaded_weight|default:'' }}</td>
+                        <td>{{ card.net_weight|default:'' }}</td>
+                        <td>{{ card.driver_name|default:'' }}</td>
+                        <td>
+                            {% if card.entry_date %}
+                                {{ card.entry_date|date:"Y-m-d H:i" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if card.exit_date %}
+                                {{ card.exit_date|date:"Y-m-d H:i" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ card.material|default:'' }}</td>
+                        <td>{{ card.quantity|default:'' }}</td>
+                        <td>{{ card.status|default:'' }}</td>
+                    {% else %}
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ card.plate_number|default:'' }}</td>
+                        <td>{{ card.violation_type|default:'' }}</td>
+                        <td>
+                            {% if card.timestamp %}
+                                {{ card.timestamp|date:"Y-m-d H:i" }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>{{ card.device_vio|default:'' }}</td>
+                        <td>{{ card.entry_exit_log|default:'' }}</td>
+                        <td>{{ card.weight_card_vio|default:'' }}</td>
+                        <td>{{ card.status|default:'' }}</td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="{% if data_type == 'weight_cards' %}10{% else %}8{% endif %}" style="text-align: center;">
+                        لا توجد بيانات متاحة
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    
+        {% comment %} <div class="no-print">
+            <button class="print-button" onclick="window.print()">🖨 طباعة التقرير</button>
+            <button class="print-button" onclick="window.close()">إغلاق النافذة</button>
+        </div> {% endcomment %}
+    
+        <script>
+            {% comment %} window.onload = function() {
+                setTimeout(function() {
+                    window.print();
+                }, 500);
+            }; {% endcomment %}
+            window.onload = function() {
+                window.print();
+            };
+        </script>
+    </body>
+    </html>

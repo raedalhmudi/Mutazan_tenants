@@ -1,0 +1,50 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n %}
+
+{% block sidebar %}
+  {{ block.super }}
+{% endblock %}
+
+{% block content %}
+
+
+<h1>تقرير بطاقات الوزن</h1>
+
+<div class="stats-box">
+    <p><strong>إجمالي البطاقات:</strong> {{ stats.total_cards }}</p>
+    <p><strong>بطاقات مكتملة ✅:</strong> {{ stats.complete_cards }}</p>
+    <p><strong>بطاقات غير مكتملة ❌:</strong> {{ stats.incomplete_cards }}</p>
+    <p><strong>إجمالي الوزن الصافي:</strong> {{ stats.total_net_weight }} طن</p>
+</div>
+
+<table class="admin-table" style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+    <thead>
+        <tr>
+            <th>رقم اللوحة</th>
+            <th>اسم السائق</th>
+            <th>المادة</th>
+            <th>الوزن الفارغ</th>
+            <th>الوزن المحمل</th>
+            <th>الوزن الصافي</th>
+            <th>التاريخ</th>
+            <th>الحالة</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for card in cards %}
+        <tr>
+            <td>{{ card.plate_number }}</td>
+            <td>{{ card.driver_name }}</td>
+            <td>{{ card.material }}</td>
+            <td>{{ card.empty_weight }}</td>
+            <td>{{ card.loaded_weight }}</td>
+            <td>{{ card.net_weight }}</td>
+            <td>{{ card.entry_date|date:"Y-m-d H:i" }}</td>
+            <td>{{ card.get_status_display }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+{% endblock %}

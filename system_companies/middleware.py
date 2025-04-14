@@ -1,35 +1,16 @@
-# # from django.shortcuts import redirect
-# # from django.utils.deprecation import MiddlewareMixin
-# # from companies_manager.models import Company
-# from django.utils.functional import SimpleLazyObject
+# # middleware/dynamic_jazzmin.py
+
 # from django.conf import settings
 
-# class TenantAwareJazzminMiddleware:
+# class DynamicJazzminMiddleware:
 #     def __init__(self, get_response):
 #         self.get_response = get_response
 
 #     def __call__(self, request):
-#         # تحديث إعدادات jazzmin ديناميكيًا
-#         def get_dynamic_site_header():
-#             try:
-#                 # الحصول على المستأجر الحالي
-#                 from companies_manager.models import Company
-#                 tenant = Company.objects.get(schema_name=request.tenant.schema_name)
-#                 return tenant.company_name
-#             except Exception:
-#                 return "النظام الرئيسي"
+#         tenant = getattr(request, 'tenant', None)
+#         if tenant and hasattr(settings, 'JAZZMIN_SETTINGS'):
+#             settings.JAZZMIN_SETTINGS["site_title"] = tenant.company_name
+#             settings.JAZZMIN_SETTINGS["site_header"] = tenant.company_name
+#             settings.JAZZMIN_SETTINGS["welcome_sign"] = f"مرحباً بك في {tenant.company_name}"
 
-#         # تحديث إعدادات jazzmin
-#         settings.JAZZMIN_SETTINGS['site_header'] = SimpleLazyObject(get_dynamic_site_header)
-
-#         response = self.get_response(request)
-#         return response
-
-
-# # class TenantMiddleware(MiddlewareMixin):
-# #     def process_request(self, request):
-# #         domain = request.get_host().split(':')[0]  # استخراج الدومين بدون البورت
-# #         try:
-# #             request.tenant = Company.objects.get(domain=domain)  # البحث عن المستأجر
-# #         except Company.DoesNotExist:
-# #             return redirect('/')  # إعادة التوجيه للصفحة الرئيسية
+#         return self.get_response(request)

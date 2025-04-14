@@ -4,13 +4,13 @@ from django.contrib.auth.models import User
 from .models import UserProfile
 
 class CustomUserCreationForm(UserCreationForm):
-    profile_picture = forms.ImageField(required=False)
-    phone_number = forms.CharField(max_length=15, required=False)
-    address = forms.CharField(widget=forms.Textarea, required=False)
+    phone_number = forms.CharField(label="رقم الهاتف", required=False)
+    address = forms.CharField(label="عنوان السكن", widget=forms.Textarea, required=False)
+    profile_picture = forms.ImageField(label="صورة المستخدم", required=False)
 
-    class Meta(UserCreationForm.Meta):
+    class Meta:
         model = User
-        fields = UserCreationForm.Meta.fields + ('email',)
+        fields = ("username", "email", "password1", "password2", "phone_number", "address", "profile_picture")
 
     def save(self, commit=True):
         user = super().save(commit=False)

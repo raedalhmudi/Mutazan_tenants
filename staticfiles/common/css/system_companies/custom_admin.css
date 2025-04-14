@@ -1,0 +1,129 @@
+/* ✅ توسيع صناديق الاختيار لتظهر الصلاحيات بالكامل */
+.form-row .related-widget-wrapper {
+    width: 100% !important; /* جعل الصناديق تأخذ العرض الكامل */
+}
+
+/* ✅ توسيع قائمة الصلاحيات وعرض النص بالكامل */
+select[multiple] {
+    min-height: 250px !important; /* زيادة الارتفاع */
+    width: 100% !important; /* جعلها عريضة */
+    font-size: 14px; /* تصغير حجم النص */
+    padding: 5px;
+    white-space: normal !important; /* السماح بنقل النص الطويل للسطر التالي */
+}
+
+/* ✅ توسيع الـ selector بالكامل */
+.selector {
+    width: 100% !important;
+    float: left;
+}
+
+/* ✅ تحسين توزيع الأعمدة في الشاشات الصغيرة */
+@media (min-width: 576px) {
+    .col-sm-3 {
+        -ms-flex: 0 0 25%;
+        flex: 0 0 25%;
+        max-width: 22%;
+    }
+}
+
+/* ✅ تغيير لون نص الصلاحيات إلى الأسود */
+#id_permissions_from, 
+#id_permissions_to {
+    color: black !important;
+}
+
+/* ✅ تحسين لون الخلفية */
+#id_permissions_from option, 
+#id_permissions_to option {
+    background-color: white !important;
+    color: black !important;
+    padding: 5px;
+    white-space: normal !important; /* التأكد من عرض النص بالكامل */
+}
+
+/* ✅ تخصيص ألوان لكل مجموعة صلاحيات حسب الجدول */
+#id_permissions_from option[value*="auth"], 
+#id_permissions_to option[value*="auth"] {
+    background-color: #ffcccc !important; /* لون وردي فاتح لصلاحيات المستخدمين */
+}
+
+#id_permissions_from option[value*="system_companies"], 
+#id_permissions_to option[value*="system_companies"] {
+    background-color: #ccffcc !important; /* لون أخضر فاتح لصلاحيات الشركات */
+}
+
+#id_permissions_from option[value*="inventory"], 
+#id_permissions_to option[value*="inventory"] {
+    background-color: #ccccff !important; /* لون أزرق فاتح لصلاحيات المخزون */
+}
+
+#id_permissions_from option[value*="sales"], 
+#id_permissions_to option[value*="sales"] {
+    background-color: #ffffcc !important; /* لون أصفر فاتح لصلاحيات المبيعات */
+}
+
+/* ✅ إضافة حدود لكل مجموعة */
+#id_permissions_from optgroup,
+#id_permissions_to optgroup {
+    font-weight: bold;
+    padding: 5px;
+    border-bottom: 1px solid #999;
+}
+
+/* ✅ جعل جميع التسميات (Labels) فوق الحقول (Inputs) */
+.form-row {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* ✅ تحسين تنسيق الحقول */
+.form-row label {
+    font-weight: bold;
+    margin-bottom: 5px; /* إضافة مسافة صغيرة بين التسمية والحقول */
+}
+
+/* ✅ تحسين مظهر الحقول */
+.form-row input, 
+.form-row select, 
+.form-row textarea {
+    width: 100% !important; /* جعل الحقول تأخذ عرض الصفحة بالكامل */
+    padding: 10px;
+    border-radius: 6px; /* زوايا ناعمة */
+    border: 1px solid #ccc; /* حدود خفيفة */
+    background-color: #f9f9f9; /* خلفية خفيفة */
+}
+
+/* ✅ تحسين توزيع النماذج بحيث تبدو منظمة */
+.field-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+}
+
+/* ✅ تحسين حقول الاختيار المتعددة */
+select[multiple] {
+    min-height: 200px; /* زيادة الارتفاع لسهولة التصفح */
+}
+
+
+/* تعديل موقع الشعار واسم الشركة */
+#header .branding {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding-left: 15px;
+}
+
+#header .branding img {
+    height: 40px;
+    width: auto;
+    margin-right: 10px;
+}
+
+#header .branding .site-name {
+    font-size: 1.2em;
+    font-weight: bold;
+}

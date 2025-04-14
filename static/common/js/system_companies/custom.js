@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-
+    
 
 // static/admin/custom.js
 document.addEventListener("DOMContentLoaded", function () {

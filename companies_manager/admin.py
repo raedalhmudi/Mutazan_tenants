@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from .models import UserProfile
+from .forms import CustomUserCreationForm
 from django.contrib.auth.models import Group, Permission
 from django.db.models import Q
 
@@ -37,26 +38,55 @@ class UserProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'الملف الشخصي'
     fk_name = 'user'
-    fields = ('profile_picture', 'phone_number', 'address')
+    fields = ('phone_number', 'address', 'profile_picture')
+
 
 class CustomUserAdmin(UserAdmin):
-    def add_view(self, *args, **kwargs):
-        self.inlines = [UserProfileInline]
-        return super().add_view(*args, **kwargs)
+    add_form = CustomUserCreationForm
+    inlines = [UserProfileInline]
 
-    def change_view(self, *args, **kwargs):
-        self.inlines = [UserProfileInline]
-        return super().change_view(*args, **kwargs)
+    # حدد الحقول في صفحة إضافة المستخدم
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2', 'phone_number', 'address', 'profile_picture'),
+        }),
+    )
 
-    list_display = ('username', 'email', 'get_phone')
-    
-    def get_phone(self, obj):
-        return obj.profile.phone_number if hasattr(obj, 'profile') else ''
-    get_phone.short_description = 'رقم الهاتف'
+    # حدد الحقول في صفحة تعديل المستخدم
+    fieldsets = (
+        (None, {
+            'fields': ('username', 'email', 'password', 'is_active', 'is_staff', 'is_superuser'),
+        }),
+        ('Personal info', {
+            'fields': ('first_name', 'last_name', 'phone_number', 'address', 'profile_picture'),
+        }),
+        ('Permissions', {
+            'fields': ('is_staff', 'is_superuser', 'groups', 'user_permissions'),
+        }),
+        ('Important dates', {
+            'fields': ('last_login', 'date_joined'),
+        }),
+    )
 
-# إلغاء التسجيل القديم وإعادة التسجيل
+    def save_model(self, request, obj, form, change):
+        """يتم هنا حفظ UserProfile تلقائيًا عند إضافة مستخدم جديد"""
+        super().save_model(request, obj, form, change)
+        if not change:  # يعني مستخدم جديد
+            UserProfile.objects.update_or_create(
+                user=obj,
+                defaults={
+                    'phone_number': form.cleaned_data.get('phone_number'),
+                    'address': form.cleaned_data.get('address'),
+                    'profile_picture': form.cleaned_data.get('profile_picture')
+                }
+            )
+
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
+
+
+
 
 class TenantAdminSete(admin.AdminSite):
     def __init__(self, *args, **kwargs):

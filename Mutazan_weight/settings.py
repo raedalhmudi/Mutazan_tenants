@@ -38,18 +38,19 @@ SHARED_APPS = [
     # 'admin_adminlte.apps.AdminAdminlteConfig',
     'jazzmin',
     # 'user_management',
-    'django.contrib.auth',
     'django.contrib.admin',
+    'django.contrib.auth',
+    # --------------api------------
+    # 'rest_framework',
     'companies_manager.apps.CompaniesManagerConfig',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_htmx',
+    'rangefilter',
     'allauth',
     'allauth.account',
-    # --------------api------------
-    # 'rest_framework',
 ]
 
 TENANT_APPS = [
@@ -137,26 +138,29 @@ JAZZMIN_SETTINGS = {
     "site_title": "لوحة الإدارة",
     "site_header": "إدارة الشركات",
     "order_with_respect_to": ["companies_manager", "system_companies"],
-    
+
+
+        # تخصيص الأيقونات في الشريط الجانبي لكل جدول من الجداول في التطبيق
+
+
     "custom_links": {
         "companies_manager": [
             {
-                "name": "إدارة الشركات",
-                "url": "admin:companies_manager_company_changelist",
+                "name": "سجل الشركات",
+                "url": "/companies/",
                 "icon": "fas fa-building",
-                "permissions": ["companies_manager.view_company"],
-            },
+                # "permissions": ["mutazan_companies.view_company"],
+            }
         ],
         "system_companies": [
             {
-                "name": "إدارة أنظمة الشركات",
-                "url": "admin:system_companies_systemcompany_changelist",
-                "icon": "fas fa-cogs",
-                "permissions": ["system_companies.view_systemcompany"],
+                "name": "صفحة التقارير",
+                "url": "/admin/reports/",
+                "icon": "fas fa-chart-line",
             },
         ],
     },
-    
+
     "custom_sidebar_links": [
         {
             "name": "إدارة الشركات",
@@ -166,87 +170,87 @@ JAZZMIN_SETTINGS = {
                 "system_companies.systemcompany",
             ],
         },
+        {
+            "name": "التقارير",
+            "icon": "fas fa-chart-line",
+            "url": "/admin/reports/",
+        },
     ],
-    
+
     "icons": {
         "companies_manager.Company": "fas fa-building",
+        "companies_manager.Domain": "fas fa-building",
+        "system_companies.Entry_and_exit":"fas fa-sign-in-alt",
+        "system_companies.Devices":"fas fa-cogs",
+        "system_companies.Invoice":"fas fa-file-invoice",
+        "system_companies.WeightCard":"fas fa-weight-hanging",
+        "system_companies.Legal_weight":"fas fa-balance-scale",
+        "system_companies.Material":"fas fa-box",
+        "system_companies.Trucks":"fas fa-truck-moving",
+        "system_companies.TrucksTypes":"fas fa-truck",
+        "system_companies.DriverNeme":"fas fa-user-tie",
         "system_companies.SystemCompany": "fas fa-cogs",
-    },
-    # "hide_apps": ["companies_manager"],  # ✅ إخفاء التطبيق بالكامل
-    # "hide_models": ["auth.Group", "auth.User"],
-    # "site_logo": "images/mutazan.svg",  
-    # "login_logo": "images/mutazan.svg",
-    "custom_css": "common/css/custom_admin.css",
-    # "custom_css": "common/css/custom.css",
-    "custom_js": "common/js/custom.js",
-    "welcome_sign": "مرحبًا بك في لوحة التحكم",
-
-    # "search_model": ["auth.User", "mutazan.YourModel"],
-    "topmenu_links": [
-        # {"name": "الرئيسية", "url": "admin:index", "permissions": ["auth.view_user"]},
-        # {"name": "الدعم الفني", "url": "https://support.example.com", "new_window": True},
-        # {"model": "auth.User"},
-        # {"app": "mutazan"},
-    ],
-     
-    "show_sidebar": True,  # التأكد من عرض الشريط الجانبي
-    "navigation_expanded": True,  # بقاء القائمة الجانبية مفتوحة بشكل افتراضي
-    "icons": {
         "auth": "fas fa-users-cog",
         "auth.user": "fas fa-user",
         "auth.Group": "fas fa-users",
         "mutazan.YourModel": "fas fa-box",
     },
 
+    # "hide_apps": ["companies_manager"],
+    # "hide_models": ["auth.Group", "auth.User"],
+    # "site_logo": "images/mutazan.svg",
+    # "login_logo": "images/mutazan.svg",
 
+    # "custom_css": "common/css/companies_manager/custom_admin.css",
+    # "custom_css": "common/css/custom.css",
+    "custom_js": "common/js/system_companies/custom.js",
+
+    "welcome_sign": "مرحبًا بك في لوحة التحكم",
+
+    # "search_model": ["auth.User", "mutazan.YourModel"],
+
+    "topmenu_links": [
+        # {"name": "الرئيسية", "url": "admin:index", "permissions": ["auth.view_user"]},
+        # {"name": "الدعم الفني", "url": "https://support.example.com", "new_window": True},
+        # {"model": "auth.User"},
+        # {"app": "mutazan"},
+    ],
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
 
     "changeform_format": "horizontal_tabs",
     "changeform_format_overrides": {"auth.user": "collapsible"},
     "use_google_fonts_cdn": True,
+    "user_avatar": "profile_picture",
     "show_ui_builder": False,
-    "language_chooser": True,  # السماح بتغيير اللغة من داخل اللوحة
-    "show_ui_builder": False,  # إخفاء خيار تعديل الواجهة للمستخدمين العاديين
-    "user_avatar": "image",  # تحديد حقل الصورة في نموذج المستخدم
+    "language_chooser": True,
+
     "custom_app_labels": {
-        "companies_manager": "إدارة الشركات",  # ✅ تغيير اسم التطبيق إلى "إدارة الشركات"
-        "system_companies": "نظام الشركة",     # ✅ تغيير اسم تطبيق آخر إذا لزم الأمر
+        "companies_manager": "إدارة الشركات",
+        "system_companies": "نظام الشركة",
     },
-
-    "custom_links": {
-        "companies_manager": [  # اسم التطبيق
-            {
-                "name": "سجل الشركات",
-                "url": "/companies/",  # تأكد من أن هذا هو المسار الصحيح للعرض (view) الخاص بك
-                "icon": "fas fa-building",
-                # "permissions": ["mutazan_companies.view_company"],  # يمكنك تخصيص الصلاحيات
-            }
-        ]
-    },
-
 }
 
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-
 JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text": False,  # تعطيل النص الصغير في الهيدر
-    "navbar_fixed": True,  # تثبيت الهيدر في أعلى الصفحة
+    "navbar_small_text": False,
+    "navbar_fixed": True,
     "sidebar_fixed": True,
     "footer_fixed": True,
-    "theme": "darkly",  # يمكنك اختيار سمات مختلفة مثل "default", "darkly", "cosmo", "flatly", إلخ
-    "actions_sticky_top": True,  # إبقاء أزرار الإجراءات مثبتة
+    "theme": "default",  # يمكنك اختيار سمات مختلفة مثل "default", "darkly", "cosmo", "flatly", إلخ
+    "actions_sticky_top": True,
     "right_sidebar": True,
-        "usermenu_links": [
+    "usermenu_links": [
         {"model": "auth.user"},
         {"name": "الإشعارات", "url": "/notifications/", "icon": "fas fa-bell"},
         {"name": "الرسائل", "url": "/messages/", "icon": "fas fa-envelope"},
         {"name": "ملء الشاشة", "url": "#", "icon": "fas fa-expand-arrows-alt"},
     ],
     "extrahead": [
-        '<link rel="stylesheet" href="{% static "css/custom_admin.css" %}">',  # ربط CSS المخصص
+        '<link rel="stylesheet" href="{% static "css/custom_admin.css" %}">',
     ],
-
 }
+
 
 
 # ==================================================================
@@ -287,13 +291,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 ASE_DIR = Path(__file__).resolve().parent.parent
-STATIC_URL = 'static/'
-# STATICFILES_DIRS = [ BASE_DIR / 'static' ]
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [ BASE_DIR / 'static' ]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # مجلد static الرئيسي
-    # BASE_DIR.parent / "books/static",  # مجلد ثانوي للصور إن كان بجانب المشروع
-]
+# STATICFILES_DIRS = [
+#     BASE_DIR / "static",  # مجلد static الرئيسي
+#     # BASE_DIR.parent / "books/static",  # مجلد ثانوي للصور إن كان بجانب المشروع
+# ]
 
 
 MEDIA_URL = 'media/'

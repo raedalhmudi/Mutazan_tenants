@@ -107,3 +107,23 @@ select[multiple] {
 select[multiple] {
     min-height: 200px; /* زيادة الارتفاع لسهولة التصفح */
 }
+
+
+/* تعديل موقع الشعار واسم الشركة */
+#header .branding {
+    display: flex !important;
+    align-items: center;
+    gap: 10px;
+    padding-left: 15px;
+}
+
+#header .branding img {
+    height: 40px;
+    width: auto;
+    margin-right: 10px;
+}
+
+#header .branding .site-name {
+    font-size: 1.2em;
+    font-weight: bold;
+}

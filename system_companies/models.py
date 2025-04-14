@@ -267,13 +267,19 @@ class WeightCard(models.Model):
 
     def clean(self):
         # التحقق من إدخال البيانات الأساسية
-        if not self.empty_weight or not self.entry_date:
+        if not self.empty_weight :
             self.status = 'incomplete'
             raise ValidationError("يجب إدخال رقم اللوحة، الوزن الفارغ، وتاريخ الدخول!")
+        
+
+        if self.loaded_weight and self.empty_weight:
+            if self.loaded_weight < self.empty_weight:
+                raise ValidationError("🚫 الوزن المحمل لا يمكن أن يكون أقل من الوزن الفارغ!")
+
 
         # إذا تم إدخال الوزن المحمل، تحقق من الوزن القانوني
         if self.loaded_weight:
-            if not self.driver_name or not self.material or not self.exit_date or not self.quantity:
+            if not self.driver_name or not self.material or not self.quantity:
                 self.status = 'incomplete'
                 raise ValidationError("يجب إدخال اسم السائق، المادة، والكمية لإكمال البطاقة!")
 
@@ -298,6 +304,13 @@ class WeightCard(models.Model):
         if self.plate_number:
             self.driver_name = self.plate_number.driver_name
         
+        if self.empty_weight and not self.entry_date:
+            self.entry_date = now()
+
+        # تسجيل وقت الخروج عند إدخال الوزن المحمل لأول مرة
+        if self.loaded_weight and not self.exit_date:
+            self.exit_date = now()
+        
         # إذا تم إدخال الوزن المحمل، احسب الوزن الصافي
         if self.empty_weight and self.loaded_weight:
             self.net_weight = self.loaded_weight - self.empty_weight
@@ -313,9 +326,6 @@ class WeightCard(models.Model):
 # نموذج Invoice المعدل
 class Invoice(models.Model):  # الفواتير
     weight_card = models.ForeignKey(WeightCard, on_delete=models.CASCADE, verbose_name="رقم بطاقة الوزن", default=1, editable=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name ='invoices', null=True, blank=True,verbose_name="المستخدم", editable=True)
     material = models.ForeignKey(Material, on_delete=models.CASCADE, verbose_name="الماده")
     quantity = models.DecimalField(max_digits=10, decimal_places=5, verbose_name="الكمية", null=True, blank=True)
     datetime = models.DateTimeField(auto_now_add=True, verbose_name="التاريخ والوقت")
@@ -337,19 +347,28 @@ def create_invoice(sender, instance, created, **kwargs):
     """
     # إذا كانت البطاقة مكتملة ولم يكن هناك فاتورة مرتبطة بها مسبقًا
     if instance.status == 'complete' and not Invoice.objects.filter(weight_card=instance).exists():
-        User = get_user_model()
-        user = kwargs.get('user', None)  # جلب المستخدم إذا كان متوفرًا في الإشارة
-
-        if user:
-            user = User.objects.first()  # تحديد مستخدم افتراضي إذا لم يكن هناك مستخدم محدد
-
         Invoice.objects.create(
             weight_card=instance,
-            user=user,
             material=instance.material,
             quantity=instance.quantity,
             net_weight=instance.net_weight,
         )
+        
+@receiver(post_save, sender=WeightCard)
+def update_or_create_invoice(sender, instance, created, **kwargs):
+    """
+    يتم إنشاء أو تحديث الفاتورة تلقائيًا عند تعديل بطاقة الوزن.
+    """
+    # إذا كانت البطاقة مكتملة
+    if instance.status == 'complete':
+        invoice, created_invoice = Invoice.objects.get_or_create(weight_card=instance)
+
+        # في حال تم تعديل البطاقة، نحدث الفاتورة المرتبطة
+        invoice.material = instance.material
+        invoice.quantity = instance.quantity
+        invoice.net_weight = instance.net_weight
+        invoice.save()
+
 
 # -----------------------------------------------------------
 #  ----------------------- الاتصال----------------------------
@@ -498,6 +517,7 @@ class Devices(models.Model):
         if self.connection_type == "wifi" and self.address_ip:
             # تطبيق إعدادات WiFi (لا تحتاج إلى إعدادات خاصة)
             print(f"تطبيق إعدادات WiFi للجهاز {self.name_devices}")
+            url = self.get_camera_stream_url()
 
             # التحقق من الاتصال بالكاميرا عبر WiFi
             cap = cv2.VideoCapture(self.get_camera_stream_url())
@@ -567,10 +587,16 @@ class Devices(models.Model):
  # -----------------------------------------------------------
 #  ----------------------- عمليات الدخول ----------------------------
 class Entry_and_exit(models.Model):  # جدول عمليات الدخول والخروج
-    device = models.ForeignKey(Devices, on_delete=models.CASCADE, verbose_name="الكاميرا")
+    NAME = [
+        ( "process_entry", 'عملية دخول'),
+        ( "process_exit", 'عملية خروج'),
+       
+    ]
+    name = models.CharField(max_length=50, choices=NAME, verbose_name="العمليه")
+    device = models.ForeignKey(Devices, on_delete=models.CASCADE, verbose_name="الكاميرا",null=True, blank=True)
     plate_number_E_e = models.ForeignKey(Trucks, on_delete=models.CASCADE, verbose_name="رقم اللوحه")
     image_path_entry = models.ImageField(upload_to="entry_images/%y/%m/%d", verbose_name="صور الدخول")
-    image_path_exit = models.ImageField(upload_to="exit_images/%y/%m/%d", verbose_name="صور الخروج")
+    image_path_exit = models.ImageField(upload_to="exit_images/%y/%m/%d", verbose_name="صور الخروج",null=True, blank=True)
     entry_date = models.DateTimeField(auto_now_add=True)
     exit_date = models.DateTimeField(auto_now_add=True)
 
@@ -578,7 +604,7 @@ class Entry_and_exit(models.Model):  # جدول عمليات الدخول وال
         verbose_name = "عمليات الدخول الخروج"
         verbose_name_plural = "  عمليات الدخول الخروج"
     def __str__(self):
-        return f"{self.plate_number_E_e}"
+        return f"{self.name}"
 
     def entry_image_tag(self):
         if self.image_path_entry:
@@ -592,12 +618,26 @@ class Entry_and_exit(models.Model):  # جدول عمليات الدخول وال
 
     exit_image_tag.short_description = "صورة الخروج"
 
+    def save(self, *args, **kwargs):
+        self.clean()  # التأكد من التحقق قبل الحفظ
+        
+
+        if self.image_path_entry and not self.entry_date:
+            self.entry_date = now()
+
+        # تسجيل وقت الخروج عند إدخال الوزن المحمل لأول مرة
+        if self.image_path_exit and not self.exit_date:
+            self.exit_date = now()
+      
+        super().save(*args, **kwargs)
+
+    
 # -----------------------------------------------------------
 #  ------------------------المخالفات ----------------------------
 class ViolationRecord(models.Model):
     plate_number_vio = models.ForeignKey(Trucks, on_delete=models.CASCADE, verbose_name="رقم اللوحه")
     violation_type = models.ForeignKey("companies_manager.ViolationsType", on_delete=models.CASCADE, verbose_name=" نوع المخالفة")
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ ووقت المخالفة")
     device_vio = models.ForeignKey(Devices, on_delete=models.CASCADE, verbose_name="الكاميرا",null=True, blank=True )
     entry_exit_log = models.ForeignKey(Entry_and_exit, on_delete=models.CASCADE, verbose_name="العمليه")
     weight_card_vio = models.ForeignKey(WeightCard, on_delete=models.CASCADE, verbose_name="بطاقة الوزن")
@@ -608,7 +648,7 @@ class ViolationRecord(models.Model):
         verbose_name_plural = "المخالفات"
 
     def __str__(self):
-        return self.plate_number_vio
+        return str(self.plate_number_vio.plate_number)
 
 
 

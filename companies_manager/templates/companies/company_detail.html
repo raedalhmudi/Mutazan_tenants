@@ -1,158 +1,689 @@
-{% extends "admin/base_site.html" %}
-
+{% extends "companies/base_site.html" %}
+{% load static %} 
+{% block sidebar %}
+  {{ block.super }}
+{% endblock %} 
 {% block content %}
+
 <style>
-    .table-container {
-        max-height: 500px;
-        overflow-y: auto;
-        border: 2px solid #ccc;
-        border-radius: 10px;
-        background-color: #f9f9f9;
-        padding: 10px;
+    /* تنسيق الترويسات */
+h2, h4 {
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+@media (min-width: 992px) {
+    .container, .container-lg, .container-md, .container-sm {
+        max-width: 1500px;
     }
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-    thead {
-        position: sticky;
-        top: 0;
-        background-color: #e0e0e0;
-        z-index: 10;
-    }
-    th, td {
-        padding: 12px;
-        text-align: center;
-        border-bottom: 1px solid #ddd;
-    }
-    th {
-        background-color: #f1f1f1;
-    }
+}
+button.btn-info, button.btn-success, button.btn-primary {
+    margin-right: 10px;
+}
+
+/* تنسيق التبويبات */
+.nav-tabs .nav-link.active {
+    background-color: #17a2b8;
+    color: white;
+    font-weight: bold;
+}
+.nav-tabs .nav-link {
+    color: #17a2b8;
+}
+
+/* تحسين شكل الجدول الجديد */
+.b-table {
+    margin-top: 20px;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.table.is-fullwidth {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table.is-striped tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table.is-hoverable tbody tr:hover {
+    background-color: #f5f5f5;
+}
+
+.table th, .table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #363636;
+}
+
+/* تنسيق الصور الدائرية */
+.image img.is-rounded {
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+}
+
+/* تنسيق شريط التقدم */
+.progress.is-small {
+    height: 8px;
+}
+
+.progress.is-primary {
+    background-color: #ededed;
+}
+
+.progress.is-primary::-webkit-progress-value {
+    background-color: #00d1b2;
+}
+
+/* تنسيق الأزرار */
+.buttons.is-right {
+    justify-content: flex-end;
+}
+
+.button.is-small {
+    padding: 0.25em 0.5em;
+    font-size: 0.75rem;
+}
+
+.button.is-primary {
+    background-color: #00d1b2;
+    border-color: transparent;
+    color: #fff;
+}
+
+.button.is-danger {
+    background-color: #ff3860;
+    border-color: transparent;
+    color: #fff;
+}
+
+/* تنسيق الصفحات */
+.notification {
+    background-color: #f5f5f5;
+    border-radius: 0 0 6px 6px;
+    padding: 1rem;
+}
+
+.level {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.buttons.has-addons .button {
+    margin-right: -1px;
+    border-radius: 0;
+}
+
+.buttons.has-addons .button:first-child {
+    border-radius: 4px 0 0 4px;
+}
+
+.buttons.has-addons .button:last-child {
+    border-radius: 0 4px 4px 0;
+}
+
+.buttons.has-addons .button.is-active {
+    background-color: #00d1b2;
+    color: white;
+}
+
+/* التبويبات */
+.tab-content {
+    margin-top: 20px;
+}
+
+/* التاريخ بحجم مناسب */
+.has-text-grey.is-abbr-like {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* تنسيق جديد للقائمة المنسدلة */
+.report-dropdown {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+.report-dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 280px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1000;
+    border-radius: 5px;
+    padding: 15px;
+    left: 0;
+    top: 100%;
+}
+
+.report-dropdown:hover .report-dropdown-content {
+    display: block;
+}
+/* منع ظهور شريط التمرير عند عرض القائمة */
+html {
+    overflow-x: hidden;
+}
+/* ضبط تموضع القائمة بالنسبة للعناصر الأخرى */
+.container {
+    position: relative;
+    z-index: 1;
+}
+/* ضبط المساحة حول القائمة */
+.report-dropdown-btn {
+    background-color: #17a2b8;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.report-dropdown-content.show {
+    display: block;
+}
+
+.report-fields {
+    margin-top: 10px;
+    background: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.refresh-icon {
+    float: left;
+    cursor: pointer;
+    margin-left: 10px;
+    font-size: 20px;
+    color: #17a2b8;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.refresh-icon {
+    cursor: pointer;
+    font-size: 20px;
+    color: #17a2b8;
+    transition: transform 0.3s ease;
+    padding: 5px;
+    border-radius: 50%;
+}
+
+.refresh-icon:hover {
+    background-color: #f0f0f0;
+}
+
+.refresh-icon:active {
+    transform: rotate(360deg);
+}
+
+
+/* تحسين ظهور حالة جلب البيانات */
+#fetch-status, #fetch-status-violations {
+    font-weight: bold;
+    margin-right: 10px;
+    transition: all 0.3s ease;
+}
+
 </style>
 
 <div class="container mt-4">
+    <link rel="stylesheet" href="{% static 'common/css/companies_manager/company_detail.css' %}">
+    
     <h2>{{ company.name }}</h2>
 
-    <!-- إضافة أزرار التقارير -->
-    <div class="mb-3">
-        <h4>تقارير العمل</h4>
-        <button class="btn btn-info" id="daily-report">تقرير يومي</button>
-        <button class="btn btn-info" id="weekly-report">تقرير أسبوعي</button>
-        <button class="btn btn-info" id="monthly-report">تقرير شهري</button>
-        <button id="print-report" class="btn btn-success">🖨️ طباعة التقرير</button>
-    </div>
+    <!-- إضافة قائمة التقارير المنسدلة -->
+    <div class="report-dropdown">
+        <button class="report-dropdown-btn">📊 التقارير</button>
+            <div class="report-dropdown-content">
+            <button class="btn btn-info btn-block" id="daily-report">تقرير يومي</button>
+            <button class="btn btn-info btn-block" id="weekly-report">تقرير أسبوعي</button>
+            <button class="btn btn-info btn-block" id="monthly-report">تقرير شهري</button>
+            <button id="print-report" class="btn btn-success btn-block">🖨️ طباعة التقرير</button>
+            
+            <!-- حقل إدخال التقرير اليومي -->
+            <div id="daily-fields" class="report-fields">
+                <label for="daily-date">اختر اليوم:</label>
+                <input type="date" id="daily-date" class="form-control" value="{{ today|date:'Y-m-d' }}">
+            </div>
 
-    <!-- حقول إدخال التقرير الأسبوعي -->
-    <div id="weekly-fields" style="display: none;">
-        <label for="from-date">من تاريخ:</label>
-        <input type="date" id="from-date" class="form-control">
-        <label for="to-date">إلى تاريخ:</label>
-        <input type="date" id="to-date" class="form-control">
-        {% comment %} <button class="btn btn-primary mt-2" id="filter-weekly">عرض التقرير</button> {% endcomment %}
-    </div>
+            <!-- حقول إدخال التقرير الأسبوعي -->
+            <div id="weekly-fields" class="report-fields" style="display: none;">
+                <label for="from-date">من تاريخ:</label>
+                <input type="date" id="from-date" class="form-control">
+                <label for="to-date">إلى تاريخ:</label>
+                <input type="date" id="to-date" class="form-control">
+            </div>
 
-    <!-- اختيار الشهر للتقرير الشهري -->
-    <div id="monthly-fields" style="display: none;">
-        <label for="month-select">اختر الشهر:</label>
-        <select id="month-select" class="form-control">
-            <option value="1">يناير</option>
-            <option value="2">فبراير</option>
-            <option value="3">مارس</option>
-            <option value="4">أبريل</option>
-            <option value="5">مايو</option>
-            <option value="6">يونيو</option>
-            <option value="7">يوليو</option>
-            <option value="8">أغسطس</option>
-            <option value="9">سبتمبر</option>
-            <option value="10">أكتوبر</option>
-            <option value="11">نوفمبر</option>
-            <option value="12">ديسمبر</option>
-        </select>
-        {% comment %} <button class="btn btn-primary mt-2" id="filter-monthly">عرض التقرير</button> {% endcomment %}
-    </div>
-
-    <!-- زر جلب بيانات الشركة -->
-    <button id="fetch-data" class="btn btn-primary">🔄 جلب بيانات الشركة</button>
-    <span id="fetch-status" style="margin-left: 10px; font-weight: bold;"></span>
-
-    <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
-        <li class="nav-item">
-            <a class="nav-link active" id="weight-cards-tab" data-toggle="tab" href="#weight-cards" role="tab" aria-controls="weight-cards" aria-selected="true">بطاقات الوزن المنقولة</a>
-        </li>
-    </ul>
-
-    <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="weight-cards" role="tabpanel" aria-labelledby="weight-cards-tab">
-            <table class="table" border="1">
-                <thead>
-                    <tr>
-                        <th>رقم اللوحة</th>
-                        <th>الوزن الفارغ</th>
-                        <th>الوزن المحمل</th>
-                        <th>الوزن الصافي</th>
-                        <th>اسم السائق</th>
-                        <th>تاريخ الدخول</th>
-                        <th>تاريخ الخروج</th>
-                        <th>المادة</th>
-                        <th>حالة البطاقة</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body">
-                    {% for card in transferred_cards %}
-                    <tr>
-                        <td>{{ card.plate_number }}</td>
-                        <td>{{ card.empty_weight }}</td>
-                        <td>{{ card.loaded_weight }}</td>
-                        <td>{{ card.net_weight }}</td>
-                        <td>{{ card.driver_name }}</td>
-                        <td>{{ card.entry_date }}</td>
-                        <td>{{ card.exit_date }}</td>
-                        <td>{{ card.material }}</td>
-                        <td>{{ card.status }}</td>
-                    </tr>
+            <!-- اختيار الشهر للتقرير الشهري -->
+            <div id="monthly-fields" class="report-fields" style="display: none;">
+                <label for="month-select">اختر الشهر:</label>
+                <select id="month-select" class="form-control">
+                    {% for month in months %}
+                    <option value="{{ month.value }}" {% if month.selected %}selected{% endif %}>{{ month.name }}</option>
                     {% endfor %}
-                </tbody>
-            </table>
+                </select>
+                <label for="year-select">السنة:</label>
+                <select id="year-select" class="form-control">
+                    {% for year in years %}
+                    <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
     </div>
-    
-    <!-- زر الطباعة -->
 
+
+<ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="weight-cards-tab" data-toggle="tab" href="#weight-cards" role="tab" aria-controls="weight-cards" aria-selected="true">بطاقات الوزن المنقولة</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="violations-tab" data-toggle="tab" href="#violations" role="tab" aria-controls="violations" aria-selected="false">المخالفات</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="weight-cards" role="tabpanel" aria-labelledby="weight-cards-tab">
+        <div class="card-content">
+            <div class="b-table has-pagination">
+                <div class="table-header">
+                    <h4>بطاقات الوزن</h4>
+                    <span id="fetch-status" style="font-weight: bold;"></span>
+                    <i class="refresh-icon" id="refresh-data" title="تحديث البيانات">🔄</i>
+                </div>
+                <div class="table-wrapper has-mobile-cards">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <thead>
+                            <tr>
+                                <th class="is-checkbox-cell">
+                                    <label class="b-checkbox checkbox">
+                                        <input type="checkbox" value="false">
+                                        <span class="check"></span>
+                                    </label>
+                                </th>
+                                <th>رقم اللوحة</th>
+                                <th>الوزن الفارغ</th>
+                                <th>الوزن المحمل</th>
+                                <th>الوزن الصافي</th>
+                                <th>اسم السائق</th>
+                                <th>تاريخ الدخول</th>
+                                <th>تاريخ الخروج</th>
+                                <th>الكميه</th>
+                                <th>المادة</th>
+                                <th>حالة البطاقة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="weight-cards-body">
+                            {% if transferred_cards %}
+                            {% for card in transferred_cards %}
+                            {% if not card.violation_type %}
+                            <tr>
+                                <td class="is-checkbox-cell">
+                                    <label class="b-checkbox checkbox">
+                                        <input type="checkbox" value="false">
+                                        <span class="check"></span>
+                                    </label>
+                                </td>
+                                <td data-label="رقم اللوحة">{{ card.plate_number }}</td>
+                                <td data-label="الوزن الفارغ">{{ card.empty_weight }}</td>
+                                <td data-label="الوزن المحمل">{{ card.loaded_weight }}</td>
+                                <td data-label="الوزن الصافي">{{ card.net_weight }}</td>
+                                <td data-label="اسم السائق">{{ card.driver_name }}</td>
+                                <td data-label="تاريخ الدخول">
+                                    <small class="has-text-grey is-abbr-like">{{ card.entry_date|date:"m/d/Y h:i A"|default:"-" }}</small>
+                                </td>
+                                <td data-label="تاريخ الخروج">
+                                    <small class="has-text-grey is-abbr-like">{{ card.exit_date|date:"m/d/Y h:i A"|default:"-" }}</small>
+                                </td>
+                                <td data-label="الكميه">{{ card.quantity }}</td>
+                                <td data-label="المادة">{{ card.material }}</td>
+                                <td data-label="حالة البطاقة">
+                                    <progress max="100" class="progress is-small is-primary" value="{% if card.status == 'مكتمل' %}100{% elif card.status == 'قيد المعالجة' %}50{% else %}10{% endif %}">
+                                        {% if card.status == 'مكتمل' %}100{% elif card.status == 'قيد المعالجة' %}50{% else %}10{% endif %}
+                                    </progress>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="11" style="text-align: center;">لا توجد بيانات</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="notification">
+                    <div class="level">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <div class="buttons has-addons">
+                                    <button type="button" class="button is-active">1</button>
+                                    <button type="button" class="button">2</button>
+                                    <button type="button" class="button">3</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <small>الصفحة 1 من 3</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <iframe id="print-frame" style="display: none; width: 100%;" frameborder="0"></iframe>
+    
+    <div class="tab-pane fade" id="violations" role="tabpanel" aria-labelledby="violations-tab">
+        <div class="card-content">
+            <div class="b-table has-pagination">
+                <div class="table-header">
+                    <h4>المخالفات</h4>
+                    <span id="fetch-status-violations" style="font-weight: bold;"></span>
+                    <i class="refresh-icon" id="refresh-data-violations" title="تحديث البيانات">🔄</i>
+                </div>
+                <div class="table-wrapper has-mobile-cards">
+                    <table class="table is-fullwidth is-striped is-hoverable">
+                        <thead>
+                            <tr>
+                                <th class="is-checkbox-cell">
+                                    <label class="b-checkbox checkbox">
+                                        <input type="checkbox" value="false">
+                                        <span class="check"></span>
+                                    </label>
+                                </th>
+                                <th>رقم اللوحة</th>
+                                <th>نوع المخالفة</th>
+                                <th>تاريخ المخالفة</th>
+                                <th>الكاميرا</th>
+                                <th>العملية</th>
+                                <th>بطاقة الوزن</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="violations-body">
+                            {% if transferred_cards %}
+                            {% for card in transferred_cards %}
+                            {% if card.violation_type %}
+                            <tr>
+                                <td class="is-checkbox-cell">
+                                    <label class="b-checkbox checkbox">
+                                        <input type="checkbox" value="false">
+                                        <span class="check"></span>
+                                    </label>
+                                </td>
+                                <td data-label="رقم اللوحة">{{ card.plate_number }}</td>
+                                <td data-label="نوع المخالفة">{{ card.violation_type }}</td>
+                                <td data-label="تاريخ المخالفة">
+                                    <small class="has-text-grey is-abbr-like">{{ card.timestamp|date:"m/d/Y h:i A"|default:"-" }}</small>
+                                </td>
+                                <td data-label="الكاميرا">{{ card.device_vio }}</td>
+                                <td data-label="العملية">{{ card.entry_exit_log }}</td>
+                                <td data-label="بطاقة الوزن">{{ card.weight_card_vio }}</td>
+                                <td data-label="الحالة">
+                                    <progress max="100" class="progress is-small is-primary" value="{% if card.status == 'مكتمل' %}100{% elif card.status == 'قيد المعالجة' %}50{% else %}10{% endif %}">
+                                        {% if card.status == 'مكتمل' %}100{% elif card.status == 'قيد المعالجة' %}50{% else %}10{% endif %}
+                                    </progress>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="8" style="text-align: center;">لا توجد بيانات</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="notification">
+                    <div class="level">
+                        <div class="level-left">
+                            <div class="level-item">
+                                <div class="buttons has-addons">
+                                    <button type="button" class="button is-active">1</button>
+                                    <button type="button" class="button">2</button>
+                                    <button type="button" class="button">3</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="level-right">
+                            <div class="level-item">
+                                <small>الصفحة 1 من 3</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- كود JavaScript لاستدعاء API -->
 <script>
-    document.getElementById("fetch-data").addEventListener("click", function() {
-        let fetchStatus = document.getElementById("fetch-status");
+document.addEventListener("DOMContentLoaded", function() {
+    // متغير لتحديد نوع التقرير الحالي
+
+
+    // تحسين تأثير التحديث
+    document.getElementById("refresh-data").addEventListener("click", function() {
+        this.style.transform = "rotate(360deg)";
+        setTimeout(() => {
+            this.style.transform = "rotate(0deg)";
+            fetchData('weight');
+        }, 300);
+    });
+    
+    document.getElementById("refresh-data-violations").addEventListener("click", function() {
+        this.style.transform = "rotate(360deg)";
+        setTimeout(() => {
+            this.style.transform = "rotate(0deg)";
+            fetchData('violations');
+        }, 300);
+    });
+    let currentReportType = 'daily';
+    
+    // تعيين تاريخ اليوم كقيمة افتراضية
+    document.getElementById("daily-date").valueAsDate = new Date();
+    
+    // تعيين نطاق أسبوعي افتراضي (من اليوم إلى بعد 7 أيام)
+    let today = new Date();
+    let nextWeek = new Date();
+    nextWeek.setDate(today.getDate() + 7);
+    
+    document.getElementById("from-date").valueAsDate = today;
+    document.getElementById("to-date").valueAsDate = nextWeek;
+    
+
+    
+    // أحداث الأزرار
+    document.getElementById("daily-report").addEventListener("click", function() {
+        currentReportType = 'daily';
+        document.getElementById("daily-fields").style.display = "block";
+        document.getElementById("weekly-fields").style.display = "none";
+        document.getElementById("monthly-fields").style.display = "none";
+    });
+    
+    document.getElementById("weekly-report").addEventListener("click", function() {
+        currentReportType = 'weekly';
+        document.getElementById("daily-fields").style.display = "none";
+        document.getElementById("weekly-fields").style.display = "block";
+        document.getElementById("monthly-fields").style.display = "none";
+    });
+    
+    document.getElementById("monthly-report").addEventListener("click", function() {
+        currentReportType = 'monthly';
+        document.getElementById("daily-fields").style.display = "none";
+        document.getElementById("weekly-fields").style.display = "none";
+        document.getElementById("monthly-fields").style.display = "block";
+    });
+    
+    document.getElementById("print-report").addEventListener("click", function() {
+        let companyId = "{{ company.id }}";
+        let url = `/companies/${companyId}/print-weight-cards/`;
+        let params = [];
+        
+        // تحديد نوع التقرير
+        let activeTab = document.querySelector('.nav-tabs .active').id;
+        let dataType = activeTab.includes('weight') ? 'weight_cards' : 'violations';
+        params.push(`data_type=${dataType}`);
+        
+        // إضافة معايير التقرير
+        if (currentReportType === 'daily') {
+            let date = document.getElementById("daily-date").value;
+            params.push(`report_type=daily&date=${date}`);
+        } 
+        else if (currentReportType === 'weekly') {
+            let fromDate = document.getElementById("from-date").value;
+            let toDate = document.getElementById("to-date").value;
+            params.push(`report_type=weekly&from_date=${fromDate}&to_date=${toDate}`);
+        } 
+        else if (currentReportType === 'monthly') {
+            let month = document.getElementById("month-select").value;
+            let year = document.getElementById("year-select").value;
+            params.push(`report_type=monthly&month=${month}&year=${year}`);
+        }
+        
+        fetch(`${url}?${params.join('&')}`)
+        .then(response => response.text())
+        .then(html => {
+            let iframe = document.getElementById("print-frame");
+            let doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(html);
+            doc.close();
+
+            iframe.style.display = "none";
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        })
+        .catch(error => {
+            console.error("حدث خطأ أثناء تحميل تقرير الطباعة:", error);
+        });
+    });
+
+    // دالة لجلب البيانات
+    function fetchData(tabType) {
+        let fetchStatus = document.getElementById(tabType === 'weight' ? "fetch-status" : "fetch-status-violations");
         fetchStatus.textContent = "⏳ جاري جلب البيانات...";
     
-        let companyId = "{{ company.id }}";  // جلب ID الشركة من القالب
+        let companyId = "{{ company.id }}";
+        let params = [];
+        
+        // تحديد نوع البيانات بناءً على التبويب النشط
+        let dataType = tabType === 'weight' ? 'weight_cards' : 'violations';
+        params.push(`data_type=${dataType}`);
+        
+        if (currentReportType === 'daily') {
+            let date = document.getElementById("daily-date").value;
+            params.push(`report_type=daily&date=${date}`);
+        } 
+        else if (currentReportType === 'weekly') {
+            let fromDate = document.getElementById("from-date").value;
+            let toDate = document.getElementById("to-date").value;
+            params.push(`report_type=weekly&from_date=${fromDate}&to_date=${toDate}`);
+        } 
+        else if (currentReportType === 'monthly') {
+            let month = document.getElementById("month-select").value;
+            let year = document.getElementById("year-select").value;
+            params.push(`report_type=monthly&month=${month}&year=${year}`);
+        }
     
-        fetch(`/companies/${companyId}/fetch-data/`)  // استدعاء API مع تمرير ID
+        fetch(`/companies/${companyId}/fetch-data/?${params.join('&')}`)
         .then(response => response.json())
         .then(data => {
             if (data.status === "success") {
                 fetchStatus.textContent = "✅ تم جلب البيانات بنجاح!";
                 
-                // تحديث الجدول بالبيانات الجديدة
-                let tableBody = document.getElementById("table-body");
-                tableBody.innerHTML = "";  // مسح البيانات القديمة
-                data.cards.forEach(card => {
-                    let row = `
-                        <tr>
-                            <td>${card.plate_number}</td>
-                            <td>${card.empty_weight}</td>
-                            <td>${card.loaded_weight}</td>
-                            <td>${card.net_weight}</td>
-                            <td>${card.driver_name}</td>
-                            <td>${card.entry_date}</td>
-                            <td>${card.exit_date}</td>
-                            <td>${card.material}</td>
-                            <td>${card.status}</td>
-                        </tr>
-                    `;
-                    tableBody.innerHTML += row;
-                });
+                if (dataType === 'weight_cards') {
+                    let tableBody = document.getElementById("weight-cards-body");
+                    tableBody.innerHTML = "";
+                    data.cards.forEach(card => {
+                        let entryDate = card.entry_date ? formatGregorianDate(card.entry_date) : '-';
+                        let exitDate = card.exit_date ? formatGregorianDate(card.exit_date) : '-';
+                        let progressValue = card.status === 'مكتمل' ? 100 : card.status === 'قيد المعالجة' ? 50 : 10;
+                        let row = `
+                            <tr>
+                                <td class="is-checkbox-cell">
+                                    <label class="b-checkbox checkbox">
+                                        <input type="checkbox" value="false">
+                                        <span class="check"></span>
+                                    </label>
+                                </td>
+                                <td data-label="رقم اللوحة">${card.plate_number || ''}</td>
+                                <td data-label="الوزن الفارغ">${card.empty_weight || ''}</td>
+                                <td data-label="الوزن المحمل">${card.loaded_weight || ''}</td>
+                                <td data-label="الوزن الصافي">${card.net_weight || ''}</td>
+                                <td data-label="اسم السائق">${card.driver_name || ''}</td>
+                                <td data-label="تاريخ الدخول">
+                                    <small class="has-text-grey is-abbr-like">${entryDate}</small>
+                                </td>
+                                <td data-label="تاريخ الخروج">
+                                    <small class="has-text-grey is-abbr-like">${exitDate}</small>
+                                </td>
+                                <td data-label="الكميه">${card.quantity || ''}</td>
+                                <td data-label="المادة">${card.material || ''}</td>
+                                <td data-label="حالة البطاقة">
+                                    <progress max="100" class="progress is-small is-primary" value="${progressValue}">
+                                        ${progressValue}
+                                    </progress>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                } else {
+                    let tableBody = document.getElementById("violations-body");
+                    tableBody.innerHTML = "";
+                    data.cards.forEach(card => {
+                        let timestamp = card.timestamp ? formatGregorianDate(card.timestamp) : '-';
+                        let progressValue = card.status === 'مكتمل' ? 100 : card.status === 'قيد المعالجة' ? 50 : 10;
+                        let row = `
+                            <tr>
+                                <td class="is-checkbox-cell">
+                                    <label class="b-checkbox checkbox">
+                                        <input type="checkbox" value="false">
+                                        <span class="check"></span>
+                                    </label>
+                                </td>
+                                <td data-label="رقم اللوحة">${card.plate_number || ''}</td>
+                                <td data-label="نوع المخالفة">${card.violation_type || ''}</td>
+                                <td data-label="تاريخ المخالفة">
+                                    <small class="has-text-grey is-abbr-like">${timestamp}</small>
+                                </td>
+                                <td data-label="الكاميرا">${card.device_vio || ''}</td>
+                                <td data-label="العملية">${card.entry_exit_log || ''}</td>
+                                <td data-label="بطاقة الوزن">${card.weight_card_vio || ''}</td>
+                                <td data-label="الحالة">
+                                    <progress max="100" class="progress is-small is-primary" value="${progressValue}">
+                                        ${progressValue}
+                                    </progress>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+                }
             } else {
                 fetchStatus.textContent = "❌ فشل في جلب البيانات!";
             }
@@ -161,26 +692,39 @@
             fetchStatus.textContent = "❌ خطأ في الاتصال!";
             console.error(error);
         });
-    });
-    document.getElementById("daily-report").addEventListener("click", function() {
-        document.getElementById("weekly-fields").style.display = "none";
-        document.getElementById("monthly-fields").style.display = "none";
-    });
-    
-    document.getElementById("weekly-report").addEventListener("click", function() {
-        document.getElementById("weekly-fields").style.display = "block";
-        document.getElementById("monthly-fields").style.display = "none";
-    });
-    
-    document.getElementById("monthly-report").addEventListener("click", function() {
-        document.getElementById("weekly-fields").style.display = "none";
-        document.getElementById("monthly-fields").style.display = "block";
-    });
-    
-    document.getElementById("print-report").addEventListener("click", function() {
-        window.print();
-    });
-    </script>
-    
+    }
 
+    // أحداث أيقونات التحديث
+    document.getElementById("refresh-data").addEventListener("click", function() {
+        fetchData('weight');
+    });
+    
+    document.getElementById("refresh-data-violations").addEventListener("click", function() {
+        fetchData('violations');
+    });
+
+    // دالة لتنسيق التاريخ ميلادي بشكل جميل
+    function formatGregorianDate(dateString) {
+        if (!dateString) return '-';
+        
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+            numberingSystem: 'latn'
+        };
+        
+        return date.toLocaleString('en-US', options)
+                   .replace(/,/g, '')
+                   .replace(/\//g, '-');
+    }
+});
+</script>
+    
 {% endblock %}
