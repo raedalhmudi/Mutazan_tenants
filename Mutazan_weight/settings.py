@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 
@@ -30,7 +31,7 @@ INTERNAL_IPS = [
 ]
 
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*']
 
 CSRF_TRUSTED_ORIGINS = [ 'https://*' ]
 
@@ -56,6 +57,9 @@ SHARED_APPS = [
     'rangefilter',
     'allauth',
     'allauth.account',
+    # --------------api------------
+    # 'rest_framework',
+    # 'rest_framework_simplejwt',
 ]
 
 TENANT_APPS = [
@@ -70,6 +74,46 @@ TENANT_APPS = [
     'system_companies',
     # 'companies_manager',
 ]
+#------api_classes---------
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# Add to REST_FRAMEWORK
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES': ('JWT',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60), # مدة صلاحية التوكن الرئيسي
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),# مدة صلاحية التوكن الاحتياطي
+    'BLACKLIST_AFTER_ROTATION': False,     # تفعيل القائمة السوداء عند تجديد التوكن
+    'UPDATE_LAST_LOGIN': True,
+}
+
+
+# throttling
+REST_FRAMEWORK = {
+    'DEFAULT_THROTTLE_RATES': {
+        'invoice': '100/day',
+        'burst': '10/minute'
+    }
+}
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+
+#-------------api_classes_end-------------
+
 
 INSTALLED_APPS = SHARED_APPS + [
     app for app in TENANT_APPS if app not in SHARED_APPS
