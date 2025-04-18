@@ -2,9 +2,9 @@ from django.urls import path
 from . import views
 from django.contrib import admin
 # from .views import check_camera_connection
-
-
-
+#---------api----------
+from django.urls import path
+from .views import InvoiceListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -16,5 +16,7 @@ urlpatterns = [
     # path('admin/dashboard/', views.admin_dashboard, name="admin_dashboard"),
     # path('video_feed/<str:camera_type>/', views.camera_feed, name='video_feed'),
     path('video_feed/<str:location>/', views.video_feed, name='video_feed'),
+   #-----------api-----------
+    path('api/invoices/', InvoiceListView.as_view(), name='invoice-list'),
     # مسارات أخرى...
 ]
