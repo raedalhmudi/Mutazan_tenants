@@ -69,7 +69,7 @@ def fetch_company_data(request, company_id):
 def company_list(request):
     """عرض قائمة الشركات"""
     companies = Company.objects.all()
-    return render(request, 'companies/company_list.html', {'companies': companies})
+    return render(request, 'admin/company_list.html', {'companies': companies})
 
 
 def company_detail(request, company_id):
@@ -81,7 +81,7 @@ def company_detail(request, company_id):
         # جلب جميع بطاقات الوزن بناءً على schema_name
         transferred_cards = WeightCardMain.objects.filter(schema_name=company.schema_name)
 
-    return render(request, 'companies/company_detail.html', {
+    return render(request, 'admin/company_detail.html', {
         'company': company,
         'transferred_cards': transferred_cards,
     })
@@ -202,7 +202,7 @@ def print_weight_cards(request, company_id):
                         'status': 'complete'
                     })
             
-            return render(request, 'companies/print_weight_cards.html', {
+            return render(request, 'admin/print_weight_cards.html', {
                 'company': company,
                 'transferred_cards': transferred_cards,
                 'report_title': report_title,
@@ -213,3 +213,6 @@ def print_weight_cards(request, company_id):
         print(f"حدث خطأ: {str(e)}")
         messages.error(request, f"حدث خطأ في جلب البيانات: {str(e)}")
         return redirect('company_detail', company_id=company_id)
+
+
+

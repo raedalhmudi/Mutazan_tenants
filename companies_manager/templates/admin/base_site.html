@@ -1,0 +1,47 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ request.tenant.company_name }} | إدارة النظام{% endblock %}
+
+{% block branding %}
+    <div class="company-brand-container" style="display: flex; align-items: center;">
+        <a href="/admin/" class="brand-link active" id="jazzy-logo" style="display: flex; align-items: center; text-decoration: none;">
+            {% if request.tenant.logo %}
+                <img src="{{ request.tenant.logo.url }}" alt="شعار {{ request.tenant.company_name }}" class="brand-image img-circle elevation-3" style="height: 45px; width: auto; margin-right: 12px; border-radius: 4px; object-fit: contain; opacity: .8;">
+            {% else %}
+                <img src="{% static 'admin/img/logo.png' %}" alt="شعار افتراضي" class="brand-image img-circle elevation-3" style="height: 45px; width: auto; margin-right: 12px; opacity: .8;">
+            {% endif %}
+            
+            <span class="brand-text font-weight-light" style="color: #fff; font-size: 1.3rem; font-weight: 500;">
+                {{ request.tenant.company_name }}
+            </span>
+        </a>
+    </div>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* تحسينات للعرض على الجوال */
+    @media (max-width: 768px) {
+        .brand-text {
+            font-size: 1.1rem !important;
+        }
+        .brand-image {
+            height: 35px !important;
+            margin-right: 8px !important;
+        }
+    }
+    
+    /* تأثير عند التحويم */
+    .brand-link:hover .brand-text {
+        color: #f8f9fa !important;
+        text-shadow: 0 0 5px rgba(255,255,255,0.3);
+    }
+    
+    /* تعديلات لونية للوضع الليلي */
+    [data-dark-mode="true"] .brand-text {
+        color: #e9ecef !important;
+    }
+</style>
+{% endblock %}

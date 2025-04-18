@@ -25,6 +25,10 @@ SECRET_KEY = 'django-insecure-rj#-z^kx3j+1ay397otg6j8m_8#v^$^$jys6&41vy^&6le)ezc
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
 
@@ -35,6 +39,7 @@ CSRF_TRUSTED_ORIGINS = [ 'https://*' ]
 
 SHARED_APPS = [
     'django_tenants',
+    'debug_toolbar',
     # 'admin_adminlte.apps.AdminAdminlteConfig',
     'jazzmin',
     # 'user_management',
@@ -74,7 +79,9 @@ SITE_ID = 1
 
 MIDDLEWARE = [
     'django_tenants.middleware.main.TenantMainMiddleware',
+    'django_tenants.middleware.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -288,12 +295,17 @@ USE_I18N = True
 USE_TZ = True
 
 
+BASE_DIR = Path(__file__).resolve().parent.parent  # هذا يشير إلى مجلد a_core
+PROJECT_ROOT = BASE_DIR.parent  # هذا يشير إلى جذر المشروع
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 ASE_DIR = Path(__file__).resolve().parent.parent
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [ BASE_DIR / 'static' ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [ PROJECT_ROOT / 'static' ]
+STATIC_ROOT = PROJECT_ROOT / 'staticfiles'
+
 # STATICFILES_DIRS = [
 #     BASE_DIR / "static",  # مجلد static الرئيسي
 #     # BASE_DIR.parent / "books/static",  # مجلد ثانوي للصور إن كان بجانب المشروع

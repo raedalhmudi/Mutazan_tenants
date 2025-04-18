@@ -5,41 +5,16 @@ import cv2
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
-
-
-# from rest_framework.views import APIView
-# from rest_framework.response import Response
-# from rest_framework.permissions import IsAuthenticated
-# from rest_framework import status
-# from .models import CustomUser
-# from .serializers import UserSerializer
-
-# class CreateUserView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-#         if not request.user.is_company_admin:
-#             return Response({"error": "ليس لديك صلاحية لإضافة مستخدمين"}, status=status.HTTP_403_FORBIDDEN)
-
-#         serializer = UserSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
 from django.template.response import TemplateResponse
 from django.contrib.admin.sites import site
 from django.db.models import Sum, Count
-from .models import WeightCard
-
-from .models import WeightCard, ViolationRecord
+from .models import WeightCard, ViolationRecord, Entry_and_exit
 
 @staff_member_required
 def reports_view(request):
     cards = WeightCard.objects.all()
     violations = ViolationRecord.objects.all()
+    entry_and_exit = Entry_and_exit.objects.all()
 
     stats = {
         "total_cards": cards.count(),
@@ -53,6 +28,7 @@ def reports_view(request):
         "app_list": site.get_app_list(request),
         "cards": cards,
         "violations": violations,
+        "entry_and_exit": entry_and_exit,
         "stats": stats,
     }
 

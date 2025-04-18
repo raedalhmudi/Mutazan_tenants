@@ -9,7 +9,11 @@ from django.contrib.auth.models import User
 from .models import UserProfile
 from .forms import CustomUserCreationForm
 from django.contrib.auth.models import Group, Permission
+from django.contrib.auth import get_user_model
 from django.db.models import Q
+from django.utils.translation import gettext_lazy as _
+from django.contrib.admin import AdminSite
+from django.template.response import TemplateResponse
 
 class CompanyGroupAdmin(admin.ModelAdmin):
     def get_form(self, request, obj=None, **kwargs):
@@ -106,3 +110,29 @@ class TenantAdminSete(admin.AdminSite):
 
 # إنشاء كائن من لوحة الإدارة المخصصة
 tenant_admin_site = TenantAdminSete(name="tenant_admin_site")
+
+
+
+
+# استخدم النسخة الأصلية من index
+# companies_manager/admin.py
+
+
+
+class TenantAdminSite(AdminSite):
+    site_header = _("نظام إدارة الشركات")
+    index_template = 'admin/custom_public_index.html'
+
+    def index(self, request, extra_context=None):
+        User = get_user_model()
+        company_count = Company.objects.count()
+        user_count = User.objects.count()
+
+        context = {
+            **self.each_context(request),
+            'company_count': company_count,
+            'user_count': user_count,
+            **(extra_context or {})
+        }
+        return TemplateResponse(request, self.index_template, context)
+

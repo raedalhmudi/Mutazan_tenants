@@ -1,0 +1,36 @@
+{% extends "admin/base_site.html" %}
+{% load static i18n %}
+
+{% block content %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+<div class="container-fluid">
+  <div class="row">
+    <!-- البطاقة الأولى -->
+    <div class="col-md-4">
+      <div class="small-box bg-info">
+        <div class="inner">
+          <h3>{{ company_count }}</h3>
+          <p>عدد الشركات</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-building"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- البطاقة الثانية -->
+    <div class="col-md-4">
+      <div class="small-box bg-success">
+        <div class="inner">
+          <h3>{{ user_count }}</h3>
+          <p>عدد المستخدمين</p>
+        </div>
+        <div class="icon">
+          <i class="fas fa-users"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
