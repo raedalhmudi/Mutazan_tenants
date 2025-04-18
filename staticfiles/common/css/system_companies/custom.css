@@ -1,0 +1,29 @@
+/* admin/custom.css */
+.button {
+    padding: 5px 10px;
+    margin: 2px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.button-edit {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.button-delete {
+    background-color: #f44336;
+    color: white;
+}
+
+.button:hover {
+    opacity: 0.8;
+}
+
+/* تحسين شكل الجدول */
+th, td {
+    text-align: center !important;
+    vertical-align: middle !important;
+}

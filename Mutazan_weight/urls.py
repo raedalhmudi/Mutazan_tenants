@@ -20,9 +20,11 @@ from django.conf.urls.static import static
 from django.conf import settings
 from companies_manager.views import CompanyListAPIView
 from system_companies.views import *
+from system_companies import views
 from django.conf.urls.i18n import set_language
 
 urlpatterns = [
+    path("admin/reports/", admin.site.admin_view(views.reports_view), name="admin-reports"),
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
     # path('', include('admin_adminlte.urls')),

@@ -7,6 +7,7 @@ from django_tenants.utils import schema_context
 from django.utils.html import mark_safe
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.contrib.postgres.fields import ArrayField 
 from django.dispatch import receiver
 
 class UserProfile(models.Model):
@@ -32,10 +33,11 @@ class UserProfile(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        # لا تنشئ ملف تعريف في الـ public schema
-        if connection.schema_name == 'public':
+    # ✅ اسمح بإنشاء ملف شخصي إذا كان المستخدم هو superuser
+        if connection.schema_name == 'public' and not self.user.is_superuser:
             return
         super().save(*args, **kwargs)
+
     
     class Meta:
         verbose_name = "ملف المستخدم"
@@ -120,6 +122,8 @@ class Company(TenantMixin):
                         tenant_admin.is_superuser = True
                         tenant_admin.save()
 
+                        
+
     def delete(self, *args, **kwargs):
         """ حذف الشركة مع قاعدة بياناتها """
         schema_name = self.schema_name
@@ -146,8 +150,20 @@ class Domain(DomainMixin):
 # -----------------------------------------------------------
 #  ------------------------نوع المخالفات----------------------------
 
+
 class ViolationsType(models.Model):
-    name = models.CharField(max_length=255, verbose_name="اسم المخالفة")  # مثل "تجاوز الوزن القانوني"
+    NAME_VIOLATION = [
+        ('Reverse entry path', 'عكس مسار دخول'),
+        ('Reverse exit path', 'عكس مسار خروج'),
+        ('Entry without a plate', 'دخول بغير لوحه '),
+        ('Exit without a plate', 'خروج بغير لوحه '),
+        ('No first weight card', 'عدم وجود بطاقة وزن اولى'),
+        ('Exceeding the legal weight', 'تجاوز الوزن القانوني '),
+        ('Incomplete data', 'بيانات غير مكتمله'),
+        ('Incorrect invoice', 'فاتوره غير صحيحه'),
+    ]
+
+    name = models.CharField(max_length=255,choices=NAME_VIOLATION,verbose_name="اسم المخالفة")  # مثل "تجاوز الوزن القانوني"
     description = models.TextField(verbose_name="وصف المخالفة", null=True, blank=True)  # تفاصيل إضافية عن المخالفة
     penalty_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="قيمة الغرامة")  # قيمة الغرامة المالية
     violation_code = models.CharField(max_length=50, unique=True, verbose_name="رمز المخالفة")  # رمز فريد لكل مخالفة
@@ -168,7 +184,12 @@ class ViolationsType(models.Model):
 
 class WeightCardMain(models.Model):
     schema_name = models.CharField(max_length=50, verbose_name="اسم الـ Schema")  # ربط البطاقة بالشركة
-    plate_number = models.CharField(max_length=50, verbose_name="رقم اللوحة")
+    plate_number = models.CharField(max_length=50, verbose_name="رقم اللوحة ")
+    violation_type = models.CharField(max_length=255, verbose_name=" نوع المخالفة ", null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ ووقت المخالفة ")
+    device_vio = models.CharField(max_length=255, verbose_name=" الكاميرا ", null=True, blank=True)
+    entry_exit_log = models.CharField(max_length=255, verbose_name="العمليه ", null=True, blank=True)
+    weight_card_vio = models.CharField(max_length=255, verbose_name="بطاقة الوزن", null=True, blank=True)
     empty_weight = models.DecimalField(max_digits=10, decimal_places=5, verbose_name="الوزن الفارغ", null=True, blank=True)
     loaded_weight = models.DecimalField(max_digits=10, decimal_places=5, verbose_name="الوزن المحمل", null=True, blank=True)
     net_weight = models.DecimalField(max_digits=10, decimal_places=5, verbose_name="الوزن الصافي", null=True, blank=True)
@@ -191,3 +212,24 @@ class WeightCardMain(models.Model):
     def __str__(self):
         return f"{self.plate_number} - {self.schema_name}"
 
+
+# -----------------------------------------------------------
+#  ---------------------------------------------------
+
+
+# class ViolationRecord(models.Model):
+#     schema_name = models.CharField(max_length=50, verbose_name="اسم الـ Schema")
+#     plate_number_vio = models.CharField(max_length=255, verbose_name="رقم اللوحه", null=True, blank=True)
+#     violation_type = models.CharField("companies_manager.ViolationsType", on_delete=models.CASCADE, verbose_name=" نوع المخالفة")
+#     timestamp = models.DateTimeField(auto_now_add=True)
+#     device_vio = models.CharField(max_length=255, verbose_name="الكاميرا", null=True, blank=True)
+#     entry_exit_log = models.CharField(max_length=255, verbose_name="العمليه", null=True, blank=True)
+#     weight_card_vio = models.CharField(max_length=255, verbose_name="بطاقة الوزن", null=True, blank=True)
+#     image_violation = models.ImageField(upload_to="images_violation/%y/%m/%d", verbose_name="صور المخالفة")
+
+#     class Meta:
+#         verbose_name = " المخالفه"
+#         verbose_name_plural = "المخالفات"
+
+#     def __str__(self):
+#         return self.plate_number_vio

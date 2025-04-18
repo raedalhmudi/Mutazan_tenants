@@ -13,9 +13,48 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
 from companies_manager.models import UserProfile
 from django.contrib.auth.models import Group, Permission
+from django.utils.timezone import localtime
+# from rangefilter.filters import DateRangeFilter
 from django.db.models import Q
+from django.db import models
+from django_tenants.utils import get_tenant, get_tenant_model
 
-class CompanyGroupAdmin(admin.ModelAdmin):
+class CustomAdminSite(admin.AdminSite):
+    """تخصيص عنوان لوحة الإدارة لكل مستأجر"""
+    
+    def get_site_header(self, request):
+        tenant = get_tenant(request)
+        if isinstance(tenant, get_tenant_model()):
+            return tenant.company_name  # استخدام اسم المستأجر
+        return "إدارة النظام"
+
+    def each_context(self, request):
+        context = super().each_context(request)
+        context['site_header'] = self.get_site_header(request)
+        context['site_title'] = self.get_site_header(request)
+        return context
+
+# استبدال `admin.site` بالنسخة المخصصة
+custom_admin = CustomAdminSite(name='custom_admin')
+
+# استبدال `admin.site` بالإدارة الجديدة بدون إعادة تسجيل النماذج
+admin.site.__class__ = CustomAdminSite
+
+# -----------------------------------------
+class BaseAdmin(admin.ModelAdmin):
+    """فلترة أي ForeignKey يشير إلى جدول يحتوي على الحقل condition=True فقط."""
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """فلترة العلاقات الخارجية (ForeignKey) بناءً على وجود حقل condition في النموذج المرتبط."""
+        related_model = db_field.related_model  # جلب الموديل المرتبط بـ FK
+        
+        # التأكد من أن الجدول يحتوي على الحقل 'condition' ثم تطبيق الفلترة
+        if related_model and hasattr(related_model, 'condition'):
+            kwargs["queryset"] = related_model.objects.filter(condition=True)  # جلب العناصر المتاحة فقط
+        
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+# -----------------------------------------------------
+class CompanyGroupAdmin(BaseAdmin):
     def get_form(self, request, obj=None, **kwargs):
         form = super().get_form(request, obj, **kwargs)
         if 'permissions' in form.base_fields:
@@ -44,12 +83,19 @@ class UserProfileInline(admin.StackedInline):
 
 class CustomUserAdmin(UserAdmin):
     inlines = (UserProfileInline,)
-    list_display = ('username', 'email', 'first_name', 'last_name', 'get_phone', 'is_staff')
+    list_display = ('username', 'email', 'first_name', 'last_name', 'get_phone', 'get_profile_picture', 'is_staff')
     list_select_related = ('profile', )
-
+    
     def get_phone(self, instance):
         return instance.profile.phone_number if hasattr(instance, 'profile') else ''
     get_phone.short_description = 'رقم الهاتف'
+
+    def get_profile_picture(self, instance):
+        """عرض صورة المستخدم في الـ Admin"""
+        if hasattr(instance, 'profile') and instance.profile.profile_picture:
+            return format_html('<img src="{}" style="width: 50px; height: 50px; border-radius: 50%;" />', instance.profile.profile_picture.url)
+        return "لا توجد صورة"
+    get_profile_picture.short_description = 'صورة الملف الشخصي'
 
     def get_inline_instances(self, request, obj=None):
         if not obj:
@@ -60,13 +106,13 @@ admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 # -----------------------------------------
 @admin.register(Attendance)
-class AttendanceAdmin(admin.ModelAdmin):
+class AttendanceAdmin(BaseAdmin):
     list_display = ("date", "check_in_time", "check_out_time", "status", "shift_type", 'notes')
     list_filter = ("status",)
     search_fields = ("date", "check_in_time")
 # انواع الشاحنات --------------------------------
 @admin.register(TrucksTypes)
-class TrucksTypesAdmin(admin.ModelAdmin):
+class TrucksTypesAdmin(BaseAdmin):
     list_display = ("manufacturer", "description", "dimensions", "status_badge", "progress_bar", 'action_buttons')
     list_filter = ("status",)
     search_fields = ("manufacturer", "description")
@@ -144,7 +190,7 @@ admin.site.index_template = "admin/custom_index.html"
 # -----------------------------------------------------------
 #  ----------------------- السائقيين----------------------------
 @admin.register(DriverNeme)
-class DriverNemeAdmin(admin.ModelAdmin):
+class DriverNemeAdmin(BaseAdmin):
     list_display = ['driver_name', 'phone_number', 'address', 'card_number', 'date_of_registration', 'number_of_trucks', 'action_buttons']
     search_fields = ['driver_name']
     date_hierarchy = 'date_of_registration'
@@ -167,10 +213,15 @@ class DriverNemeAdmin(admin.ModelAdmin):
 # -----------------------------------------------------------
 #  ----------------------- الشاحنات ----------------------------
 @admin.register(Trucks)
-class TrucksAdmin(admin.ModelAdmin):
-    list_display = ['plate_number', 'truck_type', 'registration_date', 'condition', 'driver_name', 'action_buttons']
+class TrucksAdmin(BaseAdmin):
+    list_display = ['plate_number', 'truck_type', 'formatted_registration_date', 'condition', 'driver_name', 'action_buttons']
     search_fields = ['plate_number']
+    # list_filter = (('registration_date', DateRangeFilter),)  # هنا تضيف فلتر النطاق
     date_hierarchy = 'registration_date'
+
+    def formatted_registration_date(self, obj):
+        return localtime(obj.registration_date).strftime('%Y-%m-%d %H:%M')
+    formatted_registration_date.short_description = 'تاريخ التسجيل'
 
     def action_buttons(self, obj):
         # رابط التعديل
@@ -189,10 +240,17 @@ class TrucksAdmin(admin.ModelAdmin):
     action_buttons.allow_tags = True  # السماح بعرض HTML
 # -----------------------------------------------------------
 #  ----------------------- عمليات الدخول والخروج ----------------------------
-class Entry_and_exitAdmin(admin.ModelAdmin):
+class Entry_and_exitAdmin(BaseAdmin):
     list_display = ('plate_number_E_e', 'entry_image_tag', 'exit_image_tag', 'entry_date', 'exit_date', 'action_buttons')  # Display images as columns
     readonly_fields = ('entry_image_tag', 'exit_image_tag')  # Prevent modifying images in the admin panel
     
+    # def formatted_entry_date(self, obj):
+    #     return localtime(obj.entry_date).strftime('%Y-%m-%d %H:%M')
+    # formatted_entry_date.short_description = 'تاريخ '
+
+    # def formatted_exit_date(self, obj):
+    #     return localtime(obj.exit_date).strftime('%Y-%m-%d %H:%M')
+    # formatted_exit_date.short_description = 'تاريخ '
 
     def action_buttons(self, obj):
         # رابط التعديل
@@ -214,7 +272,7 @@ admin.site.register(Entry_and_exit, Entry_and_exitAdmin)
 # -----------------------------------------------------------
 #  ----------------------- الوزن القانوني ----------------------------
 @admin.register(Legal_weight)
-class Legal_weightAdmin(admin.ModelAdmin):
+class Legal_weightAdmin(BaseAdmin):
     list_display = ['manufacturer_L_W', 'legal_weight_L_W', 'number_of_axes', 'registration_date', 'action_buttons']
     search_fields = ['manufacturer_L_W']
     date_hierarchy = 'registration_date'
@@ -237,11 +295,18 @@ class Legal_weightAdmin(admin.ModelAdmin):
 
 # -----------------------------------------------------------
 #  ----------------------- بطاقات الوزن  ----------------------------
-class WeightCardAdmin(admin.ModelAdmin):
-    list_display = ("plate_number", "empty_weight", "loaded_weight", "net_weight", "entry_date", "exit_date", "status", 'action_buttons')
+class WeightCardAdmin(BaseAdmin):
+    list_display = ("plate_number", "empty_weight", "loaded_weight", "net_weight", "entry_date", "exit_date","quantity", "status", 'action_buttons')
     readonly_fields = ("net_weight",)  # منع تعديل الوزن الصافي يدويًا
     list_filter = ('status',)
+    
     search_fields = ('plate_number__plate_number',) 
+
+
+    def formfield_for_dbfield(self, db_field, **kwargs):
+        if db_field.name in ['entry_date', 'exit_date']:
+            return None  # إخفاء الحقول من الفورم
+        return super().formfield_for_dbfield(db_field, **kwargs)
 
 
     def action_buttons(self, obj):
@@ -262,7 +327,7 @@ class WeightCardAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("📌 مسجل بيانات الوزن", {
-            "fields": (('empty_weight','loaded_weight'), "net_weight", "entry_date", "exit_date"),
+            "fields": (('empty_weight','loaded_weight'), "net_weight"),
             "classes": ("weight-section",),
         }),
         ("📜 بطاقة الوزن", {
@@ -276,8 +341,8 @@ admin.site.register(WeightCard, WeightCardAdmin)
 # -------------------------دالة الفاتوره----------------------------------
 @admin.register(Invoice)
 class InvoiceAdmin(admin.ModelAdmin):
-    list_display = ['id', 'weight_card', 'user', 'material', 'quantity', 'datetime', 'net_weight', 'print_invoice_button', 'action_buttons']
-    readonly_fields = ('weight_card', 'user', 'net_weight', 'print_invoice_button')
+    list_display = ['id', 'weight_card', 'material', 'quantity', 'datetime', 'net_weight', 'print_invoice_button', 'action_buttons']
+    readonly_fields = ('weight_card', 'net_weight', 'print_invoice_button')
 
     def action_buttons(self, obj):
         # رابط التعديل
@@ -361,7 +426,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 # -----------------------------------------------------------
 #  ----------------------- المواد ----------------------------
 @admin.register(Material)
-class MaterialAdmin(admin.ModelAdmin):
+class MaterialAdmin(BaseAdmin):
     list_display = ['id', 'name_material', 'description', 'unit', 'date_and_time', 'action_buttons']
 
     def action_buttons(self, obj):
@@ -383,7 +448,7 @@ class MaterialAdmin(admin.ModelAdmin):
 # -----------------------------------------------------------
 #  ----------------------- المخالفات  ----------------------------
 @admin.register(ViolationRecord)
-class ViolationRecordAdmin(admin.ModelAdmin):
+class ViolationRecordAdmin(BaseAdmin):
     list_display = ['plate_number_vio', 'violation_type', 'timestamp', 'device_vio','entry_exit_log','weight_card_vio','image_violation']
     search_fields = ['plate_number_vio']
     date_hierarchy = 'timestamp'
@@ -482,7 +547,7 @@ class ViolationRecordAdmin(admin.ModelAdmin):
 # -----------------------------------------------------------
 #  ----------------------- اعدادات الاجهزه ----------------------------
 @admin.register(Devices)
-class DevicesAdmin(admin.ModelAdmin):
+class DevicesAdmin(BaseAdmin):
     list_display = ['name_devices', 'address_ip', 'connection_type', 'device_status','location', 'action_buttons']
     search_fields = ['name_devices']
     date_hierarchy = 'last_date_settings_updated'

@@ -4,6 +4,8 @@ from django.http import StreamingHttpResponse
 import cv2
 from django.http import JsonResponse
 from django.shortcuts import render
+from django.contrib.admin.views.decorators import staff_member_required
+
 
 #------------api----------
 from rest_framework import generics
@@ -41,6 +43,35 @@ class InvoiceListView(generics.ListAPIView):
 
 
 
+from django.template.response import TemplateResponse
+from django.contrib.admin.sites import site
+from django.db.models import Sum, Count
+from .models import WeightCard
+
+from .models import WeightCard, ViolationRecord
+
+@staff_member_required
+def reports_view(request):
+    cards = WeightCard.objects.all()
+    violations = ViolationRecord.objects.all()
+
+    stats = {
+        "total_cards": cards.count(),
+        "complete_cards": cards.filter(status='complete').count(),
+        "incomplete_cards": cards.filter(status='incomplete').count(),
+        "total_net_weight": cards.aggregate(Sum('net_weight'))['net_weight__sum'] or 0,
+    }
+
+    context = {
+        **site.each_context(request),
+        "app_list": site.get_app_list(request),
+        "cards": cards,
+        "violations": violations,
+        "stats": stats,
+    }
+
+    return TemplateResponse(request, "admin/reports.html", context)
+
 
 # دالة توليد الإطارات من الكاميرا
 def generate_frames(ip, username, password):
@@ -74,6 +105,7 @@ def video_feed(request, location):
     try:
         return StreamingHttpResponse(
             generate_frames(camera.address_ip, "admin", "1234567890"),
+                        # generate_frames(camera.address_ip, camera.username, camera.password),
             content_type='multipart/x-mixed-replace; boundary=frame'
         )
     except Exception as e:
@@ -107,4 +139,16 @@ def invoice_print_modal(request, pk):
 #     }
 #     return render(request, 'companies/company_detail.html', context)
     
+
+
+
+
+
+
+
+
+
+
+
+
 
