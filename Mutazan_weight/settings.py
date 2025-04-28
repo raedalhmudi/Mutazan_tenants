@@ -170,6 +170,9 @@ DATABASES = {
         'PORT': '5432',
         'USER': 'AdminMU',
         'PASSWORD':'raed@1234',
+        'OPTIONS': {
+            'options': '-c search_path=azab'  # أو alazab حسب سكيمتك
+        },
     }
 }
 
