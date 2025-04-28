@@ -9,6 +9,19 @@ from django.template.response import TemplateResponse
 from django.contrib.admin.sites import site
 from django.db.models import Sum, Count
 from .models import WeightCard, ViolationRecord, Entry_and_exit
+#------------api----------
+from rest_framework import generics
+from .models import Invoice
+from .serializers import InvoiceSerializer
+from rest_framework import generics
+from .models import Invoice
+from .serializers import InvoiceSerializer
+
+
+
+class InvoiceListView(generics.ListAPIView):
+    queryset = Invoice.objects.all()
+    serializer_class = InvoiceSerializer
 
 @staff_member_required
 def reports_view(request):

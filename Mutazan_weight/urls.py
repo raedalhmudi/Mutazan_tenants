@@ -30,6 +30,8 @@ urlpatterns = [
     path('', include('system_companies.urls')),
     # path('users', include('user_management.urls')),
     path('set_language/', set_language, name='set_language'),
+        path('api/invoices/', views.InvoiceListView.as_view(), name='invoice-list'),
+
 ]
 
 if settings.DEBUG:

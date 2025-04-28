@@ -13,7 +13,7 @@ urlpatterns = [
     path('invoice/<int:pk>/print/', views.invoice_print_modal, name='invoice_print_modal'),
     path('video_feed/<str:location>/', views.video_feed, name='video_feed'),
    #-----------api-----------
-    # path('api/invoices/', InvoiceListView.as_view(), name='invoice-list'),
+    path('api/invoices/', views.InvoiceListView.as_view(), name='invoice-list'),
 
 
     # مسارات أخرى...

@@ -58,8 +58,8 @@ SHARED_APPS = [
     'allauth',
     'allauth.account',
     # --------------api------------
-    # 'rest_framework',
-    # 'rest_framework_simplejwt',
+    'rest_framework',
+    'rest_framework_simplejwt',
 ]
 
 TENANT_APPS = [

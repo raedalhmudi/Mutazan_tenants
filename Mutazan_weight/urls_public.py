@@ -21,7 +21,7 @@ from django.conf import settings
 from companies_manager.admin import tenant_admin_site
 from companies_manager.views import *
 from django.conf.urls.i18n import set_language
-
+from system_companies.views import InvoiceListView
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('admin_tenants/', tenant_admin_site.urls),
@@ -30,6 +30,8 @@ urlpatterns = [
     path('', include('companies_manager.urls')),
     # path('users', include('user_management.urls')),
     path('set_language/', set_language, name='set_language'),
+        path('api/invoices/', InvoiceListView.as_view(), name='invoice-list'),
+
 ]
 
 if settings.DEBUG:
