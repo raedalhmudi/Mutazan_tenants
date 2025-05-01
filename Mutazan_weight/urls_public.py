@@ -21,9 +21,11 @@ from django.conf import settings
 from companies_manager.admin import tenant_admin_site
 from companies_manager.views import *
 from django.conf.urls.i18n import set_language
+import debug_toolbar
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
+    path("companies/company_list/", admin.site.admin_view(company_list), name="admin-company"),
     path('admin_tenants/', tenant_admin_site.urls),
     # path('', include('admin_adminlte.urls')),
     path('accounts/', include('allauth.urls')),
@@ -36,7 +38,6 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
-    import debug_toolbar
     urlpatterns += [
         path("__debug__/", include(debug_toolbar.urls)),
     ]

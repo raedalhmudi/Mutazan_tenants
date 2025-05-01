@@ -9,6 +9,8 @@ from django.utils.timezone import now
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.db import connection
+
 # from companies_manager.models import Company, ViolationsType
 import cv2
 import socket
@@ -19,29 +21,53 @@ import serial
 # User = CustomUser 
 # from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.core.validators import RegexValidator
-# from django.contrib.auth.models import AbstractUser
+from django.contrib.auth import get_user_model
 
-# class CustomUser(AbstractUser):
-#     profile_picture = models.ImageField(
-#         upload_to="profile_pictures/%Y/%m/%d", 
-#         blank=True, 
-#         null=True, 
-#         verbose_name="الصورة الشخصية"
-#     )
-#     phone_number = models.CharField(
-#         max_length=15, 
-#         blank=True, 
-#         null=True, 
-#         verbose_name="رقم الهاتف"
-#     )
-#     address = models.CharField(
-#         max_length=255, 
-#         blank=True, 
-#         null=True, 
-#         verbose_name="عنوان السكن"
-#     )
-#     is_company_admin = models.BooleanField(default=False)  # يحدد ما إذا كان المستخدم مديرًا أم لا
 
+User = get_user_model()
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(
+        User, 
+        on_delete=models.CASCADE,
+        related_name='company_profile',  # ✅ وهنا كمان غيرنا
+        verbose_name="المستخدم"
+    )
+
+    phone_number = models.CharField(
+        max_length=15,
+        verbose_name="رقم الهاتف",
+        validators=[RegexValidator(r'^\d+$', message="يجب أن يحتوي على أرقام فقط")],
+        blank=True,
+        null=True
+    )
+    address = models.TextField(verbose_name="عنوان السكن", blank=True, null=True)
+    profile_picture = models.ImageField(
+        upload_to="user_profiles/%Y/%m/%d",
+        verbose_name="صورة المستخدم",
+        blank=True,
+        null=True
+    )
+
+    class Meta:
+        verbose_name = "ملف المستخدم"
+        verbose_name_plural = "ملفات المستخدمين"
+        db_table = 'system_companies_userprofile'  # تأكد أن تغير اسم الجدول ليكون خاص بالشركة
+
+# إزالة الإشارات (signals) السابقة واستبدالها بهذه
+@receiver(post_save, sender=User)
+def handle_user_profile(sender, instance, created, **kwargs):
+    if connection.schema_name != 'tenants':
+        return
+    
+    if created:
+        # التحقق من عدم وجود ملف شخصي بالفعل
+        if not hasattr(instance, 'company_profile'):
+            UserProfile.objects.create(user=instance)
+    else:
+        # تحديث الملف الشخصي إذا كان موجوداً
+        if hasattr(instance, 'company_profile'):
+            instance.company_profile.save()
 
 # -----------------------------------------------------------
 #  ----------------------- انواع الشاحنات----------------------------
@@ -247,8 +273,8 @@ class Legal_weight(models.Model):  # جدول الوزن القانوني
 #  ----------------------- بطاقات الوزن ----------------------------
 class WeightCard(models.Model):
     STATUS_CHOICES = [
-        ('incomplete', 'بطاقة غير مكتملة ❌'),
-        ('complete', 'بطاقة مكتملة ✅'),
+        ('incomplete', 'بطاقة غير مكتملة '),
+        ('complete', 'بطاقة مكتملة '),
     ]
     plate_number = models.ForeignKey(Trucks, on_delete=models.CASCADE, verbose_name="رقم اللوحة")
     empty_weight = models.DecimalField(max_digits=10, decimal_places=5, verbose_name="الوزن الفارغ", null=True, blank=True)
@@ -369,6 +395,9 @@ def update_or_create_invoice(sender, instance, created, **kwargs):
         invoice.net_weight = instance.net_weight
         invoice.save()
 
+
+# -----------------------------------------------------------
+#  ----------------------- الاتصال----------------------------
 
 # -----------------------------------------------------------
 #  ----------------------- الاتصال----------------------------
@@ -597,8 +626,8 @@ class Entry_and_exit(models.Model):  # جدول عمليات الدخول وال
     plate_number_E_e = models.ForeignKey(Trucks, on_delete=models.CASCADE, verbose_name="رقم اللوحه")
     image_path_entry = models.ImageField(upload_to="entry_images/%y/%m/%d", verbose_name="صور الدخول")
     image_path_exit = models.ImageField(upload_to="exit_images/%y/%m/%d", verbose_name="صور الخروج",null=True, blank=True)
-    entry_date = models.DateTimeField(auto_now_add=True)
-    exit_date = models.DateTimeField(auto_now_add=True)
+    entry_date = models.DateTimeField(null=True, blank=True, verbose_name="تاريخ الدخول")
+    exit_date = models.DateTimeField(null=True, blank=True, verbose_name="تاريخ الخروج")
 
     class Meta:
         verbose_name = "عمليات الدخول الخروج"

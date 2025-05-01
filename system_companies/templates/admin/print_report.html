@@ -1,0 +1,253 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+<style>
+    body {
+        font-family: 'Tajawal', sans-serif;
+        padding: 20px;
+        background-color: white;
+    }
+    .print-header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #17a2b8;
+        padding-bottom: 15px;
+    }
+    .print-header h1 {
+        color: #17a2b8;
+        margin: 0;
+        font-size: 24px;
+    }
+    .company-info {
+        margin-top: 10px;
+        font-size: 18px;
+    }
+    .print-date {
+        text-align: left;
+        margin-bottom: 20px;
+        font-size: 14px;
+        color: #666;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+    th {
+        background-color: #17a2b8;
+        color: white;
+        padding: 12px;
+        text-align: right;
+    }
+    td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: right;
+    }
+    tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    .no-data {
+        text-align: center;
+        padding: 20px;
+        font-style: italic;
+        color: #666;
+    }
+    @page {
+        size: A4;
+        margin: 15mm;
+    }
+    @media print {
+        body {
+            padding: 0;
+        }
+        .no-print {
+            display: none;
+        }
+        .print-header {
+            margin-top: 0;
+        }
+    }
+    @media print {
+        table {
+            page-break-inside: auto;
+        }
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+        thead {
+            display: table-header-group;
+        }
+        tfoot {
+            display: table-footer-group;
+        }
+    }
+    @media print {
+        @page {
+            size: A4 landscape;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="print-header">
+    <h1>تقرير {{ report_title }}</h1>
+    <div class="company-info">
+        شركة: {{ company.name }}<br>
+        تاريخ التقرير: {{ report_date }}
+    </div>
+</div>
+
+<div class="print-date">
+    تاريخ الطباعة: {% now "Y-m-d H:i" %}
+</div>
+
+
+{% if report_type == 'weight_cards' %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>رقم اللوحة</th>
+                <th>اسم السائق</th>
+                <th>المادة</th>
+                <th>الوزن الفارغ</th>
+                <th>الوزن المحمل</th>
+                <th>الوزن الصافي</th>
+                <th>تاريخ الدخول</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if cards %}
+                {% for card in cards %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ card.plate_number }}</td>
+                    <td>{{ card.driver_name }}</td>
+                    <td>{{ card.material }}</td>
+                    <td>{{ card.empty_weight }}</td>
+                    <td>{{ card.loaded_weight }}</td>
+                    <td>{{ card.net_weight }}</td>
+                    <td>{{ card.entry_date|date:"Y-m-d H:i" }}</td>
+                    <td>{{ card.get_status_display }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="9" class="no-data">لا توجد بيانات</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+{% elif report_type == 'violations' %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>رقم اللوحة</th>
+                <th>نوع المخالفة</th>
+                <th>تاريخ ووقت المخالفة</th>
+                <th>الكاميرا</th>
+                <th>بطاقة الوزن</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if violations %}
+                {% for v in violations %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ v.plate_number_vio }}</td>
+                    <td>{{ v.violation_type }}</td>
+                    <td>{{ v.timestamp|date:"Y-m-d H:i" }}</td>
+                    <td>{{ v.device_vio }}</td>
+                    <td>{{ v.weight_card_vio }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="no-data">لا توجد بيانات</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+{% elif report_type == 'entry_and_exit' %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>العمليه</th>
+                <th>الكاميرا</th>
+                <th>رقم اللوحة</th>
+                <th>تاريخ الدخول</th>
+                <th>تاريخ الخروج</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if entry_and_exit %}
+                {% for e_and_e in entry_and_exit %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ e_and_e.name }}</td>
+                    <td>{{ e_and_e.device }}</td>
+                    <td>{{ e_and_e.plate_number_E_e }}</td>
+                    <td>{{ e_and_e.entry_date|date:"Y-m-d H:i" }}</td>
+                    <td>{{ e_and_e.exit_date|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="no-data">لا توجد بيانات</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+    {% elif report_type == 'material' %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>المادة</th>
+                <th>الوصف</th>
+                <th>وحدة القياس</th>
+                <th>تاريخ ووقت الإضافة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if material %}
+                {% for materia in material %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ materia.name_material }}</td>
+                    <td>{{ materia.description }}</td>
+                    <td>{{ matera.unit }}</td>
+                    <td>{{ materia.date_and_time|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5" class="no-data">لا توجد بيانات</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+{% endif %}
+
+
+<div class="no-print text-center mt-4">
+    <button onclick="window.print()" class="btn btn-primary">
+        <i class="fas fa-print"></i> طباعة
+    </button>
+    <button onclick="window.close()" class="btn btn-secondary ml-2">
+        <i class="fas fa-times"></i> إغلاق
+    </button>
+</div>
+
+
+{% endblock %}

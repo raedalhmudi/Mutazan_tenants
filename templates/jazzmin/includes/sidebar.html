@@ -1,0 +1,10 @@
+{% comment %} <div class="user-panel mt-3 pb-3 mb-3 d-flex flex-column align-items-center text-center">
+    {% if request.tenant.logo %}
+        <div class="image">
+            <img src="{{ request.tenant.logo.url }}" class="img-circle elevation-2" alt="Company Logo" style="width: 70px; height: 70px; object-fit: cover;">
+        </div>
+    {% endif %}
+    <div class="info mt-2">
+        <span class="d-block font-weight-bold">{{ request.tenant.company_name }}</span>
+    </div>
+</div> {% endcomment %}

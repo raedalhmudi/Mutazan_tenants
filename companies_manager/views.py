@@ -9,6 +9,9 @@ from django.contrib import messages
 from django.utils import timezone
 from datetime import datetime, timedelta
 from system_companies.models import WeightCard, ViolationRecord
+from django.contrib.admin.views.decorators import staff_member_required
+from django.template.response import TemplateResponse
+from companies_manager.admin import tenant_admin_site 
 
 
 @csrf_exempt
@@ -44,7 +47,7 @@ def fetch_company_data(request, company_id):
                 from system_companies.models import ViolationRecord
                 violations = ViolationRecord.objects.all().select_related(
                     'plate_number_vio', 'violation_type', 'device_vio',
-                    'entry_exit_log', 'weight_card_vio'
+                    'entry_exit_log', 'weight_card_vio',
                 )
 
                 cards = []
@@ -56,6 +59,7 @@ def fetch_company_data(request, company_id):
                         'device_vio': violation.device_vio.name if violation.device_vio else '',
                         'entry_exit_log': str(violation.entry_exit_log.id) if violation.entry_exit_log else '',
                         'weight_card_vio': str(violation.weight_card_vio.id) if violation.weight_card_vio else '',
+                        ''
                         'status': 'complete',
                         'created_at': violation.timestamp
                     })
@@ -65,13 +69,47 @@ def fetch_company_data(request, company_id):
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)})
 
-
+@staff_member_required
 def company_list(request):
-    """عرض قائمة الشركات"""
+    """عرض قائمة الشركات مع عدد الشاحنات في كل شركة"""
     companies = Company.objects.all()
-    return render(request, 'companies/company_list.html', {'companies': companies})
+    enriched_companies = []
 
+    for company in companies:
+        truck_count = 0
 
+        try:
+            with schema_context(company.schema_name):
+                from system_companies.models import Trucks,Invoice  # تأكد من اسم الموديل
+                truck_count = Trucks.objects.count()
+                invoices_count = Invoice.objects.count()
+                violations_count = ViolationRecord.objects.count()
+        except Exception as e:
+            print(f"⚠️ خطأ في {company.company_name}: {e}")
+            truck_count = 0
+            invoices_count = 0
+            violations_count = 0
+
+        # بناء dict يحتوي البيانات المطلوبة للقالب
+        enriched_companies.append({
+            'id': company.id,
+            'company_name': company.company_name,
+            'logo': company.logo,
+            'services_offered': company.services_offered,
+            'violations': violations_count,  # يمكنك تحديثها لاحقًا
+            'invoices': invoices_count,    # يمكنك تحديثها لاحقًا
+            'trucks': truck_count
+        })
+
+    context = {
+        **tenant_admin_site.each_context(request),
+        "app_list": tenant_admin_site.get_app_list(request),
+        "companies": enriched_companies,  # هذا المهم
+    }
+
+    return TemplateResponse(request, 'companies/company_list.html', context)
+
+@staff_member_required
 def company_detail(request, company_id):
     """عرض تفاصيل الشركة وبطاقات الوزن الخاصة بها بناءً على schema_name"""
     company = get_object_or_404(Company, id=company_id)
@@ -80,11 +118,15 @@ def company_detail(request, company_id):
     with schema_context(company.schema_name):
         # جلب جميع بطاقات الوزن بناءً على schema_name
         transferred_cards = WeightCardMain.objects.filter(schema_name=company.schema_name)
-
-    return render(request, 'companies/company_detail.html', {
+    
+    context = {
+        **tenant_admin_site.each_context(request),
+        "app_list": tenant_admin_site.get_app_list(request),
         'company': company,
         'transferred_cards': transferred_cards,
-    })
+    }
+
+    return render(request, 'companies/company_detail.html', context)
 
 
 
@@ -213,3 +255,9 @@ def print_weight_cards(request, company_id):
         print(f"حدث خطأ: {str(e)}")
         messages.error(request, f"حدث خطأ في جلب البيانات: {str(e)}")
         return redirect('company_detail', company_id=company_id)
+# -------------------------------------------
+
+
+
+
+

@@ -1,0 +1,1 @@
+default_app_config = 'companies_manager.apps.CompaniesManagerConfig'
