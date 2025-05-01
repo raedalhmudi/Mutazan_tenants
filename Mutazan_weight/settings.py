@@ -60,6 +60,8 @@ SHARED_APPS = [
     # --------------api------------
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
+
 ]
 
 TENANT_APPS = [
@@ -136,8 +138,18 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
-]
+    #----------------api-------------
+    'corsheaders.middleware.CorsMiddleware',
+    #  'system_companies.middleware.DynamicSchemaMiddleware',
+    'system_companies.middleware.SchemaMiddleware',  # ← تأكد إنه في النهاية
 
+]
+#هذا الكود تبع ملف اسمه routers.py في تطبيق الشركات
+# DATABASE_ROUTERS = ['path.to.routers.CompanySchemaRouter']
+# DATABASE_ROUTERS = ['system_companies.routers.CompanySchemaRouter']
+
+CORS_ALLOW_ALL_ORIGINS = True  # مؤقتاً أثناء التطوير
+#-----------------api_end---------------
 ROOT_URLCONF = 'Mutazan_weight.urls'
 PUBLIC_SCHEMA_URLCONF = 'Mutazan_weight.urls_public'
 
@@ -172,7 +184,7 @@ DATABASES = {
         'USER': 'AdminMU',
         'PASSWORD':'raed@1234',
         'OPTIONS': {
-            # 'options': '-c search_path=azab'  # أو alazab حسب سكيمتك
+            'options': '-c search_path=public',  # سيتغير ديناميكيًا
         },
     }
 }

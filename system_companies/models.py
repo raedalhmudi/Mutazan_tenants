@@ -19,6 +19,8 @@ import serial
 # User = CustomUser 
 # from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.core.validators import RegexValidator
+
+# from system_companies.middleware import get_current_schema
 # from django.contrib.auth.models import AbstractUser
 
 # class CustomUser(AbstractUser):
@@ -334,12 +336,12 @@ class Invoice(models.Model):  # الفواتير
     class Meta:
         verbose_name = "الفاتوره"
         verbose_name_plural = "الفواتير"
-        
-        db_table = 'system_companies_invoice'  # تأكد أن الاسم مطابق لما في DB
+#--------------------api------------
+    #     db_table = 'system_companies_invoice'  # تأكد أن الاسم مطابق لما في DB
     # def get_db_table(self):
     #     schema = get_current_schema()
     #     return f'"{schema}"."{self._meta.db_table}"'
-
+#-----------------api_end--------------
     def __str__(self):
         return f"فاتورة {self.id} - {self.weight_card}"
     

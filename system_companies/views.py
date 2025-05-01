@@ -1,3 +1,4 @@
+from django.db import connection
 from django.shortcuts import render, get_object_or_404
 from .models import Invoice, WeightCard, Devices
 from django.http import StreamingHttpResponse
@@ -12,12 +13,45 @@ from .models import WeightCard, ViolationRecord, Entry_and_exit
 #------------api----------
 from rest_framework import generics
 from .models import Invoice
-from .serializers import InvoiceSerializer
-from rest_framework import generics
-from .models import Invoice
+# from .serializer import InvoiceSerializer
+from rest_framework import response
+# from .models import Invoice
+# from .serializers import InvoiceSerializer
+from rest_framework.views import APIView
+from django.db import connection
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+# from .models import Invoice
 from .serializers import InvoiceSerializer
 
+class InvoiceListView(APIView):
+    def get(self, request):
+        schema_name = request.headers.get("X-Schema")
+        if not schema_name:
+            return Response({"error": "يرجى تحديد اسم السكيمة في الهيدر X-Schema"}, status=400)
 
+        try:
+            # طباعة للتأكد من السكيمة الحالية
+            print("✅ Switching to schema:", schema_name)
+            connection.set_schema(schema_name, include_public=False)
+
+            # تأكد أن الجدول موجود فعلًا في السكيمة
+            with connection.cursor() as cursor:
+                cursor.execute("""
+                    SELECT tablename FROM pg_tables 
+                    WHERE schemaname = %s AND tablename = 'system_companies_invoice'
+                """, [schema_name])
+                result = cursor.fetchone()
+                if not result:
+                    return Response({"error": f"الجدول غير موجود في السكيمة '{schema_name}'"}, status=404)
+
+            invoices = Invoice.objects.all()
+            serializer = InvoiceSerializer(invoices, many=True)
+            return Response(serializer.data)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
 
 class InvoiceListView(generics.ListAPIView):
     queryset = Invoice.objects.all()
