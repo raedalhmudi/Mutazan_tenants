@@ -9,14 +9,17 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.contrib.postgres.fields import ArrayField 
 from django.dispatch import receiver
+import re
+from django.core.exceptions import ValidationError
 
 class UserProfile(models.Model):
     user = models.OneToOneField(
         User, 
         on_delete=models.CASCADE,
-        related_name='profile',
+        related_name='public_profile',  # ✅ غيرنا هنا
         verbose_name="المستخدم"
     )
+
     phone_number = models.CharField(
         max_length=15,
         verbose_name="رقم الهاتف",
@@ -33,18 +36,33 @@ class UserProfile(models.Model):
     )
 
     def save(self, *args, **kwargs):
-    # ✅ اسمح بإنشاء ملف شخصي إذا كان المستخدم هو superuser
-        if connection.schema_name == 'public' and not self.user.is_superuser:
-            return
-        super().save(*args, **kwargs)
+        # السماح بإنشاء ملف شخصي لجميع المستخدمين في الأسكيما العامة
+        if connection.schema_name == 'public':
+            super().save(*args, **kwargs)
+        # للمستخدمين في الشركات (Tenants) فقط إذا كانوا superuser
+        elif self.user.is_superuser:
+            super().save(*args, **kwargs)
 
-    
+        
     class Meta:
         verbose_name = "ملف المستخدم"
         verbose_name_plural = "ملفات المستخدمين"
+        db_table = 'companies_manager_userprofile'
 
-    def __str__(self):
-        return f"{self.user.username} - Profile"
+# إزالة الإشارات (signals) السابقة واستبدالها بهذه
+@receiver(post_save, sender=User)
+def handle_user_profile(sender, instance, created, **kwargs):
+    if connection.schema_name != 'public':
+        return
+    
+    if created:
+        # التحقق من عدم وجود ملف شخصي بالفعل
+        if not hasattr(instance, 'public_profile'):
+            UserProfile.objects.create(user=instance)
+    else:
+        # تحديث الملف الشخصي إذا كان موجوداً
+        if hasattr(instance, 'public_profile'):
+            instance.public_profile.save()
 # ===================================C:\Users\lenovo\Desktop\Mutazan\companies_manager\management=
 
 
@@ -91,15 +109,38 @@ class Company(TenantMixin):
         ordering = ['-created_at']
         verbose_name_plural = "الشركات"
 
+    def clean(self):
+        super().clean()
+
+        if self.admin_user and not hasattr(self.admin_user, 'public_profile'):
+            raise ValidationError({"admin_user": "⚠️ المستخدم المختار لا يملك ملفًا شخصيًا. الرجاء إنشاء ملف شخصي أولاً."})
+
+        # توليد اسم الأسكيما من اسم الشركة
+        self.schema_name = self.company_name.lower().replace(" ", "_")
+
+        if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', self.schema_name):
+            raise ValidationError("اسم الأسكيما غير صالح. يجب أن يحتوي على أحرف وأرقام فقط، ويبدأ بحرف.")
+
+        if Company.objects.exclude(pk=self.pk).filter(schema_name=self.schema_name).exists():
+            raise ValidationError(f"اسم الأسكيما '{self.schema_name}' موجود بالفعل. يرجى اختيار اسم آخر.")
+
     def save(self, *args, **kwargs):
         is_new = self._state.adding
+        old_admin_user = None
+
+        if not is_new and self.pk:
+            old_admin_user = Company.objects.get(pk=self.pk).admin_user
+
+        self.schema_name = self.company_name.lower().replace(" ", "_")
+        self.full_clean()
         super().save(*args, **kwargs)
 
         if is_new:
-            domain_name = f"{self.company_name.lower()}.localhost"
+            # كود إنشاء السكيمه والدومين والمستخدم الإداري الجديد (نفس الكود اللي كتبته انت)
+            domain_name = f"{self.company_name.lower().replace(' ', '')}.localhost"
             counter = 1
             while Domain.objects.filter(domain=domain_name).exists():
-                domain_name = f"{self.company_name.lower()}{counter}.localhost"
+                domain_name = f"{self.company_name.lower().replace(' ', '')}{counter}.localhost"
                 counter += 1
 
             try:
@@ -107,20 +148,73 @@ class Company(TenantMixin):
             except IntegrityError:
                 print("❌ خطأ أثناء إنشاء الدومين.")
 
-            # ✅ إنشاء المستخدم الإداري داخل `system_companies`
             if self.admin_user:
                 with schema_context(self.schema_name):
-                    if not User.objects.filter(username=self.admin_user.username).exists():
-                        tenant_admin = User.objects.create_user(
+                    # 🔥 تحقق هل المستخدم موجود داخل سكيمه الشركة
+                    tenant_user = User.objects.filter(username=self.admin_user.username).first()
+                    if not tenant_user:
+                        # 🔥 المستخدم غير موجود، أنشئه
+                        tenant_user = User.objects.create_user(
                             username=self.admin_user.username,
                             email=self.admin_user.email,
                             password="Admin@123",
                             is_staff=True,
                             is_superuser=True
                         )
-                        tenant_admin.is_staff = True
-                        tenant_admin.is_superuser = True
-                        tenant_admin.save()
+                        tenant_user.save()
+
+                    # 🔥 بعدها تأكد من إنشاء ملف شخصي له داخل السكيمه الخاصة
+                    from system_companies.models import UserProfile as TenantUserProfile
+
+                    if not TenantUserProfile.objects.filter(user=tenant_user).exists():
+                        TenantUserProfile.objects.create(
+                            user=tenant_user,
+                            phone_number=getattr(self.admin_user.public_profile, 'phone_number', ''),
+                            address=getattr(self.admin_user.public_profile, 'address', ''),
+                            profile_picture=getattr(self.admin_user.public_profile, 'profile_picture', None)
+                        )
+
+        else:
+            # ✨✨ هنا نتأكد اذا الادمن تغير ✨✨
+            if old_admin_user != self.admin_user:
+                if self.admin_user:
+                    with schema_context(self.schema_name):
+                        # 🔥 حذف المدير القديم مع ملفه الشخصي إن وجد
+                        if old_admin_user:
+                            try:
+                                old_tenant_user = User.objects.get(username=old_admin_user.username)
+                                # حذف UserProfile الخاص به أولاً
+                                if hasattr(old_tenant_user, 'public_profile'):
+                                    old_tenant_user.public_profile.delete()
+                                old_tenant_user.delete()
+                                print(f"✅ تم حذف المدير القديم: {old_admin_user.username}")
+                            except User.DoesNotExist:
+                                print(f"⚠️ المدير القديم {old_admin_user.username} غير موجود داخل السكيمة.")
+                        
+                        # 🔥 إنشاء المدير الجديد
+                        if not User.objects.filter(username=self.admin_user.username).exists():
+                            tenant_admin = User.objects.create_user(
+                                username=self.admin_user.username,
+                                email=self.admin_user.email,
+                                password="Admin@123",
+                                is_staff=True,
+                                is_superuser=True
+                            )
+                            tenant_admin.save()
+
+                            from system_companies.models import UserProfile as TenantUserProfile
+
+                            TenantUserProfile.objects.create(
+                                user=tenant_admin,
+                                phone_number=getattr(self.admin_user.public_profile, 'phone_number', ''),
+                                address=getattr(self.admin_user.public_profile, 'address', ''),
+                                profile_picture=getattr(self.admin_user.public_profile, 'profile_picture', None)
+                            )
+
+
+
+
+
 
                         
 
@@ -233,3 +327,21 @@ class WeightCardMain(models.Model):
 
 #     def __str__(self):
 #         return self.plate_number_vio
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

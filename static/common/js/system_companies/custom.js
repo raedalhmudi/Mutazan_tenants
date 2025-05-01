@@ -62,16 +62,62 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-    
+//     // تغيير لون الشريط الجانبي عند التمرير
+// const sidebar = document.querySelector('.sidebar');
+
+// if (sidebar) {
+//     sidebar.addEventListener('mouseover', function () {
+//         sidebar.style.transition = 'background-color 0.3s ease';
+//         sidebar.style.backgroundColor = '#3a0ca3';  // لون عند التمرير
+//     });
+
+//     sidebar.addEventListener('mouseout', function () {
+//         sidebar.style.transition = 'background-color 0.3s ease';
+//         sidebar.style.backgroundColor = '#2d0b8a';  // اللون الأصلي
+//     });
+// }
+
+// const links = document.querySelectorAll('.sidebar .nav-link');
+
+// links.forEach(link => {
+//     link.addEventListener('mouseenter', () => {
+//         link.style.color = '#ffffff';
+//         const icon = link.querySelector('i');
+//         if (icon) icon.style.color = '#f0f0f0';
+//     });
+
+//     link.addEventListener('mouseleave', () => {
+//         link.style.color = '#f0f0f0';
+//         const icon = link.querySelector('i');
+//         if (icon) icon.style.color = '#ffffff';
+//     });
+// });
+
 
 // static/admin/custom.js
+// document.addEventListener("DOMContentLoaded", function () {
+//     document.querySelectorAll(".button-delete").forEach(button => {
+//         button.addEventListener("click", function (event) {
+//             event.preventDefault();
+//             if (confirm("هل أنت متأكد أنك تريد حذف هذه المجموعة؟")) {
+//                 window.location.href = this.getAttribute("href");
+//             }
+//         });
+//     });
+// });
+// static/common/js/system_companies/custom.js
 document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".button-delete").forEach(button => {
-        button.addEventListener("click", function (event) {
-            event.preventDefault();
-            if (confirm("هل أنت متأكد أنك تريد حذف هذه المجموعة؟")) {
-                window.location.href = this.getAttribute("href");
+    const fullscreenButton = document.getElementById("fullscreen-button");
+    if (fullscreenButton) {
+        fullscreenButton.addEventListener("click", function (e) {
+            e.preventDefault();
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
             }
         });
-    });
+    }
 });

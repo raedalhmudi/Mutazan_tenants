@@ -1,27 +1,12 @@
-# from ping3 import ping
-# import cv2
-# import serial
+# from companies_manager.models import Company
 
-# def is_camera_reachable(ip):
-#     """ يتحقق مما إذا كان الجهاز يستجيب للـ ping """
-#     response = ping(ip)
-#     return response is not None
-
-# def is_camera_streaming(ip):
-#     """يتحقق مما إذا كانت الكاميرا تعمل عبر RTSP"""
-#     stream_url = f"rtsp://{ip}:554/stream"
-#     cap = cv2.VideoCapture(stream_url)
-#     if cap.isOpened():
-#         cap.release()
-#         return True
-#     return False
-
-
-# def is_serial_device_available(port):
-#     """يتحقق مما إذا كان الجهاز متصلاً بالمنفذ التسلسلي"""
+# def get_current_company_logo(user):
 #     try:
-#         ser = serial.Serial(port, 9600, timeout=1)
-#         ser.close()
-#         return True
-#     except:
-#         return False
+#         # لو كنت مخزن الشركة في الجلسة:
+#         from django.contrib.sites.shortcuts import get_current_site
+#         request = user._request if hasattr(user, "_request") else None
+#         company_id = request.session.get("company_id") if request else None
+#         company = Company.objects.get(id=company_id) if company_id else None
+#         return company.logo.url if company and company.logo else "company_logos/%Y/%m/%d"
+#     except Exception:
+#         return "company_logos/%Y/%m/%d"

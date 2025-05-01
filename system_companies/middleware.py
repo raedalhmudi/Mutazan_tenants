@@ -1,16 +1,19 @@
-# # middleware/dynamic_jazzmin.py
+# middleware/jazzmin_dynamic_settings.py
+from django.conf import settings
+from django.db import connection
 
-# from django.conf import settings
+class JazzminDynamicSettingsMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
 
-# class DynamicJazzminMiddleware:
-#     def __init__(self, get_response):
-#         self.get_response = get_response
-
-#     def __call__(self, request):
-#         tenant = getattr(request, 'tenant', None)
-#         if tenant and hasattr(settings, 'JAZZMIN_SETTINGS'):
-#             settings.JAZZMIN_SETTINGS["site_title"] = tenant.company_name
-#             settings.JAZZMIN_SETTINGS["site_header"] = tenant.company_name
-#             settings.JAZZMIN_SETTINGS["welcome_sign"] = f"مرحباً بك في {tenant.company_name}"
-
-#         return self.get_response(request)
+    def __call__(self, request):
+        if hasattr(request, 'tenant') and connection.schema_name != 'public':
+            company = request.tenant
+            settings.JAZZMIN_SETTINGS["site_title"] = f"لوحة إدارة {company.company_name}"
+            settings.JAZZMIN_SETTINGS["site_header"] = f"لوحة إدارة {company.company_name}"
+            settings.JAZZMIN_SETTINGS["site_brand"] = company.company_name
+            if company.logo:
+                settings.JAZZMIN_SETTINGS["site_logo"] = company.logo.url
+            else:
+                settings.JAZZMIN_SETTINGS["site_logo"] = "/static/admin/img/logo.png"
+        return self.get_response(request)

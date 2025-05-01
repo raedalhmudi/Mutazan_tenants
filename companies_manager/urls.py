@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import company_list, company_detail, fetch_company_data, print_weight_cards
+from .views import *
 
 
 #--------api---------------
@@ -29,6 +29,7 @@ urlpatterns = [
     path('companies/<int:company_id>/print-weight-cards/', print_weight_cards, name='print_weight_cards'),
     path('companies/<int:company_id>/', company_detail, name='company_detail'),
     path('companies/<int:company_id>/fetch-data/', fetch_company_data, name='fetch_company_data'),
+<<<<<<< HEAD
         #---------api------------
     path('api/companies/', CompanyListAPIView.as_view(), name='company-list'),  # عرض أو إضافة الشركات)(keep)
     path('companies/<int:pk>/', CompanyDetailView.as_view(), name='company-detail'),  # تفاصيل الشركة أو تعديلها أو حذفها)(keep)
@@ -36,4 +37,9 @@ urlpatterns = [
     path('api/login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/protected/', ProtectedView.as_view(), name='protected-view'),
     #-------------api_end------------
+=======
+    
+    
+    
+>>>>>>> 49d95fee (التعديلات الجديده للنظام)
 ]

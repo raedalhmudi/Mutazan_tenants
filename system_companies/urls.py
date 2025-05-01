@@ -7,11 +7,12 @@ from django.contrib import admin
 # from .views import InvoiceListView
 
 urlpatterns = [
-    path("admin/reports/", admin.site.admin_view(views.reports_view), name="admin-reports"),
+    # path("admin/reports/", admin.site.admin_view(views.reports_view), name="admin-reports"),
     path('admin/', admin.site.urls),
     path('invoices/', views.invoice_list, name='invoice_list'),
     path('invoice/<int:pk>/print/', views.invoice_print_modal, name='invoice_print_modal'),
     path('video_feed/<str:location>/', views.video_feed, name='video_feed'),
+    path('print_report/', views.print_report, name='print_report'),
    #-----------api-----------
     path('api/invoices/', views.InvoiceListView.as_view(), name='invoice-list'),
 

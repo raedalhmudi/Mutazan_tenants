@@ -1,36 +1,578 @@
-{% extends "admin/base_site.html" %}
+{% extends "admin/index.html" %}
 {% load static i18n %}
 
 {% block content %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<div class="container-fluid">
-  <div class="row">
-    <!-- البطاقة الأولى -->
-    <div class="col-md-4">
-      <div class="small-box bg-info">
-        <div class="inner">
-          <h3>{{ company_count }}</h3>
-          <p>عدد الشركات</p>
+<style>
+    :root {
+        --primary-color: #4361ee;
+        --secondary-color: #3f37c9;
+        --success-color: #4cc9f0;
+        --info-color: #4895ef;
+        --warning-color: #f72585;
+        --light-color: #f8f9fa;
+        --dark-color: #212529;
+        --border-radius: 12px;
+        --box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        --transition: all 0.3s ease;
+    }
+
+    /* أنماط عامة */
+    .dashboard-container {
+        font-family: 'Segoe UI', 'Tahoma', Geneva, Verdana, sans-serif;
+        color: var(--dark-color);
+        padding: 20px;
+    }
+
+    /* بطاقات الإحصائيات */
+    .stat-card {
+        border-radius: var(--border-radius);
+        overflow: hidden;
+        margin-bottom: 24px;
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+        border: none;
+        position: relative;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-card .card-body {
+        padding: 25px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stat-card .icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 60px;
+        opacity: 0.2;
+        transition: var(--transition);
+    }
+
+    .stat-card:hover .icon {
+        opacity: 0.3;
+        transform: scale(1.1);
+    }
+
+    .stat-card h3 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+
+    .stat-card p {
+        font-size: 16px;
+        margin-bottom: 0;
+        opacity: 0.9;
+    }
+
+    .bg-info { background: linear-gradient(135deg, var(--info-color), var(--primary-color)); }
+    .bg-success { background: linear-gradient(135deg, var(--success-color), #38b000); }
+    .bg-warning { background: linear-gradient(135deg, #f72585, #b5179e); }
+    .bg-purple { background: linear-gradient(135deg, #7209b7, #560bad); }
+
+    /* لوحة التحكم */
+    .dashboard-title {
+        font-size: 24px;
+        font-weight: 600;
+        margin-bottom: 30px;
+        color: var(--dark-color);
+        text-align: center;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 24px;
+        margin-bottom: 30px;
+    }
+        .row {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex
+    ;
+        -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        width: 1339px;
+        margin-right: -7.5px;
+        margin-left: -7.5px;
+    }
+    
+
+    @media (max-width: 992px) {
+        .dashboard-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 24px;
+    background-color: white;
+    height: 418px;
+}
+
+    .card-header {
+        background-color: transparent;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        padding: 20px;
+        font-weight: 600;
+        font-size: 18px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    /* مخططات */
+    .chart-container {
+        position: relative;
+        height: 300px;
+        width: 100%;
+    }
+
+    /* أشرطة التقدم */
+    .progress-container {
+        margin-bottom: 20px;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+    .company-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    }
+
+    .progress-bar {
+        height: 10px;
+        border-radius: 5px;
+        background-color: #e9ecef;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 5px;
+        transition: width 0.6s ease;
+        text-align: right;
+        padding-right: 5px;
+        font-size: 10px;
+        line-height: 10px;
+        color: white;
+    }
+
+    /* بطاقات الملخص */
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 16px;
+        box-shadow: var(--box-shadow);
+        text-align: center;
+    }
+
+    .summary-card .value {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 10px 0;
+    }
+
+    .summary-card .label {
+        font-size: 14px;
+        opacity: 0.8;
+    }
+
+    .trend-up { color: #2ecc71; }
+    .trend-down { color: #e74c3c; }
+    .trend-neutral { color: #f39c12; }
+
+    {% comment %}  {% endcomment %}
+        .modern-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        background: #ffffff;
+    }
+    
+    .elegant-header {
+        background: linear-gradient(135deg,rgb(255, 255, 255) 0%,rgb(255, 255, 255) 100%);
+        color: white;
+        padding: 20px 25px;
+        border-bottom: none;
+    }
+    
+    .dashboard-title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    
+    .dashboard-title i {
+        font-size: 1.3em;
+    }
+    
+    .table-container {
+        padding: 0 15px;
+        overflow-x: auto;
+    }
+    
+    .modern-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .table-header-row th {
+        background-color: #f8f9fa;
+        color: #495057;
+        font-weight: 600;
+        padding: 16px 12px;
+        border-bottom: 2px solid #e9ecef;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .table-data-row td {
+        padding: 15px 12px;
+        border-bottom: 1px solid #f1f3f5;
+        vertical-align: middle;
+        transition: all 0.2s ease;
+    }
+    
+    .table-data-row:hover td {
+        background-color: #f8fafc;
+    }
+    
+    .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .circular-logo {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #e0f2fe;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+
+    @media (max-width: 768px) {
+        .circular-logo {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .table-header-row th, 
+        .table-data-row td {
+            padding: 12px 8px;
+            font-size: 0.9rem;
+        }
+    }
+    {% comment %}  {% endcomment %}
+</style>
+
+<div class="dashboard-container">
+    <!-- بطاقات الإحصائيات -->
+    <div class="row">
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card bg-info text-white">
+                <div class="card-body">
+                    <h3>{{ company_count }}</h3>
+                    <p>عدد الشركات</p>
+                    <i class="fas fa-building icon"></i>
+                </div>
+            </div>
         </div>
-        <div class="icon">
-          <i class="fas fa-building"></i>
+
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card bg-success text-white">
+                <div class="card-body">
+                    <h3>{{ user_count }}</h3>
+                    <p>عدد المستخدمين</p>
+                    <i class="fas fa-users icon"></i>
+                </div>
+            </div>
         </div>
-      </div>
+        
+        <div class="col-lg-4 col-md-6">
+            <div class="stat-card bg-warning text-white">
+                <div class="card-body">
+                    <h3>{% now "F Y" %}</h3>
+                    <p>تقرير الشهر الحالي</p>
+                    <i class="fas fa-calendar-alt icon"></i>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- البطاقة الثانية -->
-    <div class="col-md-4">
-      <div class="small-box bg-success">
-        <div class="inner">
-          <h3>{{ user_count }}</h3>
-          <p>عدد المستخدمين</p>
+    <!-- لوحة تحكم المبيعات والأهداف -->
+        <div class="dashboard-grid">
+            <div class="main-section">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-chart-line me-2"></i>
+                        المبيعات الشهرية: {% now "F Y" %}
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="salesChart"></canvas>
+                        </div>
+                        
+
+                    </div>
+                </div>
+            </div>
+            
+            
+            <div class="side-section">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-bullseye me-2"></i>
+                        تقدم إكمال الأهداف
+                    </div>
+                    <div class="card-body">
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>إضافة المنتجات إلى سلة التسوق</span>
+                                <span>80%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-info" style="width: 80%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>إتمام عملية الشراء</span>
+                                <span>77.5%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-success" style="width: 77.5%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>زيارة الصفحة المميزة</span>
+                                <span>60%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-warning" style="width: 60%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>إرسال الاستفسارات</span>
+                                <span>50%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill bg-purple" style="width: 50%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="icon">
-          <i class="fas fa-users"></i>
+                                {% comment %} <div class="summary-grid">
+                            <div class="summary-card">
+                                <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 17%</div>
+                                <div class="value">35,210.43 $</div>
+                                <div class="label">إجمالي الإيرادات</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="trend trend-neutral"><i class="fas fa-arrow-right"></i> 0%</div>
+                                <div class="value">10,390.90 $</div>
+                                <div class="label">التكلفة الإجمالية</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 20%</div>
+                                <div class="value">24,813.53 $</div>
+                                <div class="label">إجمالي الربح</div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="trend trend-down"><i class="fas fa-arrow-down"></i> 18%</div>
+                                <div class="value">1,200</div>
+                                <div class="label">إكمال الأهداف</div>
+                            </div>
+                        </div> {% endcomment %}
+
+
+                        {% comment %}  {% endcomment %}
+     <!---->
+   <div class="recent-cards">
+    <div class="card modern-card">
+        <div class="card-header elegant-header">
+            <h1 class="dashboard-title">
+                <i class="fas fa-network-wired"></i>
+                شبكة الشركات اللوجستية
+            </h1>
         </div>
-      </div>
+        <div class="card-body p-0">
+            <div class="table-container">
+                <table class="modern-table">
+                    <thead>
+                        <tr class="table-header-row">
+                            <th class="text-center">#</th>
+                            <th class="text-center">شعار الشركة</th>
+                            <th>الشركة</th>
+                            <th class="text-center">عدد الشاحنات</th>
+                            <th class="text-center">عدد المخالفات</th>
+                            <th class="text-center">عدد بطاقات الوزن</th>
+                            <th class="text-center">عدد الفواتير</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for company in companies %}
+                        <tr class="table-data-row">
+                            <td class="text-center">{{ forloop.counter }}</td>
+                            <td class="text-center"> 
+                                {% if company.logo %}
+                                <div class="logo-container">
+                                    <img class="circular-logo" src="{{ company.logo.url }}" alt="{{ company.company_name }}">
+                                </div>
+                                {% else %}
+                                <span class="no-logo">لا يوجد</span>
+                                {% endif %}  
+                            </td>
+                            <td class="company-name"><strong>{{ company.company_name }}</strong></td>
+                            <td class="text-center highlight-cell">{{ company.trucks }}</td>
+                            <td class="text-center warning-cell">{{ company.violations }}</td>
+                            <td class="text-center info-cell">{{ company.weiht_card }}</td>
+                            <td class="text-center success-cell">{{ company.Invoice }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 no-data">
+                                لا توجد بيانات لعرضها
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+     <!---->
+  
+  
+
+                        {% comment %}  {% endcomment %}
+</div>
+
+<script>
+    // مخطط المبيعات الشهرية
+    const salesCtx = document.getElementById('salesChart').getContext('2d');
+    const salesChart = new Chart(salesCtx, {
+        type: 'line',
+        data: {
+            labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو'],
+            datasets: [
+                {
+                    label: 'مبيعات 2023',
+                    data: [30, 50, 40, 20, 70, 30, 80],
+                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
+                    borderColor: '#4361ee',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#4361ee',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                },
+                {
+                    label: 'مبيعات 2022',
+                    data: [60, 55, 70, 60, 50, 50, 40],
+                    backgroundColor: 'rgba(108, 117, 125, 0.05)',
+                    borderColor: '#6c757d',
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    tension: 0.3,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#6c757d',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0,0,0,0.8)',
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 12 },
+                    padding: 12,
+                    cornerRadius: 8
+                }
+            },
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                y: {
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    },
+                    ticks: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                }
+            }
+        }
+    });
+</script>
+
 {% endblock %}

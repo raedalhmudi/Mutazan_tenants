@@ -1,0 +1,116 @@
+/* تصميم البطاقات الحديثة */
+.modern-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.modern-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.card-body {
+    padding: 20px;
+}
+
+.info-item {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+.info-item i {
+    margin-left: 10px;
+    color: #6c757d;
+    width: 20px;
+    text-align: center;
+}
+
+/* تصميم شارات الحالة */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.badge-success {
+    background-color: #e6f7ee;
+    color: #28a745;
+}
+
+.badge-danger {
+    background-color: #fdecea;
+    color: #dc3545;
+}
+
+/* شريط التقدم المخصص */
+.progress-container {
+    width: 100%;
+    height: 24px;
+    background-color: #f1f1f1;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar-success {
+    background: linear-gradient(90deg, #2ecc71, #27ae60);
+}
+
+.progress-bar-warning {
+    background: linear-gradient(90deg, #f39c12, #e67e22);
+}
+
+.progress-bar-danger {
+    background: linear-gradient(90deg, #e74c3c, #c0392b);
+}
+
+.progress-text {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* أزرار الإجراءات */
+.btn-group .btn {
+    border-radius: 50% !important;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 3px;
+}
+
+/* تأثيرات الحركة */
+[data-aos] {
+    transition: all 0.5s ease;
+}

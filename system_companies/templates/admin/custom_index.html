@@ -1,117 +1,317 @@
 {% extends "admin/index.html" %}
 {% load static i18n %}
 
+{% block extrastyle %}
+{{ block.super }}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-color: #4361ee;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --dark-color: #2c3e50;
+    --light-color: #ecf0f1;
+  }
+.row {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex
+;
+    -webkit-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    width: 1340px;
+    flex-wrap: wrap;
+    margin-right: -7.5px;
+    margin-left: -7.5px;
+}
+  
+
+  
+  .dashboard-container {
+    padding: 20px;
+    background-color: #f5f7fa;
+  }
+  
+  .stat-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 20px;
+    overflow: hidden;
+    border: none;
+    color: white;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-card.bg-info {
+    background: linear-gradient(135deg, #4361ee, #3a0ca3);
+  }
+  
+  .stat-card.bg-success {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+  }
+  
+  .stat-card.bg-warning {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+  }
+  
+  .stat-card .card-body {
+    padding: 20px;
+    position: relative;
+  }
+  
+  .stat-card .stat-value {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+  
+  .stat-card .stat-label {
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+  
+  .stat-card .stat-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 3.5rem;
+    opacity: 0.2;
+  }
+  
+  .recent-cards {
+    margin-top: 30px;
+  }
+  
+  .recent-cards .card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: none;
+  }
+  
+  .recent-cards .card-header {
+    background-color: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 15px 20px;
+    border-radius: 12px 12px 0 0 !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  
+  .recent-cards .card-title {
+    font-weight: 700;
+    color: var(--dark-color);
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  
+  .recent-cards .table {
+    margin-bottom: 0;
+  }
+  
+  .recent-cards .table th {
+    border-top: none;
+    font-weight: 600;
+    color: var(--dark-color);
+    background-color: #f8f9fa;
+  }
+  
+  .recent-cards .table td, 
+  .recent-cards .table th {
+    padding: 12px 15px;
+    vertical-align: middle;
+  }
+  
+  .recent-cards .table tr:hover td {
+    background-color: #f8f9fa;
+  }
+  
+  .badge {
+    padding: 6px 10px;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    border-radius: 50px;
+  }
+  
+  .badge-success {
+    background-color: var(--success-color);
+  }
+  
+  .badge-danger {
+    background-color: var(--danger-color);
+  }
+  
+  .badge-secondary {
+    background-color: #95a5a6;
+  }
+  
+  .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    border-radius: 50px;
+    padding: 6px 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-primary:hover {
+    background-color: #3a56e8;
+    border-color: #3a56e8;
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .stat-card .stat-value {
+      font-size: 1.8rem;
+    }
+    
+    .stat-card .stat-icon {
+      font-size: 2.5rem;
+    }
+  }
+  /* حالة البطاقة */
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-completed {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--success);
+}
+
+.status-processing {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: var(--warning);
+}
+
+.status-pending {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--danger);
+}
+</style>
+{% endblock %}
+
 {% block content %}
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-
-<div class="container-fluid">
+<div class="dashboard-container">
   <div class="row">
-    <!-- البطاقة الأولى -->
+    <!-- بطاقة عمليات الدخول -->
     <div class="col-md-4">
-      <div class="small-box bg-info">
-        <div class="inner">
-          <h3>{{ entry_count }}</h3>
-          <p>عمليات الدخول اليوم</p>
-        </div>
-        <div class="icon">
-          <i class="fas fa-sign-in-alt"></i>
+      <div class="stat-card bg-info">
+        <div class="card-body">
+          <div class="stat-value">{{ entry_count }}</div>
+          <div class="stat-label">عمليات الدخول اليوم</div>
+          <div class="stat-icon">
+            <i class="fas fa-sign-in-alt"></i>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- البطاقة الثانية -->
+    <!-- بطاقة عمليات الخروج -->
     <div class="col-md-4">
-      <div class="small-box bg-success">
-        <div class="inner">
-          <h3>{{ exit_count }}</h3>
-          <p>عمليات الخروج اليوم</p>
-        </div>
-        <div class="icon">
-          <i class="fas fa-sign-out-alt"></i>
+      <div class="stat-card bg-success">
+        <div class="card-body">
+          <div class="stat-value">{{ violationrecord_count }}</div>
+          <div class="stat-label">عدد المخالفات اليوميه</div>
+          <div class="stat-icon">
+            <i class="fas fa-sign-out-alt"></i>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- البطاقة الثالثة -->
+    <!-- بطاقة الشاحنات المضافة -->
     <div class="col-md-4">
-      <div class="small-box bg-warning">
-        <div class="inner">
-          <h3>{{ trucks_count }}</h3>
-          <p>الشاحنات المضافة اليوم</p>
-        </div>
-        <div class="icon">
-          <i class="fas fa-truck"></i>
+      <div class="stat-card bg-warning">
+        <div class="card-body">
+          <div class="stat-value">{{ trucks_count }}</div>
+          <div class="stat-label">الشاحنات المضافة اليوم</div>
+          <div class="stat-icon">
+            <i class="fas fa-truck"></i>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  <div class="card">
-    <div class="card-header">
-      <h3 class="card-title">أحدث بطاقات الوزن</h3>
-      <div class="card-tools">
-        <!-- زر لعرض كل البطاقات (اختياري) -->
-        <a href="{% url 'admin:system_companies_weightcard_changelist' %}" class="btn btn-primary btn-sm" target="_blank">
-          عرض جميع البطاقات
-        </a>
+  
+  <!-- بطاقة أحدث بطاقات الوزن -->
+  <div class="recent-cards">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">أحدث بطاقات الوزن</h3>
+        {% comment %} <div class="card-tools">
+          <a href="{% url 'admin:system_companies_weightcard_changelist' %}" class="btn btn-primary btn-sm">
+            <i class="fas fa-list"></i> عرض الكل
+          </a>
+        </div> {% endcomment %}
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>رقم الشاحنة</th>
+                <th>تاريخ الدخول</th>
+                <th>تاريخ الخروج</th>
+                <th>الحالة</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for card in latest_cards %}
+                <tr>
+                  <td>
+                    <strong>{{ card.plate_number.plate_number }}</strong>
+                  </td>
+                  <td>
+                    {% if card.entry_date %}
+                      <span class="text-dark">{{ card.entry_date|date:"Y-m-d H:i" }}</span>
+                    {% else %}
+                      <span class="text-muted">---</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if card.exit_date %}
+                      <span class="text-dark">{{ card.exit_date|date:"Y-m-d H:i" }}</span>
+                    {% else %}
+                      <span class="text-muted">---</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if card.status == "complete" %}
+                      <span class="status-badge status-completed">{{ card.status }}</span>
+                    {% elif card.status == "incomplete" %}
+                      <span class="status-badge status-processing">{{ card.status }} </span>
+                    {% else %}
+                      <span class="status-badge status-pending">{{ card.status }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center py-4 text-muted">
+                    <i class="fas fa-info-circle mr-2"></i> لا توجد بطاقات وزن حتى الآن
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <div class="card-body p-0">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>رقم الشاحنة</th>
-            <th>تاريخ الدخول</th>
-            <th>تاريخ الخروج</th>
-            <th>الحالة</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for card in latest_cards %}
-            <tr>
-              <!-- رقم الشاحنة -->
-              <td>{{ card.plate_number.plate_number }}</td>
-  
-              <!-- تاريخ الدخول -->
-              <td>
-                {% if card.entry_date %}
-                  {{ card.entry_date|date:"Y-m-d H:i" }}
-                {% else %}
-                  ---
-                {% endif %}
-              </td>
-  
-              <!-- تاريخ الخروج -->
-              <td>
-                {% if card.exit_date %}
-                
-                  {{ card.exit_date|date:"Y-m-d H:i" }}
-                {% else %}
-                  ---
-                {% endif %}
-              </td>
-  
-              <!-- الحالة -->
-              <td>
-                {% if card.status == "complete" %}
-                  <span class="badge badge-success">مكتملة</span>
-                {% elif card.status == "incomplete" %}
-                  <span class="badge badge-danger">غير مكتملة</span>
-                {% else %}
-                  <span class="badge badge-secondary">{{ card.status }}</span>
-                {% endif %}
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="4" class="text-center">لا توجد بطاقات وزن حتى الآن.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
   </div>
-  
 </div>
-<!-- جدول "أحدث بطاقات الوزن" مثلاً -->
-
-{% endblock %} 
+{% endblock %}
