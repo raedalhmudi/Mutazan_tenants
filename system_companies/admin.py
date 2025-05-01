@@ -9,39 +9,22 @@ from django.urls import path, reverse
 from django.shortcuts import get_object_or_404, render
 from django.utils.safestring import mark_safe
 from .models import *
-from django.contrib.auth.admin import UserAdmin
+from Mutazan_weight.base_admin import BaseAdmin
 from django.contrib.auth.models import User
-from companies_manager.models import UserProfile
 from django.contrib.auth.models import Group, Permission
 from django.utils.timezone import localtime
-# from rangefilter.filters import DateRangeFilter
 from django.db.models import Q
 from django.db import models
 from django_tenants.utils import get_tenant, get_tenant_model
-
-class CustomAdminSite(admin.AdminSite):
-    """تخصيص عنوان لوحة الإدارة لكل مستأجر"""
-    
-    def get_site_header(self, request):
-        tenant = get_tenant(request)
-        if isinstance(tenant, get_tenant_model()):
-            return tenant.company_name  # استخدام اسم المستأجر
-        return "إدارة النظام"
-
-    def each_context(self, request):
-        context = super().each_context(request)
-        context['site_header'] = self.get_site_header(request)
-        context['site_title'] = self.get_site_header(request)
-        return context
-
-# استبدال `admin.site` بالنسخة المخصصة
-custom_admin = CustomAdminSite(name='custom_admin')
-
-# استبدال `admin.site` بالإدارة الجديدة بدون إعادة تسجيل النماذج
-admin.site.__class__ = CustomAdminSite
-
+from .models import UserProfile  # هذا UserProfile تبع الشركة
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 # -----------------------------------------
 class BaseAdmin(admin.ModelAdmin):
+
+    class Media:
+        css = {
+            'all': ('common/css/system_companies/admin_styles.css',)  # تحديد مكان ملف CSS
+        }
     """فلترة أي ForeignKey يشير إلى جدول يحتوي على الحقل condition=True فقط."""
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -53,96 +36,59 @@ class BaseAdmin(admin.ModelAdmin):
             kwargs["queryset"] = related_model.objects.filter(condition=True)  # جلب العناصر المتاحة فقط
         
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
-# -----------------------------------------------------
-class CompanyGroupAdmin(BaseAdmin):
-    def get_form(self, request, obj=None, **kwargs):
-        form = super().get_form(request, obj, **kwargs)
-        if 'permissions' in form.base_fields:
-            # فلترة الصلاحيات لتبقي فقط تلك الخاصة بتطبيق system_companies
-            # وإخفاء صلاحيات django admin الأساسية
-            form.base_fields['permissions'].queryset = Permission.objects.filter(
-                Q(content_type__app_label='system_companies') |
-                Q(content_type__app_label__in=['auth', 'admin', 'contenttypes', 'sessions'])
-            )
-        return form
-
-    def get_queryset(self, request):
-        # إذا كنت تريد أيضاً تصفية المجموعات المعروضة
-        return super().get_queryset(request)
-
-# إلغاء تسجيل النموذج الأصلي وإعادة تسجيله مع التخصيص
-admin.site.unregister(Group)
-admin.site.register(Group, CompanyGroupAdmin)
-
-# -------------------------------
-class UserProfileInline(admin.StackedInline):
-    model = UserProfile
-    can_delete = False
-    verbose_name_plural = 'الملف الشخصي'
-    fk_name = 'user'
-
-class CustomUserAdmin(UserAdmin):
-    inlines = (UserProfileInline,)
-    list_display = ('username', 'email', 'first_name', 'last_name', 'get_phone', 'get_profile_picture', 'is_staff')
-    list_select_related = ('profile', )
-    
-    def get_phone(self, instance):
-        return instance.profile.phone_number if hasattr(instance, 'profile') else ''
-    get_phone.short_description = 'رقم الهاتف'
-
-    def get_profile_picture(self, instance):
-        """عرض صورة المستخدم في الـ Admin"""
-        if hasattr(instance, 'profile') and instance.profile.profile_picture:
-            return format_html('<img src="{}" style="width: 50px; height: 50px; border-radius: 50%;" />', instance.profile.profile_picture.url)
-        return "لا توجد صورة"
-    get_profile_picture.short_description = 'صورة الملف الشخصي'
-
-    def get_inline_instances(self, request, obj=None):
-        if not obj:
-            return list()
-        return super().get_inline_instances(request, obj)
-
-admin.site.unregister(User)
-admin.site.register(User, CustomUserAdmin)
-# -----------------------------------------
-@admin.register(Attendance)
-class AttendanceAdmin(BaseAdmin):
-    list_display = ("date", "check_in_time", "check_out_time", "status", "shift_type", 'notes')
-    list_filter = ("status",)
-    search_fields = ("date", "check_in_time")
-# انواع الشاحنات --------------------------------
-@admin.register(TrucksTypes)
-class TrucksTypesAdmin(BaseAdmin):
-    list_display = ("manufacturer", "description", "dimensions", "status_badge", "progress_bar", 'action_buttons')
-    list_filter = ("status",)
-    search_fields = ("manufacturer", "description")
-    field = (('manufacturer', 'description'),('dimensions', 'status_badge'),('progress_bar'))
     
     def action_buttons(self, obj):
         # رابط التعديل
-        edit_url = reverse('admin:system_companies_truckstypes_change', args=[obj.id])
+        edit_url = reverse('admin:{}_{}_change'.format(obj._meta.app_label, obj._meta.model_name), args=[obj.id])
         # رابط الحذف
-        delete_url = reverse('admin:system_companies_truckstypes_delete', args=[obj.id])
+        delete_url = reverse('admin:{}_{}_delete'.format(obj._meta.app_label, obj._meta.model_name), args=[obj.id])
         
         return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
+            '<a href="{}" class="mr-2 btn-icon btn-icon-only btn btn-outline-info " style="margin-right: 5px;">'
+            '<i class="fas fa-edit"></i> </a>'
+            '<a href="{}" class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">'
+            '<i class="fas fa-trash"></i> </a>',
             edit_url, delete_url
         )
+
     action_buttons.short_description = 'الإجراءات'  # عنوان العمود
     action_buttons.allow_tags = True  # السماح بعرض HTML
 
     def status_badge(self, obj):
-        """عرض الحالة كشارة (Badge) في Django Admin"""
-        color = "green" if obj.status else "red"
-        status_text = "متاح" if obj.status else "غير متاح"
+        """عرض الحالة كشارة (Badge) في Django Admin بالتنسيق المطلوب"""
+        if obj.status:
+            # متاح
+            # color = "green"
+            status_text = "متاح" 
+            class_name = "status-badge status-completed"
+        else:
+            # غير متاح
+            # color = "red"
+            status_text = "غير متاح" 
+            class_name = "status-badge status-pending"
+
         return format_html(
-            f'<span style="color:white; background-color:{color}; padding:4px 8px; border-radius:5px;">{status_text}</span>'
+            f'<span class="{class_name}" {class_name}; padding:4px 8px; border-radius:5px;">{status_text}</span>'
         )
     
-    status_badge.short_description = "الحالة"
+    def status_complet(self, obj):
+        """عرض الحالة كشارة (Badge) في Django Admin بالتنسيق المطلوب"""
+        if obj.status:
+            # متاح
+            # color = "green"
+            status_text = "مكتمل"
+            class_name = "status-badge status-completed"
+        else:
+            # غير متاح
+            # color = "red"
+            status_text = "غير مكتمل "
+            class_name = "status-badge status-pending"
+
+        return format_html(
+            f'<span class="{class_name}" {class_name}; padding:4px 8px; border-radius:5px;">{status_text}</span>'
+        )
+
+    status_complet.short_description = "الحالة"
 
     def dimensions(self, obj):
         """عرض الأبعاد بتنسيق منسق"""
@@ -165,6 +111,74 @@ class TrucksTypesAdmin(BaseAdmin):
         )
 
     progress_bar.short_description = "تقدم (الطول)"
+# -----------------------------------------------------
+class CompanyGroupAdmin(BaseAdmin):
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        if 'permissions' in form.base_fields:
+            # فلترة الصلاحيات لتبقي فقط تلك الخاصة بتطبيق system_companies
+            # وإخفاء صلاحيات django admin الأساسية
+            form.base_fields['permissions'].queryset = Permission.objects.filter(
+                Q(content_type__app_label='system_companies') |
+                Q(content_type__app_label__in=['auth', 'admin', 'contenttypes', 'sessions'])
+            )
+        return form
+
+    def get_queryset(self, request):
+        # إذا كنت تريد أيضاً تصفية المجموعات المعروضة
+        return super().get_queryset(request)
+
+# إلغاء تسجيل النموذج الأصلي وإعادة تسجيله مع التخصيص
+admin.site.unregister(Group)
+admin.site.register(Group, CompanyGroupAdmin)
+
+# -------------------------------
+User = get_user_model()
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    can_delete = False
+    verbose_name_plural = 'الملف الشخصي'
+    fk_name = 'user'
+
+class CustomUserAdmin(UserAdmin):
+    inlines = (UserProfileInline,)
+    list_display = ('username', 'email', 'first_name', 'last_name', 'get_phone', 'get_profile_picture', 'is_staff')
+    list_select_related = ('company_profile', )  # ✅ هنا بدلنا profile إلى company_profile
+
+    def get_phone(self, instance):
+        return instance.company_profile.phone_number if hasattr(instance, 'company_profile') else ''
+    get_phone.short_description = 'رقم الهاتف'
+
+    def get_profile_picture(self, instance):
+        if hasattr(instance, 'company_profile') and instance.company_profile.profile_picture:
+            return format_html('<img src="{}" style="width: 50px; height: 50px; border-radius: 50%;" />', instance.company_profile.profile_picture.url)
+        return "لا توجد صورة"
+    get_profile_picture.short_description = 'صورة الملف الشخصي'
+
+    def get_inline_instances(self, request, obj=None):
+        if not obj:
+            return []
+        return super(CustomUserAdmin, self).get_inline_instances(request, obj)
+
+admin.site.unregister(User)
+admin.site.register(User, CustomUserAdmin)
+
+# -----------------------------------------
+@admin.register(Attendance)
+class AttendanceAdmin(BaseAdmin):
+    list_display = ("date", "check_in_time", "check_out_time", "status_badge", "shift_type", 'notes')
+    list_filter = ("status",)
+    search_fields = ("date", "check_in_time")
+# انواع الشاحنات --------------------------------
+@admin.register(TrucksTypes)
+class TrucksTypesAdmin(BaseAdmin):
+    list_display = ("manufacturer", "description", "dimensions", "status_badge", "progress_bar", 'action_buttons')
+    list_filter = ("status",)
+    search_fields = ("manufacturer", "description")
+    field = (('manufacturer', 'description'), ('dimensions', 'status_badge'), ('progress_bar'))
+
+
     # --------------------------------------------------------------
 # احتفظ بنسخة من الدالة الأصلية للصفحة الرئيسية
 original_index = admin.site.index
@@ -176,6 +190,7 @@ def custom_index(request, extra_context=None):
     today = timezone.now().date()
     extra_context['entry_count'] = Entry_and_exit.objects.filter(entry_date__date=today).count()
     extra_context['exit_count'] = Entry_and_exit.objects.filter(exit_date__date=today).count()
+    extra_context['violationrecord_count'] =  ViolationRecord.objects.count()
     extra_context['trucks_count'] = Trucks.objects.count()
 
 
@@ -195,21 +210,7 @@ class DriverNemeAdmin(BaseAdmin):
     search_fields = ['driver_name']
     date_hierarchy = 'date_of_registration'
     
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_driverneme_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_driverneme_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
+
 # -----------------------------------------------------------
 #  ----------------------- الشاحنات ----------------------------
 @admin.register(Trucks)
@@ -218,55 +219,20 @@ class TrucksAdmin(BaseAdmin):
     search_fields = ['plate_number']
     # list_filter = (('registration_date', DateRangeFilter),)  # هنا تضيف فلتر النطاق
     date_hierarchy = 'registration_date'
+    # list_filter = ("condition",)
 
     def formatted_registration_date(self, obj):
         return localtime(obj.registration_date).strftime('%Y-%m-%d %H:%M')
     formatted_registration_date.short_description = 'تاريخ التسجيل'
 
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_trucks_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_trucks_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
+
 # -----------------------------------------------------------
 #  ----------------------- عمليات الدخول والخروج ----------------------------
 class Entry_and_exitAdmin(BaseAdmin):
     list_display = ('plate_number_E_e', 'entry_image_tag', 'exit_image_tag', 'entry_date', 'exit_date', 'action_buttons')  # Display images as columns
-    readonly_fields = ('entry_image_tag', 'exit_image_tag')  # Prevent modifying images in the admin panel
+    # readonly_fields = ('entry_image_tag', 'exit_image_tag')  # Prevent modifying images in the admin panel
     
-    # def formatted_entry_date(self, obj):
-    #     return localtime(obj.entry_date).strftime('%Y-%m-%d %H:%M')
-    # formatted_entry_date.short_description = 'تاريخ '
-
-    # def formatted_exit_date(self, obj):
-    #     return localtime(obj.exit_date).strftime('%Y-%m-%d %H:%M')
-    # formatted_exit_date.short_description = 'تاريخ '
-
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_entry_and_exit_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_entry_and_exit_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
+    
 
 admin.site.register(Entry_and_exit, Entry_and_exitAdmin)
 # -----------------------------------------------------------
@@ -277,26 +243,11 @@ class Legal_weightAdmin(BaseAdmin):
     search_fields = ['manufacturer_L_W']
     date_hierarchy = 'registration_date'
     
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_legal_weight_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_legal_weight_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
 
 # -----------------------------------------------------------
 #  ----------------------- بطاقات الوزن  ----------------------------
 class WeightCardAdmin(BaseAdmin):
-    list_display = ("plate_number", "empty_weight", "loaded_weight", "net_weight", "entry_date", "exit_date","quantity", "status", 'action_buttons')
+    list_display = ("id","plate_number", "empty_weight", "loaded_weight", "net_weight", "entry_date", "exit_date","quantity", "status_complet", 'action_buttons')
     readonly_fields = ("net_weight",)  # منع تعديل الوزن الصافي يدويًا
     list_filter = ('status',)
     
@@ -308,29 +259,12 @@ class WeightCardAdmin(BaseAdmin):
             return None  # إخفاء الحقول من الفورم
         return super().formfield_for_dbfield(db_field, **kwargs)
 
-
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_weightcard_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_weightcard_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
-
     fieldsets = (
-        ("📌 مسجل بيانات الوزن", {
+        (" مسجل بيانات الوزن", {
             "fields": (('empty_weight','loaded_weight'), "net_weight"),
             "classes": ("weight-section",),
         }),
-        ("📜 بطاقة الوزن", {
+        (" بطاقة الوزن", {
             "fields": ("plate_number","driver_name","quantity","material"),
             "classes": ("card-section",),
         }),
@@ -340,26 +274,11 @@ admin.site.register(WeightCard, WeightCardAdmin)
 # -----------------------------------------------------------
 # -------------------------دالة الفاتوره----------------------------------
 @admin.register(Invoice)
-class InvoiceAdmin(admin.ModelAdmin):
+class InvoiceAdmin(BaseAdmin):
     list_display = ['id', 'weight_card', 'material', 'quantity', 'datetime', 'net_weight', 'print_invoice_button', 'action_buttons']
     readonly_fields = ('weight_card', 'net_weight', 'print_invoice_button')
 
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_invoice_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_invoice_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
-
+    
 
     def has_add_permission(self, request):
         """
@@ -412,15 +331,6 @@ class InvoiceAdmin(admin.ModelAdmin):
         return format_html('<a class="button" href="{}" target="_blank">طباعة الفاتورة</a>', url)
 
     print_invoice_button.short_description = "طباعة"
-    # ---------------------------------------------------------------------
-    
-    # Add custom logic here for fields like weight_card and user if needed
-    
-    # Optionally, you can define methods to show more details of related fields
-    # def user_name(self, obj):
-    #     return obj.user.username if obj.user else 'No User'
-    # user_name.short_description = 'User Name'
-    # list_display.append('user_name')
     
 
 # -----------------------------------------------------------
@@ -429,21 +339,7 @@ class InvoiceAdmin(admin.ModelAdmin):
 class MaterialAdmin(BaseAdmin):
     list_display = ['id', 'name_material', 'description', 'unit', 'date_and_time', 'action_buttons']
 
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_material_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_material_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
+    
 
 # -----------------------------------------------------------
 #  ----------------------- المخالفات  ----------------------------
@@ -453,97 +349,6 @@ class ViolationRecordAdmin(BaseAdmin):
     search_fields = ['plate_number_vio']
     date_hierarchy = 'timestamp'
     # fields = (('plate_number_vio' , 'violation_type' ))
-
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_violationrecord_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_violationrecord_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
-
-# # -----------------------------------------------------------
-# # -------------اختبار الاتصال---------------------------------
-# @admin.register(Connection)
-# class ConnectionAdmin(admin.ModelAdmin):
-#     list_display = ('connection_name', 'date_and_tim', 'check_connection_button', 'action_buttons')
-#     search_fields = ['connection_name']
-#     date_hierarchy = 'date_and_tim'
-    
-#     def action_buttons(self, obj):
-#         # رابط التعديل
-#         edit_url = reverse('admin:system_companies_connection_change', args=[obj.id])
-#         # رابط الحذف
-#         delete_url = reverse('admin:system_companies_connection_delete', args=[obj.id])
-        
-#         return format_html(
-#             '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-#             '<i class="fas fa-edit"></i> Edit</a>'
-#             '<a href="{}" class="btn btn-danger btn-sm">'
-#             '<i class="fas fa-trash"></i> Delete</a>',
-#             edit_url, delete_url
-#         )
-#     action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-#     action_buttons.allow_tags = True  # السماح بعرض HTML
-
-#     def check_connection_button(self, obj):
-#         return format_html(
-#             '<a class="button" href="{}">اختبار الاتصال</a>',
-#             f"/admin/company_app/connection/{obj.id}/check/"
-#         )
-
-#     check_connection_button.short_description = "اختبار الاتصال"
-#     check_connection_button.allow_tags = True
-
-#     def get_urls(self):
-#         from django.urls import path
-#         urls = super().get_urls()
-#         custom_urls = [
-#             path(
-#                 '<path:object_id>/check/',
-#                 self.admin_site.admin_view(self.check_connection),
-#                 name='check-connection',
-#             ),
-#         ]
-#         return custom_urls + urls
-
-#     def check_connection(self, request, object_id):
-#         connection = Connection.objects.get(id=object_id)
-
-#         # هنا نقوم بمحاكاة التحقق الفعلي من الجهاز المتصل
-#         device_connected = self.is_device_connected(connection.connection_name)
-
-#         if device_connected:
-#             self.message_user(request, f"✅ {connection.connection_name}: الاتصال ناجح والجهاز متصل.", messages.SUCCESS)
-#         else:
-#             self.message_user(request, f"❌ {connection.connection_name}: الاتصال غير ناجح، لا يوجد جهاز متصل!", messages.ERROR)
-
-#         return redirect('/admin/company_app/connection/')
-
-#     def is_device_connected(self, connection_type):
-#         """
-#         دالة محاكاة للتحقق مما إذا كان هناك جهاز متصل فعليًا أم لا.
-#         يمكن استبدال هذا الجزء بفحص فعلي للأجهزة حسب نوع الاتصال.
-#         """
-#         import random
-
-#         # محاكاة الاتصال الفعلي بالجهاز (هنا نجعل بعض الاتصالات ناجحة وأخرى فاشلة)
-#         fake_device_status = {
-#             'USB': random.choice([True, False]),  # أحيانًا متصل وأحيانًا غير متصل
-#             'WiFi': True,  # نفترض أن الاتصال اللاسلكي دائمًا ناجح
-#             'Serial': random.choice([True, False]),  # عشوائيًا ناجح أو فاشل
-#             'API': True  # نفترض أن API متاحة دائمًا
-#         }
-
-#         return fake_device_status.get(connection_type, False)  # القيمة الافتراضية هي False إذا كان النوع غير موجود
 # -----------------------------------------------------------
 #  ----------------------- اعدادات الاجهزه ----------------------------
 @admin.register(Devices)
@@ -558,21 +363,6 @@ class DevicesAdmin(BaseAdmin):
               'https://cdn.jsdelivr.net/npm/sweetalert2@11',  # تحميل SweetAlert2
               'js/custom_admin.js') 
 
-    def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:system_companies_devices_change', args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:system_companies_devices_delete', args=[obj.id])
-        
-        return format_html(
-            '<a href="{}" class="btn btn-info btn-sm" style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> Edit</a>'
-            '<a href="{}" class="btn btn-danger btn-sm">'
-            '<i class="fas fa-trash"></i> Delete</a>',
-            edit_url, delete_url
-        )
-    action_buttons.short_description = 'الإجراءات'  # عنوان العمود
-    action_buttons.allow_tags = True  # السماح بعرض HTML
 
     def save_model(self, request, obj, form, change):
         if not obj.check_camera_connection():
@@ -581,66 +371,4 @@ class DevicesAdmin(BaseAdmin):
         
         super().save_model(request, obj, form, change)
         messages.success(request, f"✅ تم الاتصال بنجاح بالكاميرا عبر {obj.connection_type} ({obj.address_ip or obj.port_number}).")
-
-# admin.site.register(Devices, DevicesAdmin)
-# ----------------------------------------------------------------------------------------------------
-# --------------------------------المستخدمين-----------------------------------------------------
-# class CustomUserAdmin(UserAdmin):
-#     model = CustomUser
-#     # الحقول التي تظهر عند عرض المستخدم
-#     def image_tag(self, obj):
-#         if obj.image:
-#             return format_html('<img src="{}" width="70" height="70" style="border-radius: 70%;" />', obj.image.url)
-#         return "لا توجد صورة"
-
-#     image_tag.short_description = "الصورة"
-#     # الحقول التي تظهر عند عرض المستخدم
-#     fieldsets = UserAdmin.fieldsets + (
-#         ("معلومات إضافية", {'fields': ('address', 'phone_number', 'image')}),
-#     )
-
-#     # الحقول التي تظهر عند إنشاء مستخدم جديد
-#     add_fieldsets = UserAdmin.add_fieldsets + (
-#         ("معلومات إضافية", {'fields': ('address', 'phone_number', 'image')}),
-#     )
-
-#     # الحقول المعروضة في قائمة المستخدمين
-#     list_display = ('username', 'email', 'phone_number', 'address', 'is_staff', 'is_active', 'image_tag')
-
-#     # الحقول التي يمكن البحث بها
-#     search_fields = ('username', 'email', 'phone_number')
-
-#     # الحقول التي يمكن تعديلها مباشرة من قائمة المستخدمين
-#     list_editable = ('phone_number', 'address')
-
-# # تسجيل الموديل مع لوحة التحكم
-# # admin.site.register(CustomUser, CustomUserAdmin)
-
-
-
-
-# # ----------------------------------------------------------------------------------------------------
-# # ----------------------------------------------------الدوام-------------------------
-# @admin.register(Attendance)
-# class AttendanceAdmin(admin.ModelAdmin):
-#     list_display = ('employee', 'date', 'check_in_time', 'check_out_time', 'total_hours', 'status', 'shift_type')
-#     list_filter = ('status', 'shift_type', 'date')  # إضافة فلاتر حسب الحالة ونوع الدوام والتاريخ
-#     search_fields = ('employee__name', 'date')  # البحث عن الحضور بالاسم والتاريخ
-#     ordering = ('-date',)  # ترتيب السجلات بحيث الأحدث يظهر أولًا
-#     readonly_fields = ('total_hours',)  # جعل عدد ساعات العمل للقراءة فقط
-#     fieldsets = (
-#         ('الموظف والتاريخ', {
-#             'fields': ('employee', 'date', 'shift_type')
-#         }),
-#         ('تفاصيل الحضور', {
-#             'fields': ('check_in_time', 'check_out_time', 'total_hours', 'status')
-#         }),
-#         ('ملاحظات إضافية', {
-#             'fields': ('notes',)
-#         }),
-#     )
-
-
-# # ----------------------------------------------------------------------------------------------------
-# # ----------------------------------------------------------------------------------------------------
 

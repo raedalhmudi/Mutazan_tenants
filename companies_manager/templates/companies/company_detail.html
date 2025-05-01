@@ -3,728 +3,1032 @@
 {% block sidebar %}
   {{ block.super }}
 {% endblock %} 
-{% block content %}
 
+{% block extrastyle %}
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-    /* تنسيق الترويسات */
+:root {
+  --primary: #4361ee;
+  --primary-light: #e6e9ff;
+  --secondary: #3f37c9;
+  --accent: #4cc9f0;
+  --success: #4caf50;
+  --warning: #ff9800;
+  --danger: #f44336;
+  --dark: #1a1a2e;
+  --light: #f8f9fa;
+  --gray: #6c757d;
+  --border-radius: 12px;
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+
+
+/* تحسينات عامة */
+.container-fluid {
+  padding: 0 2rem;
+}
+
 h2, h4 {
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-@media (min-width: 992px) {
-    .container, .container-lg, .container-md, .container-sm {
-        max-width: 1500px;
-    }
-}
-button.btn-info, button.btn-success, button.btn-primary {
-    margin-right: 10px;
+  font-weight: 700;
+  color: var(--dark);
+  margin-bottom: 1.5rem;
 }
 
-/* تنسيق التبويبات */
-.nav-tabs .nav-link.active {
-    background-color: #17a2b8;
-    color: white;
-    font-weight: bold;
+/* كارد الشركة */
+.company-header {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 2rem;
+  box-shadow: var(--box-shadow);
+  position: relative;
+  overflow: hidden;
 }
+
+.company-header::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+}
+
+/* تبويبات */
+.nav-tabs {
+  border-bottom: 2px solid #dee2e6;
+  margin-bottom: 1.5rem;
+}
+
 .nav-tabs .nav-link {
-    color: #17a2b8;
+  border: none;
+  color: var(--gray);
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  margin-right: 0.5rem;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  transition: var(--transition);
 }
 
-/* تحسين شكل الجدول الجديد */
-.b-table {
-    margin-top: 20px;
-    border-radius: 10px;
-    background-color: #fff;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+.nav-tabs .nav-link:hover {
+  color: var(--primary);
+  background-color: var(--primary-light);
 }
 
-.table-wrapper {
-    overflow-x: auto;
+.nav-tabs .nav-link.active {
+  background-color: var(--primary);
+  color: white;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
 }
 
-.table.is-fullwidth {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table.is-striped tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.table.is-hoverable tbody tr:hover {
-    background-color: #f5f5f5;
-}
-
-.table th, .table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-}
-
-.table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-    color: #363636;
-}
-
-/* تنسيق الصور الدائرية */
-.image img.is-rounded {
-    border-radius: 50%;
-    width: 32px;
-    height: 32px;
-}
-
-/* تنسيق شريط التقدم */
-.progress.is-small {
-    height: 8px;
-}
-
-.progress.is-primary {
-    background-color: #ededed;
-}
-
-.progress.is-primary::-webkit-progress-value {
-    background-color: #00d1b2;
-}
-
-/* تنسيق الأزرار */
-.buttons.is-right {
-    justify-content: flex-end;
-}
-
-.button.is-small {
-    padding: 0.25em 0.5em;
-    font-size: 0.75rem;
-}
-
-.button.is-primary {
-    background-color: #00d1b2;
-    border-color: transparent;
-    color: #fff;
-}
-
-.button.is-danger {
-    background-color: #ff3860;
-    border-color: transparent;
-    color: #fff;
-}
-
-/* تنسيق الصفحات */
-.notification {
-    background-color: #f5f5f5;
-    border-radius: 0 0 6px 6px;
-    padding: 1rem;
-}
-
-.level {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.buttons.has-addons .button {
-    margin-right: -1px;
-    border-radius: 0;
-}
-
-.buttons.has-addons .button:first-child {
-    border-radius: 4px 0 0 4px;
-}
-
-.buttons.has-addons .button:last-child {
-    border-radius: 0 4px 4px 0;
-}
-
-.buttons.has-addons .button.is-active {
-    background-color: #00d1b2;
-    color: white;
-}
-
-/* التبويبات */
-.tab-content {
-    margin-top: 20px;
-}
-
-/* التاريخ بحجم مناسب */
-.has-text-grey.is-abbr-like {
-    font-size: 0.85rem;
-    color: #666;
-}
-
-/* تنسيق جديد للقائمة المنسدلة */
+/* القائمة المنسدلة للتقارير */
 .report-dropdown {
-    position: relative;
-    display: inline-block;
-    margin-bottom: 15px;
+  position: relative;
+  display: inline-block;
+  margin-bottom: 1.5rem;
 }
+
+.report-dropdown-btn {
+  background-color: var(--primary);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.report-dropdown-btn:hover {
+  background-color: var(--secondary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+}
+
 .report-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 280px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1000;
-    border-radius: 5px;
-    padding: 15px;
-    left: 0;
-    top: 100%;
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 300px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: var(--border-radius);
+  z-index: 1000;
+  padding: 1rem;
+  left: 0;
+  top: 100%;
+  margin-top: 0.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .report-dropdown:hover .report-dropdown-content {
-    display: block;
-}
-/* منع ظهور شريط التمرير عند عرض القائمة */
-html {
-    overflow-x: hidden;
-}
-/* ضبط تموضع القائمة بالنسبة للعناصر الأخرى */
-.container {
-    position: relative;
-    z-index: 1;
-}
-/* ضبط المساحة حول القائمة */
-.report-dropdown-btn {
-    background-color: #17a2b8;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    font-weight: bold;
+  display: block;
 }
 
-.report-dropdown-content.show {
-    display: block;
+.report-option {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary-light);
+  color: var(--primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: right;
+}
+
+.report-option:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+.report-option i {
+  margin-left: 0.5rem;
 }
 
 .report-fields {
-    margin-top: 10px;
-    background: white;
-    padding: 10px;
-    border-radius: 5px;
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  animation: slideDown 0.3s ease;
 }
 
-.refresh-icon {
-    float: left;
-    cursor: pointer;
-    margin-left: 10px;
-    font-size: 20px;
-    color: #17a2b8;
+@keyframes slideDown {
+  from { opacity: 0; height: 0; }
+  to { opacity: 1; height: auto; }
+}
+
+.report-fields label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.report-fields input,
+.report-fields select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  transition: var(--transition);
+}
+
+.report-fields input:focus,
+.report-fields select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+  outline: none;
+}
+
+/* زر التحديث الدائري */
+.refresh-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  color: var(--primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+  margin-left: 0.5rem;
+}
+
+.refresh-btn:hover {
+  background-color: var(--primary);
+  color: white;
+  transform: rotate(180deg);
+}
+
+/* تنسيق الجداول */
+.table-container {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  margin-bottom: 2rem;
 }
 
 .table-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #f1f1f1;
 }
 
-.refresh-icon {
-    cursor: pointer;
-    font-size: 20px;
-    color: #17a2b8;
-    transition: transform 0.3s ease;
-    padding: 5px;
-    border-radius: 50%;
+.table-responsive {
+  overflow-x: auto;
 }
 
-.refresh-icon:hover {
-    background-color: #f0f0f0;
+.table {
+  width: 100%;
+  border-collapse: collapse;
 }
 
-.refresh-icon:active {
-    transform: rotate(360deg);
+.table th {
+  background-color: #f8f9fa;
+  color: var(--dark);
+  font-weight: 700;
+  padding: 1rem;
+  text-align: right;
+  border-bottom: 2px solid #dee2e6;
 }
 
-
-/* تحسين ظهور حالة جلب البيانات */
-#fetch-status, #fetch-status-violations {
-    font-weight: bold;
-    margin-right: 10px;
-    transition: all 0.3s ease;
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f1f1;
+  text-align: right;
 }
 
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background-color: #f9f9f9;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+  background-color: #fcfcfc;
+}
+
+/* شريط التقدم */
+.progress {
+  height: 8px;
+  border-radius: 4px;
+  background-color: #e9ecef;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--primary);
+  transition: width 0.6s ease;
+}
+
+/* حالة البطاقة */
+.status-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-completed {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--success);
+}
+
+.status-processing {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: var(--warning);
+}
+
+.status-pending {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--danger);
+}
+
+/* تنسيق الصفحات */
+.pagination {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+  border-top: 1px solid #f1f1f1;
+}
+
+.page-item {
+  margin: 0 0.25rem;
+}
+
+.page-link {
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  color: var(--gray);
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.page-link:hover {
+  background-color: #f1f1f1;
+  color: var(--primary);
+}
+
+.page-item.active .page-link {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* رسائل الحالة */
+.status-message {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-weight: 600;
+  margin-left: 0.5rem;
+  transition: var(--transition);
+}
+
+.status-loading {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: var(--warning);
+}
+
+.status-success {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--success);
+}
+
+.status-error {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--danger);
+}
+
+/* زر الإجراءات */
+.actions-dropdown {
+  position: relative;
+}
+
+.actions-btn {
+  background-color: white;
+  border: 1px solid #dee2e6;
+  color: var(--dark);
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actions-btn:hover {
+  background-color: #f8f9fa;
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.actions-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background-color: white;
+  min-width: 200px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  border-radius: var(--border-radius);
+  z-index: 100;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+}
+
+.actions-dropdown:hover .actions-menu {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.actions-item {
+  padding: 0.75rem 1.5rem;
+  color: var(--dark);
+  text-decoration: none;
+  display: block;
+  transition: var(--transition);
+  text-align: right;
+}
+
+.actions-item:hover {
+  background-color: #f8f9fa;
+  color: var(--primary);
+}
+
+.actions-item i {
+  margin-left: 0.5rem;
+  width: 20px;
+  text-align: center;
+}
+
+/* التأثيرات عند التمرير */
+[data-aos="fade-up"] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+}
+
+[data-aos="fade-up"].aos-animate {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* التجاوب */
+@media (max-width: 992px) {
+  .container-fluid {
+    padding: 0 1.5rem;
+  }
+  
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 0 1rem;
+  }
+  
+  .nav-tabs .nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .report-dropdown-content {
+    min-width: 250px;
+  }
+}
+
+@media (max-width: 576px) {
+  .company-header {
+    padding: 1.5rem;
+  }
+  
+  .report-dropdown-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+  }
+}
+.company-logo {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 100%;
+  border: 3px solid white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+}
 </style>
+{% endblock %}
 
-<div class="container mt-4">
-    <link rel="stylesheet" href="{% static 'common/css/companies_manager/company_detail.css' %}">
-    
+{% block content %}
+<div class="container-fluid mt-4" data-aos="fade-up">
+  <!-- بطاقة الشركة -->
+   {% comment %} <div class="company-header">
     <h2>{{ company.name }}</h2>
+    <p><img src="{{ company.logo.url }}" class="company-logo" alt="{{ company.company_name }}"></p>
+</div>  {% endcomment %}
+  
+  <!-- القائمة المنسدلة للتقارير -->
+  <div class="report-dropdown">
+    <button class="report-dropdown-btn">
+      <i class="fas fa-chart-pie"></i> التقارير
+    </button>
+    <div class="report-dropdown-content">
+      <button class="report-option" id="daily-report">
+        <i class="fas fa-calendar-day"></i> تقرير يومي
+      </button>
+      <button class="report-option" id="weekly-report">
+        <i class="fas fa-calendar-week"></i> تقرير أسبوعي
+      </button>
+      <button class="report-option" id="monthly-report">
+        <i class="fas fa-calendar-alt"></i> تقرير شهري
+      </button>
+      <button class="report-option" id="print-report" style="background-color: var(--success); color: white;">
+        <i class="fas fa-print"></i> طباعة التقرير
+      </button>
+      
+      <!-- حقول التقارير -->
+      <div id="daily-fields" class="report-fields">
+        <label for="daily-date"><i class="fas fa-calendar-check"></i> اختر اليوم:</label>
+        <input type="date" id="daily-date" class="form-control">
+      </div>
+      
+      <div id="weekly-fields" class="report-fields" style="display: none;">
+        <label for="from-date"><i class="fas fa-calendar"></i> من تاريخ:</label>
+        <input type="date" id="from-date" class="form-control">
+        <label for="to-date"><i class="fas fa-calendar"></i> إلى تاريخ:</label>
+        <input type="date" id="to-date" class="form-control">
+      </div>
+      
+      <div id="monthly-fields" class="report-fields" style="display: none;">
+        <label for="month-select"><i class="fas fa-calendar"></i> اختر الشهر:</label>
+        <select id="month-select" class="form-control">
+          {% for month in months %}
+          <option value="{{ month.value }}" {% if month.selected %}selected{% endif %}>{{ month.name }}</option>
+          {% endfor %}
+        </select>
+        <label for="year-select"><i class="fas fa-calendar"></i> السنة:</label>
+        <select id="year-select" class="form-control">
+          {% for year in years %}
+          <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  </div>
 
-    <!-- إضافة قائمة التقارير المنسدلة -->
-    <div class="report-dropdown">
-        <button class="report-dropdown-btn">📊 التقارير</button>
-            <div class="report-dropdown-content">
-            <button class="btn btn-info btn-block" id="daily-report">تقرير يومي</button>
-            <button class="btn btn-info btn-block" id="weekly-report">تقرير أسبوعي</button>
-            <button class="btn btn-info btn-block" id="monthly-report">تقرير شهري</button>
-            <button id="print-report" class="btn btn-success btn-block">🖨️ طباعة التقرير</button>
+  <!-- تبويبات المحتوى -->
+  <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <a class="nav-link active" id="weight-cards-tab" data-toggle="tab" href="#weight-cards" role="tab">
+        <i class="fas fa-truck-loading"></i> بطاقات الوزن المنقولة
+      </a>
+    </li>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="violations-tab" data-toggle="tab" href="#violations" role="tab">
+        <i class="fas fa-exclamation-triangle"></i> المخالفات
+      </a>
+    </li>
+  </ul>
+
+  <!-- محتوى التبويبات -->
+  <div class="tab-content" id="myTabContent">
+    <!-- تبويب بطاقات الوزن -->
+    <div class="tab-pane fade show active" id="weight-cards" role="tabpanel">
+      <div class="table-container">
+        <div class="table-header">
+          <h4></h4>
+          <div class="d-flex align-items-center">
+            {% comment %} <form method="get" class="form-inline mb-3">
+            <label for="start_date">من:</label>
+            <input type="date" name="start_date" id="start_date" class="form-control mx-2" value="{{ start_date }}">
             
-            <!-- حقل إدخال التقرير اليومي -->
-            <div id="daily-fields" class="report-fields">
-                <label for="daily-date">اختر اليوم:</label>
-                <input type="date" id="daily-date" class="form-control" value="{{ today|date:'Y-m-d' }}">
-            </div>
+            <label for="end_date">إلى:</label>
+            <input type="date" name="end_date" id="end_date" class="form-control mx-2" value="{{ end_date }}">
 
-            <!-- حقول إدخال التقرير الأسبوعي -->
-            <div id="weekly-fields" class="report-fields" style="display: none;">
-                <label for="from-date">من تاريخ:</label>
-                <input type="date" id="from-date" class="form-control">
-                <label for="to-date">إلى تاريخ:</label>
-                <input type="date" id="to-date" class="form-control">
-            </div>
+            <button type="submit" class="btn btn-primary">تصفية</button>
+            </form> {% endcomment %}
 
-            <!-- اختيار الشهر للتقرير الشهري -->
-            <div id="monthly-fields" class="report-fields" style="display: none;">
-                <label for="month-select">اختر الشهر:</label>
-                <select id="month-select" class="form-control">
-                    {% for month in months %}
-                    <option value="{{ month.value }}" {% if month.selected %}selected{% endif %}>{{ month.name }}</option>
-                    {% endfor %}
-                </select>
-                <label for="year-select">السنة:</label>
-                <select id="year-select" class="form-control">
-                    {% for year in years %}
-                    <option value="{{ year }}" {% if year == current_year %}selected{% endif %}>{{ year }}</option>
-                    {% endfor %}
-                </select>
-            </div>
+            <span id="fetch-status" class="status-message"></span>
+            <button class="refresh-btn" id="refresh-data" title="تحديث البيانات">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+            {% comment %} <div class="actions-dropdown">
+              <button class="actions-btn">
+                <i class="fas fa-ellipsis-v"></i> الإجراءات
+              </button>
+              <div class="actions-menu">
+                <a href="#" class="actions-item"><i class="fas fa-download"></i> تصدير Excel</a>
+                <a href="#" class="actions-item"><i class="fas fa-filter"></i> تصفية متقدمة</a>
+                <a href="#" class="actions-item"><i class="fas fa-cog"></i> الإعدادات</a>
+              </div>
+            </div> {% endcomment %}
+          </div>
         </div>
-    </div>
-
-
-<ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
-    <li class="nav-item">
-        <a class="nav-link active" id="weight-cards-tab" data-toggle="tab" href="#weight-cards" role="tab" aria-controls="weight-cards" aria-selected="true">بطاقات الوزن المنقولة</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link" id="violations-tab" data-toggle="tab" href="#violations" role="tab" aria-controls="violations" aria-selected="false">المخالفات</a>
-    </li>
-</ul>
-
-<div class="tab-content" id="myTabContent">
-    <div class="tab-pane fade show active" id="weight-cards" role="tabpanel" aria-labelledby="weight-cards-tab">
-        <div class="card-content">
-            <div class="b-table has-pagination">
-                <div class="table-header">
-                    <h4>بطاقات الوزن</h4>
-                    <span id="fetch-status" style="font-weight: bold;"></span>
-                    <i class="refresh-icon" id="refresh-data" title="تحديث البيانات">🔄</i>
-                </div>
-                <div class="table-wrapper has-mobile-cards">
-                    <table class="table is-fullwidth is-striped is-hoverable">
-                        <thead>
-                            <tr>
-                                <th class="is-checkbox-cell">
-                                    <label class="b-checkbox checkbox">
-                                        <input type="checkbox" value="false">
-                                        <span class="check"></span>
-                                    </label>
-                                </th>
-                                <th>رقم اللوحة</th>
-                                <th>الوزن الفارغ</th>
-                                <th>الوزن المحمل</th>
-                                <th>الوزن الصافي</th>
-                                <th>اسم السائق</th>
-                                <th>تاريخ الدخول</th>
-                                <th>تاريخ الخروج</th>
-                                <th>الكميه</th>
-                                <th>المادة</th>
-                                <th>حالة البطاقة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="weight-cards-body">
-                            {% if transferred_cards %}
-                            {% for card in transferred_cards %}
-                            {% if not card.violation_type %}
-                            <tr>
-                                <td class="is-checkbox-cell">
-                                    <label class="b-checkbox checkbox">
-                                        <input type="checkbox" value="false">
-                                        <span class="check"></span>
-                                    </label>
-                                </td>
-                                <td data-label="رقم اللوحة">{{ card.plate_number }}</td>
-                                <td data-label="الوزن الفارغ">{{ card.empty_weight }}</td>
-                                <td data-label="الوزن المحمل">{{ card.loaded_weight }}</td>
-                                <td data-label="الوزن الصافي">{{ card.net_weight }}</td>
-                                <td data-label="اسم السائق">{{ card.driver_name }}</td>
-                                <td data-label="تاريخ الدخول">
-                                    <small class="has-text-grey is-abbr-like">{{ card.entry_date|date:"m/d/Y h:i A"|default:"-" }}</small>
-                                </td>
-                                <td data-label="تاريخ الخروج">
-                                    <small class="has-text-grey is-abbr-like">{{ card.exit_date|date:"m/d/Y h:i A"|default:"-" }}</small>
-                                </td>
-                                <td data-label="الكميه">{{ card.quantity }}</td>
-                                <td data-label="المادة">{{ card.material }}</td>
-                                <td data-label="حالة البطاقة">
-                                    <progress max="100" class="progress is-small is-primary" value="{% if card.status == 'مكتمل' %}100{% elif card.status == 'قيد المعالجة' %}50{% else %}10{% endif %}">
-                                        {% if card.status == 'مكتمل' %}100{% elif card.status == 'قيد المعالجة' %}50{% else %}10{% endif %}
-                                    </progress>
-                                </td>
-                            </tr>
-                            {% endif %}
-                            {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="11" style="text-align: center;">لا توجد بيانات</td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="notification">
-                    <div class="level">
-                        <div class="level-left">
-                            <div class="level-item">
-                                <div class="buttons has-addons">
-                                    <button type="button" class="button is-active">1</button>
-                                    <button type="button" class="button">2</button>
-                                    <button type="button" class="button">3</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="level-right">
-                            <div class="level-item">
-                                <small>الصفحة 1 من 3</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>رقم اللوحة</th>
+                <th>الوزن الفارغ</th>
+                <th>الوزن المحمل</th>
+                <th>الوزن الصافي</th>
+                <th>اسم السائق</th>
+                <th>تاريخ الدخول</th>
+                <th>تاريخ الخروج</th>
+                <th>الكمية</th>
+                <th>المادة</th>
+                <th>حالة البطاقة</th>
+              </tr>
+            </thead>
+            <tbody id="weight-cards-body">
+              {% if transferred_cards %}
+                {% for card in transferred_cards %}
+                  {% if not card.violation_type %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ card.plate_number|default:"-" }}</td>
+                    <td>{{ card.empty_weight|default:"-" }}</td>
+                    <td>{{ card.loaded_weight|default:"-" }}</td>
+                    <td>{{ card.net_weight|default:"-" }}</td>
+                    <td>{{ card.driver_name|default:"-" }}</td>
+                    <td>{{ card.entry_date|date:"Y/m/d H:i"|default:"-" }}</td>
+                    <td>{{ card.exit_date|date:"Y/m/d H:i"|default:"-" }}</td>
+                    <td>{{ card.quantity|default:"-" }}</td>
+                    <td>{{ card.material|default:"-" }}</td>
+                    <td>
+                      {% if card.status == 'مكتمل' %}
+                        <span class="status-badge status-completed">مكتمل</span>
+                      {% elif card.status == 'قيد المعالجة' %}
+                        <span class="status-badge status-processing">قيد المعالجة</span>
+                      {% else %}
+                        <span class="status-badge status-pending">قيد الانتظار</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="11" class="text-center py-4">لا توجد بيانات متاحة</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
         </div>
+        
+        <div class="pagination">
+          <ul class="pagination">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">السابق</a>
+            </li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">التالي</a>
+            </li>
+          </ul>
+        </div>
+      </div>
     </div>
-    <iframe id="print-frame" style="display: none; width: 100%;" frameborder="0"></iframe>
     
-    <div class="tab-pane fade" id="violations" role="tabpanel" aria-labelledby="violations-tab">
-        <div class="card-content">
-            <div class="b-table has-pagination">
-                <div class="table-header">
-                    <h4>المخالفات</h4>
-                    <span id="fetch-status-violations" style="font-weight: bold;"></span>
-                    <i class="refresh-icon" id="refresh-data-violations" title="تحديث البيانات">🔄</i>
-                </div>
-                <div class="table-wrapper has-mobile-cards">
-                    <table class="table is-fullwidth is-striped is-hoverable">
-                        <thead>
-                            <tr>
-                                <th class="is-checkbox-cell">
-                                    <label class="b-checkbox checkbox">
-                                        <input type="checkbox" value="false">
-                                        <span class="check"></span>
-                                    </label>
-                                </th>
-                                <th>رقم اللوحة</th>
-                                <th>نوع المخالفة</th>
-                                <th>تاريخ المخالفة</th>
-                                <th>الكاميرا</th>
-                                <th>العملية</th>
-                                <th>بطاقة الوزن</th>
-                                <th>الحالة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="violations-body">
-                            {% if transferred_cards %}
-                            {% for card in transferred_cards %}
-                            {% if card.violation_type %}
-                            <tr>
-                                <td class="is-checkbox-cell">
-                                    <label class="b-checkbox checkbox">
-                                        <input type="checkbox" value="false">
-                                        <span class="check"></span>
-                                    </label>
-                                </td>
-                                <td data-label="رقم اللوحة">{{ card.plate_number }}</td>
-                                <td data-label="نوع المخالفة">{{ card.violation_type }}</td>
-                                <td data-label="تاريخ المخالفة">
-                                    <small class="has-text-grey is-abbr-like">{{ card.timestamp|date:"m/d/Y h:i A"|default:"-" }}</small>
-                                </td>
-                                <td data-label="الكاميرا">{{ card.device_vio }}</td>
-                                <td data-label="العملية">{{ card.entry_exit_log }}</td>
-                                <td data-label="بطاقة الوزن">{{ card.weight_card_vio }}</td>
-                                <td data-label="الحالة">
-                                    <progress max="100" class="progress is-small is-primary" value="{% if card.status == 'مكتمل' %}100{% elif card.status == 'قيد المعالجة' %}50{% else %}10{% endif %}">
-                                        {% if card.status == 'مكتمل' %}100{% elif card.status == 'قيد المعالجة' %}50{% else %}10{% endif %}
-                                    </progress>
-                                </td>
-                            </tr>
-                            {% endif %}
-                            {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="8" style="text-align: center;">لا توجد بيانات</td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
-                <div class="notification">
-                    <div class="level">
-                        <div class="level-left">
-                            <div class="level-item">
-                                <div class="buttons has-addons">
-                                    <button type="button" class="button is-active">1</button>
-                                    <button type="button" class="button">2</button>
-                                    <button type="button" class="button">3</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="level-right">
-                            <div class="level-item">
-                                <small>الصفحة 1 من 3</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- تبويب المخالفات -->
+    <div class="tab-pane fade" id="violations" role="tabpanel">
+      <div class="table-container">
+        <div class="table-header">
+          <h4> </h4>
+          <div class="d-flex align-items-center">
+            <span id="fetch-status-violations" class="status-message"></span>
+            <button class="refresh-btn" id="refresh-data-violations" title="تحديث البيانات">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+          </div>
         </div>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>رقم اللوحة</th>
+                <th>نوع المخالفة</th>
+                <th>تاريخ المخالفة</th>
+                <th>الكاميرا</th>
+                <th>العملية</th>
+                <th>بطاقة الوزن</th>
+                <th>الحالة</th>
+              </tr>
+            </thead>
+            <tbody id="violations-body">
+              {% if transferred_cards %}
+                {% for card in transferred_cards %}
+                  {% if card.violation_type %}
+                  <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ card.plate_number|default:"-" }}</td>
+                    <td>{{ card.violation_type|default:"-" }}</td>
+                    <td>{{ card.timestamp|date:"Y/m/d H:i"|default:"-" }}</td>
+                    <td>{{ card.device_vio|default:"-" }}</td>
+                    <td>{{ card.entry_exit_log|default:"-" }}</td>
+                    <td>{{ card.weight_card_vio|default:"-" }}</td>
+                    <td>{{ card.status|default:"-" }}</td>
+                    <td>
+                      {% if card.status == 'مكتمل' %}
+                        <span class="status-badge status-completed">مكتمل</span>
+                      {% elif card.status == 'قيد المعالجة' %}
+                        <span class="status-badge status-processing">قيد المعالجة</span>
+                      {% else %}
+                        <span class="status-badge status-pending">قيد الانتظار</span>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endif %}
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="8" class="text-center py-4">لا توجد بيانات متاحة</td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+        
+        {% for card in transferred_cards %}
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}">السابق</a>
+        {% endif %}
+        {% for num in paginator.page_range %}
+        <a href="?page={{ num }}">{{ num }}</a>
+        {% endfor %}
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}">التالي</a>
+        {% endif %}
+
+        {% endfor %}
+      </div>
     </div>
+  </div>
 </div>
+
+<iframe id="print-frame" style="display: none; width: 100%;" frameborder="0"></iframe>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // متغير لتحديد نوع التقرير الحالي
+  // متغير لتحديد نوع التقرير الحالي
+  let currentReportType = 'daily';
+  
+  // تعيين تاريخ اليوم كقيمة افتراضية
+  document.getElementById("daily-date").valueAsDate = new Date();
+  
+  // تعيين نطاق أسبوعي افتراضي (من اليوم إلى بعد 7 أيام)
+  let today = new Date();
+  let nextWeek = new Date();
+  nextWeek.setDate(today.getDate() + 7);
+  
+  document.getElementById("from-date").valueAsDate = today;
+  document.getElementById("to-date").valueAsDate = nextWeek;
+  
+  // أحداث الأزرار
+  document.getElementById("daily-report").addEventListener("click", function() {
+    currentReportType = 'daily';
+    document.getElementById("daily-fields").style.display = "block";
+    document.getElementById("weekly-fields").style.display = "none";
+    document.getElementById("monthly-fields").style.display = "none";
+  });
+  
+  document.getElementById("weekly-report").addEventListener("click", function() {
+    currentReportType = 'weekly';
+    document.getElementById("daily-fields").style.display = "none";
+    document.getElementById("weekly-fields").style.display = "block";
+    document.getElementById("monthly-fields").style.display = "none";
+  });
+  
+  document.getElementById("monthly-report").addEventListener("click", function() {
+    currentReportType = 'monthly';
+    document.getElementById("daily-fields").style.display = "none";
+    document.getElementById("weekly-fields").style.display = "none";
+    document.getElementById("monthly-fields").style.display = "block";
+  });
+  
+  document.getElementById("print-report").addEventListener("click", function() {
+    let companyId = "{{ company.id }}";
+    let url = `/companies/${companyId}/print-weight-cards/`;
+    let params = [];
+    
+    // تحديد نوع التقرير
+    let activeTab = document.querySelector('.nav-tabs .active').id;
+    let dataType = activeTab.includes('weight') ? 'weight_cards' : 'violations';
+    params.push(`data_type=${dataType}`);
+    
+    // إضافة معايير التقرير
+    if (currentReportType === 'daily') {
+      let date = document.getElementById("daily-date").value;
+      params.push(`report_type=daily&date=${date}`);
+    } 
+    else if (currentReportType === 'weekly') {
+      let fromDate = document.getElementById("from-date").value;
+      let toDate = document.getElementById("to-date").value;
+      params.push(`report_type=weekly&from_date=${fromDate}&to_date=${toDate}`);
+    } 
+    else if (currentReportType === 'monthly') {
+      let month = document.getElementById("month-select").value;
+      let year = document.getElementById("year-select").value;
+      params.push(`report_type=monthly&month=${month}&year=${year}`);
+    }
+    
+    fetch(`${url}?${params.join('&')}`)
+    .then(response => response.text())
+    .then(html => {
+      let iframe = document.getElementById("print-frame");
+      let doc = iframe.contentWindow.document;
+      doc.open();
+      doc.write(html);
+      doc.close();
 
+      iframe.style.display = "none";
+      iframe.contentWindow.focus();
+      {% comment %} iframe.contentWindow.print(); {% endcomment %}
+    })
+    .catch(error => {
+      console.error("حدث خطأ أثناء تحميل تقرير الطباعة:", error);
+      showStatusMessage('error', 'حدث خطأ أثناء تحميل التقرير');
+    });
+  });
 
-    // تحسين تأثير التحديث
-    document.getElementById("refresh-data").addEventListener("click", function() {
-        this.style.transform = "rotate(360deg)";
-        setTimeout(() => {
-            this.style.transform = "rotate(0deg)";
-            fetchData('weight');
-        }, 300);
-    });
+  // دالة لجلب البيانات
+  function fetchData(tabType) {
+    let fetchStatus = document.getElementById(tabType === 'weight' ? "fetch-status" : "fetch-status-violations");
+    fetchStatus.textContent = "جاري جلب البيانات...";
+    fetchStatus.className = "status-message status-loading";
     
-    document.getElementById("refresh-data-violations").addEventListener("click", function() {
-        this.style.transform = "rotate(360deg)";
-        setTimeout(() => {
-            this.style.transform = "rotate(0deg)";
-            fetchData('violations');
-        }, 300);
-    });
-    let currentReportType = 'daily';
+    let companyId = "{{ company.id }}";
+    let params = [];
     
-    // تعيين تاريخ اليوم كقيمة افتراضية
-    document.getElementById("daily-date").valueAsDate = new Date();
+    // تحديد نوع البيانات بناءً على التبويب النشط
+    let dataType = tabType === 'weight' ? 'weight_cards' : 'violations';
+    params.push(`data_type=${dataType}`);
     
-    // تعيين نطاق أسبوعي افتراضي (من اليوم إلى بعد 7 أيام)
-    let today = new Date();
-    let nextWeek = new Date();
-    nextWeek.setDate(today.getDate() + 7);
+    if (currentReportType === 'daily') {
+      let date = document.getElementById("daily-date").value;
+      params.push(`report_type=daily&date=${date}`);
+    } 
+    else if (currentReportType === 'weekly') {
+      let fromDate = document.getElementById("from-date").value;
+      let toDate = document.getElementById("to-date").value;
+      params.push(`report_type=weekly&from_date=${fromDate}&to_date=${toDate}`);
+    } 
+    else if (currentReportType === 'monthly') {
+      let month = document.getElementById("month-select").value;
+      let year = document.getElementById("year-select").value;
+      params.push(`report_type=monthly&month=${month}&year=${year}`);
+    }
     
-    document.getElementById("from-date").valueAsDate = today;
-    document.getElementById("to-date").valueAsDate = nextWeek;
-    
-
-    
-    // أحداث الأزرار
-    document.getElementById("daily-report").addEventListener("click", function() {
-        currentReportType = 'daily';
-        document.getElementById("daily-fields").style.display = "block";
-        document.getElementById("weekly-fields").style.display = "none";
-        document.getElementById("monthly-fields").style.display = "none";
-    });
-    
-    document.getElementById("weekly-report").addEventListener("click", function() {
-        currentReportType = 'weekly';
-        document.getElementById("daily-fields").style.display = "none";
-        document.getElementById("weekly-fields").style.display = "block";
-        document.getElementById("monthly-fields").style.display = "none";
-    });
-    
-    document.getElementById("monthly-report").addEventListener("click", function() {
-        currentReportType = 'monthly';
-        document.getElementById("daily-fields").style.display = "none";
-        document.getElementById("weekly-fields").style.display = "none";
-        document.getElementById("monthly-fields").style.display = "block";
-    });
-    
-    document.getElementById("print-report").addEventListener("click", function() {
-        let companyId = "{{ company.id }}";
-        let url = `/companies/${companyId}/print-weight-cards/`;
-        let params = [];
+    fetch(`/companies/${companyId}/fetch-data/?${params.join('&')}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "success") {
+        fetchStatus.textContent = "تم جلب البيانات بنجاح";
+        fetchStatus.className = "status-message status-success";
         
-        // تحديد نوع التقرير
-        let activeTab = document.querySelector('.nav-tabs .active').id;
-        let dataType = activeTab.includes('weight') ? 'weight_cards' : 'violations';
-        params.push(`data_type=${dataType}`);
-        
-        // إضافة معايير التقرير
-        if (currentReportType === 'daily') {
-            let date = document.getElementById("daily-date").value;
-            params.push(`report_type=daily&date=${date}`);
-        } 
-        else if (currentReportType === 'weekly') {
-            let fromDate = document.getElementById("from-date").value;
-            let toDate = document.getElementById("to-date").value;
-            params.push(`report_type=weekly&from_date=${fromDate}&to_date=${toDate}`);
-        } 
-        else if (currentReportType === 'monthly') {
-            let month = document.getElementById("month-select").value;
-            let year = document.getElementById("year-select").value;
-            params.push(`report_type=monthly&month=${month}&year=${year}`);
-        }
-        
-        fetch(`${url}?${params.join('&')}`)
-        .then(response => response.text())
-        .then(html => {
-            let iframe = document.getElementById("print-frame");
-            let doc = iframe.contentWindow.document;
-            doc.open();
-            doc.write(html);
-            doc.close();
-
-            iframe.style.display = "none";
-            iframe.contentWindow.focus();
-            iframe.contentWindow.print();
-        })
-        .catch(error => {
-            console.error("حدث خطأ أثناء تحميل تقرير الطباعة:", error);
-        });
-    });
-
-    // دالة لجلب البيانات
-    function fetchData(tabType) {
-        let fetchStatus = document.getElementById(tabType === 'weight' ? "fetch-status" : "fetch-status-violations");
-        fetchStatus.textContent = "⏳ جاري جلب البيانات...";
-    
-        let companyId = "{{ company.id }}";
-        let params = [];
-        
-        // تحديد نوع البيانات بناءً على التبويب النشط
-        let dataType = tabType === 'weight' ? 'weight_cards' : 'violations';
-        params.push(`data_type=${dataType}`);
-        
-        if (currentReportType === 'daily') {
-            let date = document.getElementById("daily-date").value;
-            params.push(`report_type=daily&date=${date}`);
-        } 
-        else if (currentReportType === 'weekly') {
-            let fromDate = document.getElementById("from-date").value;
-            let toDate = document.getElementById("to-date").value;
-            params.push(`report_type=weekly&from_date=${fromDate}&to_date=${toDate}`);
-        } 
-        else if (currentReportType === 'monthly') {
-            let month = document.getElementById("month-select").value;
-            let year = document.getElementById("year-select").value;
-            params.push(`report_type=monthly&month=${month}&year=${year}`);
-        }
-    
-        fetch(`/companies/${companyId}/fetch-data/?${params.join('&')}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "success") {
-                fetchStatus.textContent = "✅ تم جلب البيانات بنجاح!";
-                
-                if (dataType === 'weight_cards') {
-                    let tableBody = document.getElementById("weight-cards-body");
-                    tableBody.innerHTML = "";
-                    data.cards.forEach(card => {
-                        let entryDate = card.entry_date ? formatGregorianDate(card.entry_date) : '-';
-                        let exitDate = card.exit_date ? formatGregorianDate(card.exit_date) : '-';
-                        let progressValue = card.status === 'مكتمل' ? 100 : card.status === 'قيد المعالجة' ? 50 : 10;
-                        let row = `
-                            <tr>
-                                <td class="is-checkbox-cell">
-                                    <label class="b-checkbox checkbox">
-                                        <input type="checkbox" value="false">
-                                        <span class="check"></span>
-                                    </label>
-                                </td>
-                                <td data-label="رقم اللوحة">${card.plate_number || ''}</td>
-                                <td data-label="الوزن الفارغ">${card.empty_weight || ''}</td>
-                                <td data-label="الوزن المحمل">${card.loaded_weight || ''}</td>
-                                <td data-label="الوزن الصافي">${card.net_weight || ''}</td>
-                                <td data-label="اسم السائق">${card.driver_name || ''}</td>
-                                <td data-label="تاريخ الدخول">
-                                    <small class="has-text-grey is-abbr-like">${entryDate}</small>
-                                </td>
-                                <td data-label="تاريخ الخروج">
-                                    <small class="has-text-grey is-abbr-like">${exitDate}</small>
-                                </td>
-                                <td data-label="الكميه">${card.quantity || ''}</td>
-                                <td data-label="المادة">${card.material || ''}</td>
-                                <td data-label="حالة البطاقة">
-                                    <progress max="100" class="progress is-small is-primary" value="${progressValue}">
-                                        ${progressValue}
-                                    </progress>
-                                </td>
-                            </tr>
-                        `;
-                        tableBody.innerHTML += row;
-                    });
-                } else {
-                    let tableBody = document.getElementById("violations-body");
-                    tableBody.innerHTML = "";
-                    data.cards.forEach(card => {
-                        let timestamp = card.timestamp ? formatGregorianDate(card.timestamp) : '-';
-                        let progressValue = card.status === 'مكتمل' ? 100 : card.status === 'قيد المعالجة' ? 50 : 10;
-                        let row = `
-                            <tr>
-                                <td class="is-checkbox-cell">
-                                    <label class="b-checkbox checkbox">
-                                        <input type="checkbox" value="false">
-                                        <span class="check"></span>
-                                    </label>
-                                </td>
-                                <td data-label="رقم اللوحة">${card.plate_number || ''}</td>
-                                <td data-label="نوع المخالفة">${card.violation_type || ''}</td>
-                                <td data-label="تاريخ المخالفة">
-                                    <small class="has-text-grey is-abbr-like">${timestamp}</small>
-                                </td>
-                                <td data-label="الكاميرا">${card.device_vio || ''}</td>
-                                <td data-label="العملية">${card.entry_exit_log || ''}</td>
-                                <td data-label="بطاقة الوزن">${card.weight_card_vio || ''}</td>
-                                <td data-label="الحالة">
-                                    <progress max="100" class="progress is-small is-primary" value="${progressValue}">
-                                        ${progressValue}
-                                    </progress>
-                                </td>
-                            </tr>
-                        `;
-                        tableBody.innerHTML += row;
-                    });
-                }
+        if (dataType === 'weight_cards') {
+          let tableBody = document.getElementById("weight-cards-body");
+          tableBody.innerHTML = "";
+          
+          if (data.cards.length === 0) {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="11" class="text-center py-4">لا توجد بيانات متاحة</td>
+              </tr>
+            `;
+            return;
+          }
+          
+          data.cards.forEach((card, index) => {
+            let entryDate = card.entry_date ? formatGregorianDate(card.entry_date) : '-';
+            let exitDate = card.exit_date ? formatGregorianDate(card.exit_date) : '-';
+            
+            let statusBadge;
+            if (card.status === 'مكتمل') {
+              statusBadge = '<span class="status-badge status-completed">مكتمل</span>';
+            } else if (card.status === 'قيد المعالجة') {
+              statusBadge = '<span class="status-badge status-processing">قيد المعالجة</span>';
             } else {
-                fetchStatus.textContent = "❌ فشل في جلب البيانات!";
+              statusBadge = '<span class="status-badge status-pending">قيد الانتظار</span>';
             }
-        })
-        .catch(error => {
-            fetchStatus.textContent = "❌ خطأ في الاتصال!";
-            console.error(error);
-        });
-    }
-
-    // أحداث أيقونات التحديث
-    document.getElementById("refresh-data").addEventListener("click", function() {
-        fetchData('weight');
+            
+            let row = `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${card.plate_number || '-'}</td>
+                <td>${card.empty_weight || '-'}</td>
+                <td>${card.loaded_weight || '-'}</td>
+                <td>${card.net_weight || '-'}</td>
+                <td>${card.driver_name || '-'}</td>
+                <td>${entryDate}</td>
+                <td>${exitDate}</td>
+                <td>${card.quantity || '-'}</td>
+                <td>${card.material || '-'}</td>
+                <td>${statusBadge}</td>
+              </tr>
+            `;
+            tableBody.innerHTML += row;
+          });
+        } else {
+          let tableBody = document.getElementById("violations-body");
+          tableBody.innerHTML = "";
+          
+          if (data.cards.length === 0) {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="8" class="text-center py-4">لا توجد بيانات متاحة</td>
+              </tr>
+            `;
+            return;
+          }
+          
+          data.cards.forEach((card, index) => {
+            let timestamp = card.timestamp ? formatGregorianDate(card.timestamp) : '-';
+            
+            let statusBadge;
+            if (card.status === 'مكتمل') {
+              statusBadge = '<span class="status-badge status-completed">مكتمل</span>';
+            } else if (card.status === 'قيد المعالجة') {
+              statusBadge = '<span class="status-badge status-processing">قيد المعالجة</span>';
+            } else {
+              statusBadge = '<span class="status-badge status-pending">قيد الانتظار</span>';
+            }
+            
+            let row = `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${card.plate_number || '-'}</td>
+                <td>${card.violation_type || '-'}</td>
+                <td>${timestamp}</td>
+                <td>${card.device_vio || '-'}</td>
+                <td>${card.entry_exit_log || '-'}</td>
+                <td>${card.weight_card_vio || '-'}</td>
+                <td>${statusBadge}</td>
+              </tr>
+            `;
+            tableBody.innerHTML += row;
+          });
+        }
+      } else {
+        fetchStatus.textContent = "فشل في جلب البيانات";
+        fetchStatus.className = "status-message status-error";
+      }
+    })
+    .catch(error => {
+      fetchStatus.textContent = "خطأ في الاتصال";
+      fetchStatus.className = "status-message status-error";
+      console.error(error);
     });
+  }
+
+  // أحداث أيقونات التحديث
+  document.getElementById("refresh-data").addEventListener("click", function() {
+    this.querySelector('i').classList.add('fa-spin');
+    fetchData('weight');
+    setTimeout(() => {
+      this.querySelector('i').classList.remove('fa-spin');
+    }, 1000);
+  });
+  
+  document.getElementById("refresh-data-violations").addEventListener("click", function() {
+    this.querySelector('i').classList.add('fa-spin');
+    fetchData('violations');
+    setTimeout(() => {
+      this.querySelector('i').classList.remove('fa-spin');
+    }, 1000);
+  });
+
+  // دالة لتنسيق التاريخ ميلادي بشكل جميل
+  function formatGregorianDate(dateString) {
+    if (!dateString) return '-';
     
-    document.getElementById("refresh-data-violations").addEventListener("click", function() {
-        fetchData('violations');
-    });
-
-    // دالة لتنسيق التاريخ ميلادي بشكل جميل
-    function formatGregorianDate(dateString) {
-        if (!dateString) return '-';
-        
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return dateString;
-        
-        const options = {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: true,
-            numberingSystem: 'latn'
-        };
-        
-        return date.toLocaleString('en-US', options)
-                   .replace(/,/g, '')
-                   .replace(/\//g, '-');
-    }
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString;
+    
+    const options = {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    };
+    
+    return date.toLocaleString('en-US', options)
+               .replace(/,/g, '')
+               .replace(/\//g, '/');
+  }
+  
+  // إضافة تأثيرات التمرير
+  function initAOS() {
+    const elements = document.querySelectorAll('[data-aos]');
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('aos-animate');
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    elements.forEach(el => observer.observe(el));
+  }
+  
+  initAOS();
 });
 </script>
-    
 {% endblock %}

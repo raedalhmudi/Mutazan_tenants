@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from datetime import timedelta
 import os
+from django.db import connection
+
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -26,6 +28,8 @@ SECRET_KEY = 'django-insecure-rj#-z^kx3j+1ay397otg6j8m_8#v^$^$jys6&41vy^&6le)ezc
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 INTERNAL_IPS = [
     "127.0.0.1",
 ]
@@ -57,6 +61,7 @@ SHARED_APPS = [
     'rangefilter',
     'allauth',
     'allauth.account',
+    
     # --------------api------------
     'rest_framework',
     'rest_framework_simplejwt',
@@ -160,6 +165,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.static',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -202,8 +208,22 @@ SHOW_PUBLIC_IF_NO_TENANT_FOUND = True
 # ==================================================================
 
 JAZZMIN_SETTINGS = {
+
+    "user_avatar": lambda user: (
+        user.company_profile.profile_picture.url if connection.schema_name != 'public' and hasattr(user, 'company_profile') and user.company_profile.profile_picture
+        else user.public_profile.profile_picture.url if hasattr(user, 'public_profile') and user.public_profile.profile_picture
+        else "/static/default-avatar.png"
+    ),
+
+
     "site_title": "لوحة الإدارة",
     "site_header": "إدارة الشركات",
+    "site_sidebar": "إدارة الشركات",
+    # "site_logo": "/media/logos/company_logo.png",  # مسار شعار الشركة
+    "site_logo": "common/images/Mutazan.svg",  # مسار شعار الشركة
+    "site_icon": "common/images/mut.svg",  # مسار شعار الشركة
+    "custom_css": "common/css/system_companies/custom.css",
+    "custom_js": "common/js/system_companies/custom.js",
     "order_with_respect_to": ["companies_manager", "system_companies"],
 
 
@@ -214,7 +234,7 @@ JAZZMIN_SETTINGS = {
         "companies_manager": [
             {
                 "name": "سجل الشركات",
-                "url": "/companies/",
+                "url": "/companies/company_list/",
                 "icon": "fas fa-building",
                 # "permissions": ["mutazan_companies.view_company"],
             }
@@ -228,21 +248,21 @@ JAZZMIN_SETTINGS = {
         ],
     },
 
-    "custom_sidebar_links": [
-        {
-            "name": "إدارة الشركات",
-            "icon": "fas fa-briefcase",
-            "models": [
-                "companies_manager.company",
-                "system_companies.systemcompany",
-            ],
-        },
-        {
-            "name": "التقارير",
-            "icon": "fas fa-chart-line",
-            "url": "/admin/reports/",
-        },
-    ],
+    # "custom_sidebar_links": [
+    #     {
+    #         "name": "إدارة الشركات",
+    #         "icon": "fas fa-briefcase",
+    #         "models": [
+    #             "companies_manager.company",
+    #             "system_companies.systemcompany",
+    #         ],
+    #     },
+    #     {
+    #         "name": "التقارير",
+    #         "icon": "fas fa-chart-line",
+    #         "url": "/admin/reports/",
+    #     },
+    # ],
 
     "icons": {
         "companies_manager.Company": "fas fa-building",
@@ -269,18 +289,17 @@ JAZZMIN_SETTINGS = {
     # "login_logo": "images/mutazan.svg",
 
     # "custom_css": "common/css/companies_manager/custom_admin.css",
-    # "custom_css": "common/css/custom.css",
-    "custom_js": "common/js/system_companies/custom.js",
+
 
     "welcome_sign": "مرحبًا بك في لوحة التحكم",
 
     # "search_model": ["auth.User", "mutazan.YourModel"],
 
     "topmenu_links": [
-        # {"name": "الرئيسية", "url": "admin:index", "permissions": ["auth.view_user"]},
-        # {"name": "الدعم الفني", "url": "https://support.example.com", "new_window": True},
-        # {"model": "auth.User"},
-        # {"app": "mutazan"},
+        {"name": "الرئيسية", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "الدعم الفني", "url": "https://support.example.com", "new_window": True},
+        {"model": "auth.User"},
+        {"app": "mutazan"},
     ],
 
     "show_sidebar": True,
@@ -289,9 +308,9 @@ JAZZMIN_SETTINGS = {
     "changeform_format": "horizontal_tabs",
     "changeform_format_overrides": {"auth.user": "collapsible"},
     "use_google_fonts_cdn": True,
-    "user_avatar": "profile_picture",
     "show_ui_builder": False,
     "language_chooser": True,
+    "icon": True,
 
     "custom_app_labels": {
         "companies_manager": "إدارة الشركات",
@@ -307,15 +326,15 @@ JAZZMIN_UI_TWEAKS = {
     "theme": "default",  # يمكنك اختيار سمات مختلفة مثل "default", "darkly", "cosmo", "flatly", إلخ
     "actions_sticky_top": True,
     "right_sidebar": True,
-    "usermenu_links": [
-        {"model": "auth.user"},
-        {"name": "الإشعارات", "url": "/notifications/", "icon": "fas fa-bell"},
-        {"name": "الرسائل", "url": "/messages/", "icon": "fas fa-envelope"},
-        {"name": "ملء الشاشة", "url": "#", "icon": "fas fa-expand-arrows-alt"},
-    ],
-    "extrahead": [
-        '<link rel="stylesheet" href="{% static "css/custom_admin.css" %}">',
-    ],
+    # "usermenu_links": [
+    #     {"model": "auth.user"},
+    #     {"name": "الإشعارات", "url": "/notifications/", "icon": "fas fa-bell"},
+    #     {"name": "الرسائل", "url": "/messages/", "icon": "fas fa-envelope"},
+    #     {"name": "ملء الشاشة", "url": "#", "icon": "fas fa-expand-arrows-alt"},
+    # ],
+    # "extrahead": [
+    #     '<link rel="stylesheet" href="{% static "css/custom_admin.css" %}">',
+    # ],
 }
 
 
@@ -355,21 +374,15 @@ USE_I18N = True
 USE_TZ = True
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent  # هذا يشير إلى مجلد a_core
-PROJECT_ROOT = BASE_DIR.parent  # هذا يشير إلى جذر المشروع
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-ASE_DIR = Path(__file__).resolve().parent.parent
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [ PROJECT_ROOT / 'static' ]
-STATIC_ROOT = PROJECT_ROOT / 'staticfiles'
-
-# STATICFILES_DIRS = [
-#     BASE_DIR / "static",  # مجلد static الرئيسي
-#     # BASE_DIR.parent / "books/static",  # مجلد ثانوي للصور إن كان بجانب المشروع
-# ]
+# ASE_DIR = Path(__file__).resolve().parent.parent
+STATIC_URL = 'static/'
+# STATICFILES_DIRS = [ BASE_DIR / 'static' ]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # تأكد أن هذا المسار صحيح
+]
 
 
 MEDIA_URL = 'media/'

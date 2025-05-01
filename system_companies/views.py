@@ -56,12 +56,37 @@ class InvoiceListView(APIView):
 class InvoiceListView(generics.ListAPIView):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
+from .models import WeightCard, ViolationRecord, Entry_and_exit, Material, DriverNeme, Trucks
+
+from django.shortcuts import render
+from django.http import JsonResponse
+
+from django.utils import timezone
 
 @staff_member_required
 def reports_view(request):
     cards = WeightCard.objects.all()
     violations = ViolationRecord.objects.all()
     entry_and_exit = Entry_and_exit.objects.all()
+    material = Material.objects.all()
+    trucks = Trucks.objects.all()
+
+    # قاموس لربط رقم الشاحنة باسم السائق
+    truck_lookup = {t.plate_number: t.driver_name for t in trucks}
+
+    # تجهيز بيانات المخالفات مع اسم السائق
+    violations_data = []
+    for v in violations:
+        Trucks.plate_number = v.plate_number_vio
+        driver_name = truck_lookup.get(Trucks.plate_number, "غير معروف")
+        print(f"مخالفة لشاحنة {Trucks.plate_number} - السائق: {driver_name}")  # <-- سطر مؤقت لفحص البيانات
+        violations_data.append({
+            "plate_number": Trucks.plate_number,
+            "violation_type": v.violation_type,
+            "driver_name": driver_name,
+        })
+
+
 
     stats = {
         "total_cards": cards.count(),
@@ -74,8 +99,10 @@ def reports_view(request):
         **site.each_context(request),
         "app_list": site.get_app_list(request),
         "cards": cards,
-        "violations": violations,
+        "violations": violations,  # تمرير قائمة البيانات
         "entry_and_exit": entry_and_exit,
+        "material": material,
+        "trucks": trucks,
         "stats": stats,
     }
 
@@ -134,30 +161,56 @@ def invoice_print_modal(request, pk):
     return render(request, 'admin/invoice_modal.html', {'invoice': invoice})
 
 
-# def company_list(request):
-#     companies = Company.objects.all()
-#     return render(request, 'companies/company_list.html', {'companies': companies})
 
-# def company_detail(request, company_id):
-#     company = get_object_or_404(Company, id=company_id)
-#     weight_cards = WeightCard.objects.filter(company=company)  # جلب بطاقات الوزن الخاصة بالشركة
     
-#     context = {
-#         'company': company,
-#         'weight_cards': weight_cards,
-#     }
-#     return render(request, 'companies/company_detail.html', context)
+from django.utils import timezone
+from datetime import datetime, timedelta
+
+def print_report(request):
+    report_type = request.GET.get('report_type', 'weight_cards')
+    report_title = request.GET.get('title', 'تقرير')
+    date_range = request.GET.get('date_range', '')
     
-
-
-
-
-
-
-
-
-
-
-
+    # تحديد التاريخ الافتراضي إذا لم يتم تحديد نطاق
+    if not date_range:
+        today = timezone.now().date()
+        last_month = today - timedelta(days=30)
+        date_range = f"{last_month.strftime('%Y-%m-%d')} - {today.strftime('%Y-%m-%d')}"
+    
+    context = {
+        'report_type': report_type,
+        'report_title': report_title,
+        'report_date': date_range,
+        'company': {'name': 'اسم الشركة'},
+    }
+    
+    # تحليل نطاق التاريخ
+    dates = date_range.split(' - ')
+    start_date = datetime.strptime(dates[0], '%Y-%m-%d').date()
+    end_date = datetime.strptime(dates[1], '%Y-%m-%d').date() + timedelta(days=1)  # لتشمل اليوم كامل
+    
+    # جلب البيانات حسب نوع التقرير مع الفلترة بالتاريخ
+    if report_type == 'weight_cards':
+        context['cards'] = WeightCard.objects.filter(
+            entry_date__gte=start_date,
+            entry_date__lte=end_date
+        ).order_by('-entry_date')
+    elif report_type == 'violations':
+        context['violations'] = ViolationRecord.objects.filter(
+            timestamp__gte=start_date,
+            timestamp__lte=end_date
+        ).order_by('-timestamp')
+    elif report_type == 'entry_and_exit':
+        context['entry_and_exit'] = Entry_and_exit.objects.filter(
+            entry_date__gte=start_date,
+            entry_date__lte=end_date
+        ).order_by('-entry_date')
+    elif report_type == 'material':
+        context['material'] = Material.objects.filter(
+            date_and_time__gte=start_date,
+            date_and_time__lte=end_date
+        ).order_by('-date_and_time')
+    
+    return render(request, 'admin/print_report.html', context)
 
 
