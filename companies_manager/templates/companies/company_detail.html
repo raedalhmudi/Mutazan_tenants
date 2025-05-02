@@ -837,7 +837,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
       iframe.style.display = "none";
       iframe.contentWindow.focus();
-      {% comment %} iframe.contentWindow.print(); {% endcomment %}
+      iframe.contentWindow.print(); 
     })
     .catch(error => {
       console.error("حدث خطأ أثناء تحميل تقرير الطباعة:", error);

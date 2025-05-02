@@ -21,12 +21,9 @@ from django.conf import settings
 from companies_manager.admin import tenant_admin_site
 from companies_manager.views import *
 from django.conf.urls.i18n import set_language
-<<<<<<< HEAD
 from system_companies.views import InvoiceListView
-=======
 import debug_toolbar
 
->>>>>>> 49d95fee (التعديلات الجديده للنظام)
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path("companies/company_list/", admin.site.admin_view(company_list), name="admin-company"),

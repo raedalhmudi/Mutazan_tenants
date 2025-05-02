@@ -363,8 +363,8 @@ class Invoice(models.Model):  # الفواتير
     class Meta:
         verbose_name = "الفاتوره"
         verbose_name_plural = "الفواتير"
-#--------------------api------------
-    #     db_table = 'system_companies_invoice'  # تأكد أن الاسم مطابق لما في DB
+# --------------------api------------
+        db_table = 'system_companies_invoice'  # تأكد أن الاسم مطابق لما في DB
     # def get_db_table(self):
     #     schema = get_current_schema()
     #     return f'"{schema}"."{self._meta.db_table}"'
