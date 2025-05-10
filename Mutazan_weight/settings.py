@@ -20,19 +20,24 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-rj#-z^kx3j+1ay397otg6j8m_8#v^$^$jys6&41vy^&6le)ezc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-INTERNAL_IPS = [
-    "127.0.0.1",
+
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # إذا عندك مجلد static في المشروع
 ]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+INTERNAL_IPS = type(str('c'), (), {'__contains__': lambda *a: True})()
 
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*']
@@ -66,6 +71,7 @@ SHARED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    
 
 ]
 
@@ -130,10 +136,10 @@ INSTALLED_APPS = SHARED_APPS + [
 SITE_ID = 1
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django_tenants.middleware.main.TenantMainMiddleware',
     'django_tenants.middleware.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',

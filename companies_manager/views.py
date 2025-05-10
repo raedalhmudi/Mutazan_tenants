@@ -111,10 +111,20 @@ class CompanyDetailView(APIView):
         company.delete()  # حذف الشركة
         return Response(status=status.HTTP_204_NO_CONTENT)
     
+#--------------api_violations-------------
+from rest_framework import viewsets
+from .models import ViolationsType
+from .Serializer import ViolationTypeSerializer
+from rest_framework.permissions import IsAuthenticated
 
 
+class ViolationTypeViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = ViolationsType.objects.all()
+    serializer_class = ViolationTypeSerializer
+    def get_queryset(self):
+        return ViolationsType.objects.filter(name='Incorrect invoice')
+    permission_classes = [IsAuthenticated]
 
-    
 #---------------------------نهايه كلاس الapi-------------
 
 

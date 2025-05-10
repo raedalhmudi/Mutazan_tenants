@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import connection
 
-# from companies_manager.models import Company, ViolationsType
+from companies_manager.models import  ViolationsType
 import cv2
 import socket
 import serial.tools.list_ports

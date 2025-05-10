@@ -54,9 +54,15 @@ class InvoiceListView(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=500)
 
-# class InvoiceListView(generics.ListAPIView):
-#     queryset = Invoice.objects.all()
-#     serializer_class = InvoiceSerializer
+
+from rest_framework import viewsets
+from .models import ViolationRecord
+from .serializers import ViolationRecordSerializer
+
+class ViolationRecordViewSet(viewsets.ModelViewSet):
+    queryset = ViolationRecord.objects.all()
+    serializer_class = ViolationRecordSerializer
+
 #-----------------api_calss_end-------------
 
 from .models import WeightCard, ViolationRecord, Entry_and_exit, Material, DriverNeme, Trucks

@@ -1,5 +1,11 @@
 from rest_framework import serializers
 from companies_manager.models import Company
+from .models import ViolationsType
+
+class ViolationTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ViolationsType
+        fields = ['id', 'name','description']
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:

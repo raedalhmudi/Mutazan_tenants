@@ -22,6 +22,14 @@ class ProtectedView(APIView):
     def get(self, request):
         return Response({"message": "authentication seccess welcome!"})
 
+from rest_framework.routers import DefaultRouter
+from .views import ViolationTypeViewSet
+
+router = DefaultRouter()
+router.register(r'violation-types', ViolationTypeViewSet)
+
+
+
 #---------api_class_end-----------------
 
 urlpatterns = [
@@ -35,8 +43,5 @@ urlpatterns = [
     # path('api/login/', LoginView.as_view(), name='login'),
     path('api/login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/protected/', ProtectedView.as_view(), name='protected-view'),
-    #-------------api_end------------
-    
-    
-    
-]
+    #-------------api_end------------    
+] + router.urls

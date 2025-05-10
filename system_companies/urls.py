@@ -3,8 +3,13 @@ from . import views
 from django.contrib import admin
 # from .views import check_camera_connection
 #---------api----------
-# from django.urls import path
-# from .views import InvoiceListView
+from rest_framework.routers import DefaultRouter
+from .views import ViolationRecordViewSet
+
+router = DefaultRouter()
+router.register(r'violations', ViolationRecordViewSet)
+
+
 
 urlpatterns = [
     # path("admin/reports/", admin.site.admin_view(views.reports_view), name="admin-reports"),
@@ -18,4 +23,4 @@ urlpatterns = [
 
 
     # مسارات أخرى...
-]
+] + router.urls

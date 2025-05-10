@@ -33,20 +33,21 @@ urlpatterns = [
     path('', include('companies_manager.urls')),
     # path('users', include('user_management.urls')),
     path('set_language/', set_language, name='set_language'),
-        path('api/invoices/', InvoiceListView.as_view(), name='invoice-list'),
+    path('api/invoices/', InvoiceListView.as_view(), name='invoice-list'),
+    path('api/companies/', include('companies_manager.urls')),
+    path('api/violations/', include('system_companies.urls')),
 
 ]
 
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# if settings.DEBUG:
+#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+import debug_toolbar
 
 if settings.DEBUG:
     urlpatterns += [
-        path("__debug__/", include(debug_toolbar.urls)),
+        path('__debug__/', include(debug_toolbar.urls)),
     ]
-
-
-
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
 
