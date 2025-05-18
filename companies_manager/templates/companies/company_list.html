@@ -92,10 +92,10 @@
         </select>
       </div>
       
-      <button class="btn-export">
+      {% comment %} <button class="btn-export">
         <i class="fas fa-file-export"></i>
         تصدير البيانات
-      </button>
+      </button> {% endcomment %}
     </div>
   </div>
 
@@ -120,12 +120,17 @@
             <h3 class="company-name">{{ company.company_name }}</h3>
             <span class="company-id">ID: {{ company.id }}</span>
           </div>
-          <div class="company-status {% if not company.is_active %}inactive{% endif %}">
-            {% if company.is_active %}
-              <i class="fas fa-check-circle"></i> نشطة
+          <div class="company-status">
+            {% if company.company_condition == "complete" %}
+              <span class="status-badge status-completed">نشط</span>
             {% else %}
-              <i class="fas fa-times-circle"></i> غير نشطة
+              <span class="status-badge status-pending">غير نشط</span>
             {% endif %}
+            {% comment %} {% if card.status == "complete" %}
+              <span class="status-badge status-completed">مكتمل</span>
+            {% else %}
+              <span class="status-badge status-pending">غير مكتمل </span>
+            {% endif %} {% endcomment %}
           </div>
         </div>
         
@@ -198,9 +203,9 @@
 <!-- Modern CSS Styles -->
 <style>
 :root {
-  --primary: #4361ee;
+  --primary: #4a6682;
   --primary-light: #eef2ff;
-  --secondary: #3f37c9;
+  --secondary:#4a6682;
   --success: #10b981;
   --success-light: #d1fae5;
   --warning: #f59e0b;
@@ -574,7 +579,7 @@
 }
 
 .btn-details {
-  background-color: var(--primary-light);
+  background-color: #4a66823b;
   color: var(--primary);
   border: none;
   padding: 8px 15px;
@@ -724,6 +729,7 @@
 <!-- Modern JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+
   // Search and Filter Functionality
   const searchInput = document.getElementById('searchInput');
   const filterType = document.getElementById('filterType');
@@ -752,7 +758,7 @@ document.addEventListener('DOMContentLoaded', function() {
       
       return matchesSearch && matchesFilter;
     });
-    
+
     // Sort companies
     filteredCompanies.sort((a, b) => {
       const nameA = a.querySelector('.company-name').textContent.toLowerCase();

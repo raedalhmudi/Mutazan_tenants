@@ -2,17 +2,41 @@ document.addEventListener("DOMContentLoaded", function () {
     console.log("DOM fully loaded and parsed");
 
     // التحقق من أننا في الصفحة الصحيحة
-    if (window.location.href.includes("/admin/system_companies/weightcard/")) {  
+    if (window.location.href.includes("/admin/system_companies/weightcard/add")) {  
         console.log("On the correct page");
 
         // إضافة العداد
         let counterHTML = `
-            <div style="background: black; padding: 10px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
+            <div style="
+                background: linear-gradient(135deg, #4a6682, #3a5470);
+                padding: 15px;
+                border-radius: 12px;
+                text-align: center;
+                margin-bottom: 25px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                color: white;
+                font-family: 'Segoe UI', sans-serif;
+            ">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <div style="color: red; font-size: 24px;">0</div>
+                    <div style="
+                        color: #fff;
+                        font-size: 24px;
+                        font-weight: 600;
+                        background: rgba(0,0,0,0.2);
+                        padding: 8px 15px;
+                        border-radius: 8px;
+                    ">0</div>
                     <div>
-                        <span style="color: white;">00:00:00</span><br>
-                        <span style="color: white;">00/00/0000</span>
+                        <span style="
+                            font-size: 18px;
+                            font-weight: 500;
+                            display: block;
+                            margin-bottom: 5px;
+                        ">00:00:00</span>
+                        <span style="
+                            font-size: 14px;
+                            opacity: 0.9;
+                        ">00/00/0000</span>
                     </div>
                 </div>
             </div>
@@ -25,22 +49,93 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("Counter added");
         }
 
-        // إنشاء عنصر للبوكسات
+        // إنشاء عنصر للبوكسات بتصميم عصري وترتيب عمودي
         let camerasHTML = `
-            <div style="margin-bottom: 20px;">
+            <div style="
+                margin-bottom: 30px;
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+            ">
                 <!-- بوكس كاميرا الدخول -->
-                <div class="card bg-dark" style="margin-bottom: 10px;">
-                    <div class="card-header text-white" style="padding: 10px; font-size: 14px;">📷 بث كاميرا الدخول</div>
-                    <div class="card-body text-center" style="padding: 10px;">
-                        <img src="/video_feed/entry/" class="img-fluid" style="width: 100%; height: 150px; object-fit: cover;">
+                <div class="camera-card" style="
+                    background: #fff;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                    border: 1px solid #f1f1f1;
+                ">
+                    <div class="camera-header" style="
+                        background: linear-gradient(135deg, #4a6682, #3a5470);
+                        color: white;
+                        padding: 12px 15px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
+                        <i class="fas fa-sign-in-alt" style="font-size: 16px;"></i>
+                        <span>بث كاميرا الدخول</span>
+                    </div>
+                    <div class="camera-feed" style="
+                        padding: 10px;
+                        background: #f9f9f9;
+                        text-align: center;
+                        height: 250px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">
+                        <img src="/video_feed/entry/" class="img-fluid" style="
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            border-radius: 6px;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                        ">
                     </div>
                 </div>
 
                 <!-- بوكس كاميرا الخروج -->
-                <div class="card bg-dark" style="margin-bottom: 10px;">
-                    <div class="card-header text-white" style="padding: 10px; font-size: 14px;">📷 بث كاميرا الخروج</div>
-                    <div class="card-body text-center" style="padding: 10px;">
-                        <img src="/video_feed/exit/" class="img-fluid" style="width: 100%; height: 150px; object-fit: cover;">
+                <div class="camera-card" style="
+                    background: #fff;
+                    border-radius: 12px;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                    border: 1px solid #f1f1f1;
+                ">
+                    <div class="camera-header" style="
+                        background: linear-gradient(135deg, #4a6682, #3a5470);
+                        color: white;
+                        padding: 12px 15px;
+                        font-size: 14px;
+                        font-weight: 600;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                    ">
+                        <i class="fas fa-sign-out-alt" style="font-size: 16px;"></i>
+                        <span>بث كاميرا الخروج</span>
+                    </div>
+                    <div class="camera-feed" style="
+                        padding: 10px;
+                        background: #f9f9f9;
+                        text-align: center;
+                        height: 250px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    ">
+                        <img src="/video_feed/exit/" class="img-fluid" style="
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            border-radius: 6px;
+                            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                        ">
                     </div>
                 </div>
             </div>
@@ -54,6 +149,19 @@ document.addEventListener("DOMContentLoaded", function () {
             // إضافة البوكسات فوق أزرار الحفظ
             saveButtonsContainer.insertAdjacentHTML("beforebegin", camerasHTML);
             console.log("Cameras added above save buttons");
+            
+            // إضافة تأثيرات hover للكاميرات
+            document.querySelectorAll('.camera-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                    this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = '';
+                    this.style.boxShadow = '0 4px 20px rgba(0,0,0,0.08)';
+                });
+            });
         } else {
             console.log("Save buttons container not found");
         }
@@ -62,50 +170,21 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-//     // تغيير لون الشريط الجانبي عند التمرير
-// const sidebar = document.querySelector('.sidebar');
+document.addEventListener("DOMContentLoaded", function () {
+    // التأكد أننا في صفحة بطاقات الوزن
+    if (window.location.pathname.includes("/admin/system_companies/weightcard")) {
+        const pageHeader = document.querySelector("h1");
 
-// if (sidebar) {
-//     sidebar.addEventListener('mouseover', function () {
-//         sidebar.style.transition = 'background-color 0.3s ease';
-//         sidebar.style.backgroundColor = '#3a0ca3';  // لون عند التمرير
-//     });
-
-//     sidebar.addEventListener('mouseout', function () {
-//         sidebar.style.transition = 'background-color 0.3s ease';
-//         sidebar.style.backgroundColor = '#2d0b8a';  // اللون الأصلي
-//     });
-// }
-
-// const links = document.querySelectorAll('.sidebar .nav-link');
-
-// links.forEach(link => {
-//     link.addEventListener('mouseenter', () => {
-//         link.style.color = '#ffffff';
-//         const icon = link.querySelector('i');
-//         if (icon) icon.style.color = '#f0f0f0';
-//     });
-
-//     link.addEventListener('mouseleave', () => {
-//         link.style.color = '#f0f0f0';
-//         const icon = link.querySelector('i');
-//         if (icon) icon.style.color = '#ffffff';
-//     });
-// });
+        if (pageHeader && pageHeader.textContent.includes("بطاقات الوزن")) {
+            // تحقق من عدم تكرار الأيقونة
+            if (!pageHeader.innerHTML.includes("fa-balance-scale-left")) {
+                pageHeader.innerHTML = `<i class="fas fa-balance-scale-left" style="margin-left: 10px; color :rgb(74, 102, 130)"></i> ${pageHeader.textContent.trim()}`;
+            }
+        }
+    }
+});
 
 
-// static/admin/custom.js
-// document.addEventListener("DOMContentLoaded", function () {
-//     document.querySelectorAll(".button-delete").forEach(button => {
-//         button.addEventListener("click", function (event) {
-//             event.preventDefault();
-//             if (confirm("هل أنت متأكد أنك تريد حذف هذه المجموعة؟")) {
-//                 window.location.href = this.getAttribute("href");
-//             }
-//         });
-//     });
-// });
-// static/common/js/system_companies/custom.js
 document.addEventListener("DOMContentLoaded", function () {
     const fullscreenButton = document.getElementById("fullscreen-button");
     if (fullscreenButton) {

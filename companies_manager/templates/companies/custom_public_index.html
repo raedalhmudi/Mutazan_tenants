@@ -21,9 +21,10 @@
 
     /* أنماط عامة */
     .dashboard-container {
-        font-family: 'Segoe UI', 'Tahoma', Geneva, Verdana, sans-serif;
+        {% comment %} font-family: 'Segoe UI', 'Tahoma', Geneva, Verdana, sans-serif; {% endcomment %}
         color: var(--dark-color);
         padding: 20px;
+        width: 100%;
     }
 
     /* بطاقات الإحصائيات */
@@ -93,19 +94,19 @@
         gap: 24px;
         margin-bottom: 30px;
     }
-        .row {
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex
+    .row {
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex
     ;
         -webkit-flex-wrap: wrap;
         -ms-flex-wrap: wrap;
+        {% comment %} width: 200%; {% endcomment %}
         flex-wrap: wrap;
-        width: 1339px;
-        margin-right: -7.5px;
-        margin-left: -7.5px;
+        margin-right: -5.5px;
+        margin-left: -0.5px;
     }
-    
+  
 
     @media (max-width: 992px) {
         .dashboard-grid {
@@ -210,7 +211,7 @@
     {% comment %}  {% endcomment %}
         .modern-card {
         border: none;
-        border-radius: 12px;
+        border-radius: 6px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
         overflow: hidden;
         background: #ffffff;
@@ -245,7 +246,7 @@
         width: 100%;
         border-collapse: separate;
         border-spacing: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        {% comment %} font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; {% endcomment %}
     }
     
     .table-header-row th {
@@ -300,144 +301,311 @@
         }
     }
     {% comment %}  {% endcomment %}
+      :root {
+    --primary-color: #3f6ad8;
+    --success-color: #3ac47d;
+    --warning-color: #f7b924;
+    --danger-color: #d92550;
+    --dark-color: #343a40;
+    --light-color: #f8f9fa;
+    --border-color: #e1e5eb;
+  }
+  
+  body {
+    {% comment %} font-family: 'Tajawal', sans -serif; {% endcomment %}
+    background-color: #f5f7fb;
+  }
+  
+  .dashboard-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  
+  /* بطاقات الإحصائيات كما في الصورة */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .stat-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0.46875rem 2.1875rem rgba(0, 0, 0, 0.03), 
+                0 0.9375rem 1.40625rem rgba(0, 0, 0, 0.03), 
+                0 0.25rem 0.53125rem rgba(0, 0, 0, 0.05), 
+                0 0.125rem 0.1875rem rgba(0, 0, 0, 0.03);
+    padding: 20px;
+    border-top: 4px solid;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .stat-card.primary {
+    border-top-color: var(--primary-color);
+  }
+  
+  .stat-card.danger {
+    border-top-color: var(--danger-color);
+  }
+  
+  .stat-card.warning {
+    border-top-color: var(--warning-color);
+  }
+  
+  .stat-card.success {
+    border-top-color: var(--success-color);
+  }
+  
+  .stat-card .stat-title {
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+  
+  .stat-card .stat-value {
+    display: flex;
+    align-items: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--dark-color);
+    margin-bottom: 5px;
+  }
+  
+  .stat-card .stat-value .change {
+    font-size: 14px;
+    margin-right: 8px;
+  }
+  
+  .stat-card.primary .stat-value .change {
+    color: var(--success-color);
+  }
+  
+  .stat-card.danger .stat-value .change {
+    color: var(--danger-color);
+  }
+  
+  .stat-card .stat-percent {
+    font-size: 14px;
+    color: #adb5bd;
+    margin-left: 5px;
+  }
+  
+  .stat-card .stat-description {
+    font-size: 13px;
+    color: #adb5bd;
+    margin-top: 5px;
+  }
+  
+  .stat-card .progress-circle {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 60px;
+  }
+  
+  .stat-card .progress-circle .circle-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .stat-card.primary .progress-circle .circle-text {
+    color: var(--primary-color);
+  } 
+  
+  .stat-card.danger .progress-circle .circle-text {
+    color: var(--danger-color);
+  }
+  
+  .stat-card.warning .progress-circle .circle-text {
+    color: var(--warning-color);
+  }
+  
+  .stat-card.success .progress-circle .circle-text {
+    color: var(--success-color);
+  }
+  
+  /* باقي العناصر */
+  .content-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 20px;
+  }
+  
+  @media (max-width: 992px) {
+    .content-row {
+      grid-template-columns: 1fr;
+    }
+    .btn-export {
+        margin-left: 0;
+        width: 100%;
+        justify-content: center;
+    }
+  }
+
+  .btn-export {
+  background-color: white;
+  color: #4a6682;
+  border: 1px solid #4a6682;
+  padding: 10px 20px;
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  margin-left: auto;
+  transition: var(--transition);
+}
+
+.btn-export:hover {
+  background-color: var(--primary-light);
+}
+
+
+.total-stats {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid #e2e8f0;
+}
+
+.total-stats h3 {
+    margin-top: 0;
+    color: #4b6682;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px dashed #e2e8f0;
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-item strong {
+    color: #4b6682;
+}
 </style>
 
 <div class="dashboard-container">
     <!-- بطاقات الإحصائيات -->
-    <div class="row">
-        <div class="col-lg-4 col-md-6">
-            <div class="stat-card bg-info text-white">
-                <div class="card-body">
-                    <h3>{{ company_count }}</h3>
-                    <p>عدد الشركات</p>
-                    <i class="fas fa-building icon"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-6">
-            <div class="stat-card bg-success text-white">
-                <div class="card-body">
-                    <h3>{{ user_count }}</h3>
-                    <p>عدد المستخدمين</p>
-                    <i class="fas fa-users icon"></i>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-4 col-md-6">
-            <div class="stat-card bg-warning text-white">
-                <div class="card-body">
-                    <h3>{% now "F Y" %}</h3>
-                    <p>تقرير الشهر الحالي</p>
-                    <i class="fas fa-calendar-alt icon"></i>
-                </div>
-            </div>
-        </div>
+     <div class="stats-row">
+    <!-- بطاقة حسابات جديدة -->
+    <div class="stat-card primary">
+      <div class="stat-title">عدد الشركات</div>
+      <div class="stat-value">
+        <span class="change">{{ company_count }}</span>
+        {% comment %} <span class="stat-percent">%</span> {% endcomment %}
+      </div>
+      <div class="progress-circle">
+        <div class="circle-text">42%</div>
+        <svg width="60" height="60" viewBox="0 0 124 124">
+          <circle cx="62" cy="62" r="59" fill="none" stroke="#e1e5eb" stroke-width="6"></circle>
+          <path fill="none" stroke="var(--primary-color)" stroke-width="6" stroke-linecap="round" 
+                d="M 90.42350467160801 113.7020732870847 A 59 59 0 0 0 62.00000000000001 3" 
+                transform="scale(-1, 1) translate(-124 0)"></path>
+        </svg>
+      </div>
     </div>
+    
+    <!-- بطاقة إجمالي النفقات -->
+    <div class="stat-card danger">
+      <div class="stat-title">عدد المستخدمين</div>
+      <div class="stat-value">
+        <span class="change">{{ user_count }}</span>
+        {% comment %} <span class="stat-percent">%</span> {% endcomment %}
+      </div>
+      <div class="progress-circle">
+        <div class="circle-text">71%</div>
+        <svg width="60" height="60" viewBox="0 0 124 124">
+          <circle cx="62" cy="62" r="59" fill="none" stroke="#e1e5eb" stroke-width="6"></circle>
+          <path fill="none" stroke="var(--danger-color)" stroke-width="6" stroke-linecap="round" 
+                d="M 4.853611675630468 76.67277415761457 A 59 59 0 1 0 62.00000000000001 3" 
+                transform="scale(-1, 1) translate(-124 0)"></path>
+        </svg>
+      </div>
+    </div>
+    
+    <!-- بطاقة قيمة الشركة -->
+    <div class="stat-card warning">
+      <div class="stat-title">قيمة الشركة</div>
+      <div class="stat-value">
+        <span>1.45</span>
+        <span class="stat-percent">دولار</span>
+      </div>
+      <div class="progress-circle">
+        <div class="circle-text">55%</div>
+        <svg width="60" height="60" viewBox="0 0 124 124">
+          <circle cx="62" cy="62" r="59" fill="none" stroke="#e1e5eb" stroke-width="6"></circle>
+          <path fill="none" stroke="var(--warning-color)" stroke-width="6" stroke-linecap="round" 
+                d="M 43.768051195860785 118.11235196285438 A 59 59 0 1 0 62.00000000000001 3" 
+                transform="scale(-1, 1) translate(-124 0)"></path>
+        </svg>
+      </div>
+    </div>
+    
+    <!-- بطاقة الموظفين الجدد -->
 
-    <!-- لوحة تحكم المبيعات والأهداف -->
-        <div class="dashboard-grid">
-            <div class="main-section">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-chart-line me-2"></i>
-                        المبيعات الشهرية: {% now "F Y" %}
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-container">
-                            <canvas id="salesChart"></canvas>
-                        </div>
-                        
+  </div>
+  
+  <!-- باقي المحتوى -->
 
-                    </div>
-                </div>
-            </div>
-            
-            
-            <div class="side-section">
-                <div class="card">
-                    <div class="card-header">
-                        <i class="fas fa-bullseye me-2"></i>
-                        تقدم إكمال الأهداف
-                    </div>
-                    <div class="card-body">
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>إضافة المنتجات إلى سلة التسوق</span>
-                                <span>80%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill bg-info" style="width: 80%"></div>
-                            </div>
-                        </div>
-
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>إتمام عملية الشراء</span>
-                                <span>77.5%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill bg-success" style="width: 77.5%"></div>
-                            </div>
-                        </div>
-
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>زيارة الصفحة المميزة</span>
-                                <span>60%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill bg-warning" style="width: 60%"></div>
-                            </div>
-                        </div>
-
-                        <div class="progress-container">
-                            <div class="progress-label">
-                                <span>إرسال الاستفسارات</span>
-                                <span>50%</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div class="progress-fill bg-purple" style="width: 50%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-                                {% comment %} <div class="summary-grid">
-                            <div class="summary-card">
-                                <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 17%</div>
-                                <div class="value">35,210.43 $</div>
-                                <div class="label">إجمالي الإيرادات</div>
-                            </div>
-                            <div class="summary-card">
-                                <div class="trend trend-neutral"><i class="fas fa-arrow-right"></i> 0%</div>
-                                <div class="value">10,390.90 $</div>
-                                <div class="label">التكلفة الإجمالية</div>
-                            </div>
-                            <div class="summary-card">
-                                <div class="trend trend-up"><i class="fas fa-arrow-up"></i> 20%</div>
-                                <div class="value">24,813.53 $</div>
-                                <div class="label">إجمالي الربح</div>
-                            </div>
-                            <div class="summary-card">
-                                <div class="trend trend-down"><i class="fas fa-arrow-down"></i> 18%</div>
-                                <div class="value">1,200</div>
-                                <div class="label">إكمال الأهداف</div>
-                            </div>
-                        </div> {% endcomment %}
-
-
-                        {% comment %}  {% endcomment %}
-     <!---->
-   <div class="recent-cards">
+<div class="recent-cards">
+  <div class="total-stats">
+    <h3>الإحصائيات العامة</h3>
+    <div class="stat-item">
+        <span>إجمالي الشاحنات:</span>
+        <strong>{{ total_trucks }}</strong>
+    </div>
+    <div class="stat-item">
+        <span>إجمالي المخالفات:</span>
+        <strong>{{ total_violations }}</strong>
+    </div>
+    <div class="stat-item">
+        <span>إجمالي بطاقات الوزن:</span>
+        <strong>{{ total_weight_cards }}</strong>
+    </div>
+    <div class="stat-item">
+        <span>إجمالي الفواتير:</span>
+        <strong>{{ total_invoices }}</strong>
+    </div>
+    <div class="stat-item">
+        <span>إجمالي الأجهزة:</span>
+        <strong>{{ total_devices }}</strong>
+    </div>
+</div>
     <div class="card modern-card">
+        
         <div class="card-header elegant-header">
             <h1 class="dashboard-title">
                 <i class="fas fa-network-wired"></i>
                 شبكة الشركات اللوجستية
+
+                            <button class="btn-export">
+                <i class="fas fa-file-export"></i>
+                تصدير البيانات
+            </button>
             </h1>
+
         </div>
         <div class="card-body p-0">
             <div class="table-container">
@@ -451,6 +619,7 @@
                             <th class="text-center">عدد المخالفات</th>
                             <th class="text-center">عدد بطاقات الوزن</th>
                             <th class="text-center">عدد الفواتير</th>
+                            <th class="text-center">عدد الاجهزه</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -471,6 +640,7 @@
                             <td class="text-center warning-cell">{{ company.violations }}</td>
                             <td class="text-center info-cell">{{ company.weiht_card }}</td>
                             <td class="text-center success-cell">{{ company.Invoice }}</td>
+                            <td class="text-center success-cell">{{ company.devices }}</td>
                         </tr>
                         {% empty %}
                         <tr>
@@ -484,95 +654,13 @@
             </div>
         </div>
     </div>
-</div>
-     <!---->
-  
-  
-
-                        {% comment %}  {% endcomment %}
+    
 </div>
 
-<script>
-    // مخطط المبيعات الشهرية
-    const salesCtx = document.getElementById('salesChart').getContext('2d');
-    const salesChart = new Chart(salesCtx, {
-        type: 'line',
-        data: {
-            labels: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو'],
-            datasets: [
-                {
-                    label: 'مبيعات 2023',
-                    data: [30, 50, 40, 20, 70, 30, 80],
-                    backgroundColor: 'rgba(67, 97, 238, 0.1)',
-                    borderColor: '#4361ee',
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#4361ee',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                },
-                {
-                    label: 'مبيعات 2022',
-                    data: [60, 55, 70, 60, 50, 50, 40],
-                    backgroundColor: 'rgba(108, 117, 125, 0.05)',
-                    borderColor: '#6c757d',
-                    borderWidth: 2,
-                    borderDash: [5, 5],
-                    tension: 0.3,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: '#6c757d',
-                    pointBorderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'top',
-                    labels: {
-                        usePointStyle: true,
-                        padding: 20
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0,0,0,0.8)',
-                    titleFont: { size: 14 },
-                    bodyFont: { size: 12 },
-                    padding: 12,
-                    cornerRadius: 8
-                }
-            },
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                },
-                y: {
-                    grid: {
-                        color: 'rgba(0,0,0,0.05)'
-                    },
-                    ticks: {
-                        font: {
-                            size: 12
-                        }
-                    }
-                }
-            }
-        }
-    });
-</script>
+        </div>
+        
+</div>
+
+
 
 {% endblock %}

@@ -1,283 +1,238 @@
+/* ===== الخطوط والأساس ===== */
+/* @font-face {
+    font-family: 'MyCustomFont';
+    src: url('/static/common/fonts/Khandevane.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+} */
+
+  body {
+    font-family: 'Cairo', sans-serif;
+  }
 
 
 
-
-/* تصميم عصري ثابت للسايدبار - معدل حسب الطلب */
-.sidebar {
+/* ===== الهيكل الرئيسي ===== */
+.main-sidebar {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    width: 280px;
     position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 250px;
-    background-color: #ffffff;
-    color: #000000;
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.08);
-    border-right: 1px solid #e9ecef;
-    z-index: 1000;
-    overflow-y: auto;
-    overflow-x: hidden; /* منع التمرير الأفقي */
-}
-
-/* إصلاح مشكلة اختفاء النصوص */
-.sidebar * {
-    white-space: nowrap;
-    overflow: visible;
-    text-overflow: initial;
-}
-
-.layout-navbar-fixed .wrapper .brand-link {
+    height: 100vh;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-right: 1px solid #eaeff5;
+    z-index: 1030;
+    display: flex;
+    flex-direction: column;
     overflow: hidden;
-    position: fixed;
-    top: 0;
-    transition: width .3s ease-in-out;
-    width: 250px;
-    height: 58px;
-    z-index: 1035;
 }
 
-[class*=sidebar-dark-] .sidebar a {
-    color: #000000;
-}
-
-/* تنسيق العناوين - معدل */
-.sidebar .nav-header {
-    padding: 15px 20px;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #000000;
-    font-weight: 600;
-    margin: 10px 15px 5px;
-    position: relative;
-}
-
-.sidebar .nav-header::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 20px;
-    right: 20px;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
-}
-
-/* تنسيق العناصر - معدل */
-.sidebar .nav-link {
-    color: #000000;
-    font-weight: 500;
-    padding: 12px 20px;
-    border-radius: 8px;
-    margin: 5px 15px;
-    transition: all 0.3s ease;
+/* ===== تعديلات الشعار كما طلبت (عرض كامل مع ثبات المساحة) ===== */
+.brand-link {
+    height: 70px; /* الحفاظ على نفس ارتفاع المساحة */
     display: flex;
     align-items: center;
-    position: relative;
-    background-color: transparent;
-    text-align: left; /* جعل النص في الجهة اليسرى */
-    justify-content: flex-start; /* محاذاة العناصر لليسار */
-}
-
-.sidebar .nav-link::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 3px;
-    background-color: #000000;
-    transform: scaleY(0);
-    transform-origin: top;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    opacity: 0;
-}
-
-/* الأيقونات - معدل */
-.sidebar .nav-link i {
-    color: #000000;
-    font-size: 1.1rem;
-    margin-right: 12px;
+    padding: 0 15px;
+    background: #ffffff !important;
+    border-bottom: 1px solid #f0f4f9;
     transition: all 0.3s ease;
-    min-width: 24px;
-    text-align: center;
+    overflow: hidden; /* لمنع تجاوز الشعار للمساحة المحددة */
 }
 
 .brand-link .brand-image {
     float: left;
-    line-height: 1.8;
+    line-height: .8;
     margin-left: .8rem;
-    margin-right: 15.5rem;
-    margin-top: 1px;
-    max-height: 163px;
-    width: 270px;
+    margin-right: .5rem;
+    margin-top: 8px;
+    max-height: 173px;
+    width: auto;
 }
-.layout-navbar-fixed .wrapper .main-header {
-    left: 0;
-    position: fixed;
-    right: 0;
-    top: 0;
-    height: 69px;
-    z-index: 1037;
-}
-.layout-navbar-fixed .wrapper .sidebar-dark-primary .brand-link:not([class*=navbar]) {
-    background-color: #ffffff;
-}
-.layout-navbar-fixed .wrapper .brand-link {
-    overflow: hidden;
-    position: fixed;
-    top: 0;
-    transition: width .3s ease-in-out;
-    width: 251px;
-    height: 69px;
-    z-index: 1035;
-}
-/* تأثيرات العناصر عند المرور - معدل */
-.sidebar .nav-link:hover {
-    background-color: rgba(0, 0, 0, 0.03);
-    color: #000000;
-    transform: translateX(5px);
+[class*=sidebar-dark-] .nav-header {
+    color: rgb(56 56 56 / 39%);
+    margin-top: 1rem;
 }
 
-.sidebar .nav-link:hover::before {
-    transform: scaleY(1);
-    opacity: 1;
-}
-
-.sidebar .nav-link:hover i {
-    color: #000000;
-}
-
-/* العنصر النشط - معدل */
-.sidebar .nav-link.active {
-    background-color: rgba(0, 0, 0, 0.05);
-    color: #000000;
-    font-weight: 600;
-}
-
-.sidebar .nav-link.active::before {
-    transform: scaleY(1);
-    opacity: 1;
-}
-
-.sidebar .nav-link.active i {
-    color: #000000;
-}
-
-/* شعار المشروع - معدل */
-.brand-link {
-    background-color: #ffffff;
-    color: #000000 !important;
-    font-size: 1.25rem;
-    font-weight: 700;
-    text-align: center;
-    padding: 20px 15px;
-    border-bottom: 1px solid #f0f0f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-}
-
-.brand-link:hover {
-    background-color: #f8f8f8;
-}
-
-.brand-link .brand-image {
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    margin-right: 10px;
-}
-
-/* تأثيرات إضافية للوضع المصغر */
-.sidebar-mini .brand-link {
-    padding: 15px 5px;
-    justify-content: center;
-}
-
-.sidebar-mini .brand-link .brand-text {
-    display: none;
-}
-
-.sidebar-mini .nav-link {
-    justify-content: center;
-    padding: 12px 5px;
-}
-
-.sidebar-mini .nav-link span {
-    display: none;
-}
-
-.sidebar-mini .nav-link i {
-    margin-right: 0;
-    font-size: 1.3rem;
-}
-
-/* تصميم حديث للعناصر الفرعية */
-.sidebar .nav-treeview {
-    margin: 0 15px 10px;
-    padding: 5px 0;
-}
-
-.sidebar .nav-treeview .nav-link {
-    margin: 2px 0;
-    padding: 8px 15px 8px 50px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    background-color: rgba(0, 0, 0, 0.02);
-    text-align: left; /* جعل النص في الجهة اليسرى */
-}
-
-.sidebar .nav-treeview .nav-link:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-/* تأثيرات للهواتف - معدل */
-@media (max-width: 767.98px) {
-    .sidebar {
-        transform: translateX(0); /* إزالة تأثير الإخفاء */
-        width: 280px;
-        transition: transform 0.3s ease;
-    }
-    
-    .sidebar.show {
-        transform: translateX(0);
-    }
-    
-    .brand-link {
-        justify-content: flex-start;
-        padding-left: 20px;
-    }
-}
-
-/* إزالة زر إغلاق السايدبار */
-.sidebar-close-btn {
-    display: none !important;
-}
-
-.wrapper, body, html {
-    min-height: 100%;
-    margin-top: 12px;
-}
-element.style {
-    overflow-y: auto;
-    margin-top: 69px;
-}
-/* شريط التمرير - معدل */
-.sidebar::-webkit-scrollbar {
-    width: 6px;
-}
 .elevation-3 {
     box-shadow: 0 10px 20px rgb(255, 255, 255), 0 6px 6px rgb(255, 255, 255) !important;
 }
-
-.sidebar::-webkit-scrollbar-track {
-    background: #f1f1f1;
+/* ===== قسم المستخدم ===== */
+.user-panel {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f0f4f9;
+    margin-bottom: 10px;
 }
 
-.sidebar::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
+.user-panel img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.user-panel .info {
+    padding-left: 12px;
+}
+
+.user-panel .info .name {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 15px;
+    margin-bottom: 3px;
+}
+
+.user-panel .info .role {
+    font-size: 13px;
+    color: #718096;
+    font-weight: 500;
+}
+
+/* ===== عناصر القائمة مع اللون الجديد #4b6682 ===== */
+.nav-sidebar {
+    padding: 0 10px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.nav-sidebar > .nav-item {
+    margin-bottom: 5px;
+}
+
+.nav-sidebar > .nav-item > .nav-link {
+    color: #4a5568 !important;
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    font-weight: 500;
+    font-size: 15px;
+    margin: 0 5px;
+}
+
+.nav-sidebar > .nav-item > .nav-link:hover {
+    background-color: rgba(75, 102, 130, 0.1) !important;
+    color: #4b6682 !important;
+    transform: translateX(3px);
+}
+
+.nav-sidebar > .nav-item > .nav-link.active {
+    background: linear-gradient(135deg, #4b6682 0%, #5a7a9a 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 6px rgba(75, 102, 130, 0.2);
+}
+
+.nav-sidebar > .nav-item > .nav-link.active .nav-icon {
+    color: white !important;
+}
+
+.nav-icon {
+    font-size: 18px;
+    margin-right: 12px;
+    width: 24px;
+    text-align: center;
+    color: #64748b;
+    transition: all 0.25s ease;
+}
+
+.nav-link:hover .nav-icon {
+    color: inherit;
+}
+
+/* ===== العناوين الفرعية ===== */
+.nav-header {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 15px 20px 5px;
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+/* ===== الحالة المغلقة ===== */
+.sidebar-collapse .main-sidebar {
+    width: 80px;
+}
+
+.sidebar-collapse .brand-link {
+    justify-content: center;
+    padding: 0;
+    height: 70px; /* الحفاظ على نفس الارتفاع */
+}
+
+.sidebar-collapse .brand-image {
+    max-height: 60%; /* تصغير الشعار في الحالة المغلقة */
+    max-width: 60%; /* تصغير الشعار في الحالة المغلقة */
+    margin: 0 auto;
+}
+
+.sidebar-collapse .user-panel {
+    justify-content: center;
+    padding: 15px 0;
+}
+
+.sidebar-collapse .user-panel .info,
+.sidebar-collapse .nav-link > p,
+.sidebar-collapse .nav-header {
+    display: none;
+}
+
+.sidebar-collapse .nav-link {
+    justify-content: center;
+    padding: 12px 0 !important;
+}
+
+.sidebar-collapse .nav-icon {
+    margin-right: 0;
+    font-size: 20px;
+}
+
+/* ===== التمرير ===== */
+.nav-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.nav-sidebar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.nav-sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
     border-radius: 3px;
 }
 
-.sidebar::-webkit-scrollbar-thumb:hover {
-    background: #a1a1a1;
+/* ===== للشاشات الصغيرة ===== */
+@media (max-width: 767.98px) {
+    .main-sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+    
+    .sidebar-open .main-sidebar {
+        transform: translateX(0);
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* ===== تعديلات المحتوى عند تغيير العرض ===== */
+@media (min-width: 768px) {
+    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper,
+    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer,
+    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {
+        transition: margin-left 0.3s ease;
+        margin-left: 280px;
+    }
+    
+    .sidebar-collapse:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper,
+    .sidebar-collapse:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer,
+    .sidebar-collapse:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {
+        margin-left: 80px;
+    }
 }

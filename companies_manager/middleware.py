@@ -1,11 +1,14 @@
-# from django.shortcuts import redirect
-# from django.utils.deprecation import MiddlewareMixin
-# from companies_manager.models import Company
+import threading
+_thread_locals = threading.local()
 
-# class TenantMiddleware(MiddlewareMixin):
-#     def process_request(self, request):
-#         domain = request.get_host().split(':')[0]  # استخراج الدومين بدون البورت
-#         try:
-#             request.tenant = Company.objects.get(domain=domain)  # البحث عن المستأجر
-#         except Company.DoesNotExist:
-#             return redirect('/')  # إعادة التوجيه للصفحة الرئيسية
+def get_current_request():
+    return getattr(_thread_locals, 'request', None)
+
+class ThreadLocalMiddlewareCompanies:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        _thread_locals.request = request
+        response = self.get_response(request)
+        return response

@@ -1,0 +1,325 @@
+@font-face {
+    font-family: 'MyCustomFont';
+    src: url('/static/common/fonts/ArabicAG.otf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body, html, .content-wrapper, .main-header, .main-sidebar {
+    font-family: 'Khandevane', sans-serif !important;
+}
+
+
+:root {
+  --primary: #4a6682; /* اللون الأساسي المطلوب */
+  --primary-light: #e8f0f7; /* نسخة فاتحة من اللون الأساسي */
+  --primary-dark: #3a5470; /* نسخة داكنة من اللون الأساسي */
+  --secondary: #3f5a76; /* لون ثانوي متناسق */
+  --accent: #6d8ba7; /* لون مميز */
+  --success: #4caf50;
+  --warning: #ff9800;
+  --danger: #f44336;
+  --dark: #1a1a2e;
+  --light: #f8f9fa;
+  --gray: #6c757d;
+  --border-radius: 12px;
+  --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* تصميم حديث للبطاقات */
+.card {
+  background: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  border: none;
+  overflow: hidden;
+  transition: var(--transition);
+  margin-bottom: 1.5rem;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+.card-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 1.25rem 1.5rem;
+  border-bottom: none;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-header .card-title {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+/* تصميم حديث للأزرار */
+.btn {
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  transition: var(--transition);
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 102, 130, 0.3);
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  border: 2px solid var(--primary);
+  color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* تصميم حديث للجداول */
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  background-color: #ffffff;
+  color: var(--dark);
+  font-weight: 600;
+  padding: 1rem;
+  text-align: right;
+  border-bottom: 2px solid var(--primary);
+}
+
+.table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f1f1;
+  text-align: right;
+  transition: var(--transition);
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover td {
+  background-color: rgba(74, 102, 130, 0.05);
+}
+
+.table-striped tbody tr:nth-child(odd) {
+  background-color: rgba(74, 102, 130, 0.02);
+}
+
+/* تصميم حديث لحالات البطاقات */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.status-completed {
+  background-color: rgba(76, 175, 80, 0.1);
+  color: var(--success);
+}
+
+.status-processing {
+  background-color: rgba(255, 152, 0, 0.1);
+  color: var(--warning);
+}
+
+.status-pending {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: var(--danger);
+}
+
+/* تصميم حديث للتبويبات */
+.nav-tabs {
+  border-bottom: none;
+  margin-bottom: 1.5rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.nav-tabs .nav-link {
+  border: none;
+  color: var(--gray);
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+  background-color: #f8f9fa;
+}
+
+.nav-tabs .nav-link:hover {
+  color: var(--primary);
+  background-color: var(--primary-light);
+}
+
+.nav-tabs .nav-link.active {
+  background-color: var(--primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(74, 102, 130, 0.3);
+}
+
+/* تصميم حديث للقوائم المنسدلة */
+.dropdown-menu {
+  border-radius: var(--border-radius);
+  border: none;
+  box-shadow: var(--box-shadow);
+  padding: 0.5rem;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.dropdown-item:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+/* تصميم حديث لحقول الإدخال */
+.form-control {
+  border-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  border: 1px solid #e1e5eb;
+  transition: var(--transition);
+}
+
+.form-control:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 0.25rem rgba(74, 102, 130, 0.25);
+}
+
+/* تصميم حديث للتنبيهات */
+.alert {
+  border-radius: var(--border-radius);
+  padding: 1rem 1.5rem;
+  border: none;
+}
+
+.alert-primary {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+/* تصميم حديث للباج */
+.badge {
+  padding: 0.5rem 0.8rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+}
+
+.badge-primary {
+  background-color: var(--primary);
+  color: white;
+}
+
+/* تصميم حديث للباجنج */
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.page-item.active .page-link {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.page-link {
+  border-radius: var(--border-radius) !important;
+  padding: 0.5rem 1rem;
+  transition: var(--transition);
+}
+
+/* تأثيرات حركية حديثة */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-fade {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+/* تصميم متجاوب */
+@media (max-width: 768px) {
+  .card-header {
+    padding: 1rem;
+  }
+  
+  .card-body {
+    padding: 1rem;
+  }
+  
+  .table th, .table td {
+    padding: 0.75rem;
+  }
+  
+  .nav-tabs {
+    flex-wrap: wrap;
+  }
+}
+
+/* تخصيصات إضافية للون الأساسي */
+.bg-primary {
+  background-color: var(--primary) !important;
+}
+
+.text-primary {
+  color: var(--primary) !important;
+}
+
+.border-primary {
+  border-color: var(--primary) !important;
+}
+
+/* تدرج لوني متناسق مع اللون الأساسي */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+}
+
+.breadcrumb {
+    display: none !important;
+}

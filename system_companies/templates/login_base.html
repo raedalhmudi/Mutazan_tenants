@@ -1,0 +1,447 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | نظام الإدارة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4a6682;
+            --primary-dark: #4a6682;
+            --secondary: #4a6682;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --border-radius: 12px;
+            --box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Tajawal', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .login-container {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            min-height: 600px;
+        }
+        
+        .login-illustration {
+            flex: 1;
+            background: linear-gradient(to bottom right, var(--primary), var(--secondary));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-illustration::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .illustration-img {
+            width: 80%;
+            max-width: 300px;
+            margin-bottom: 30px;
+            z-index: 1;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.2));
+        }
+        
+        .illustration-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            z-index: 1;
+            text-align: center;
+        }
+        
+        .illustration-text {
+            font-size: 16px;
+            opacity: 0.9;
+            text-align: center;
+            z-index: 1;
+            max-width: 350px;
+        }
+        
+        .login-form {
+            flex: 1;
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form-header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .form-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .form-subtitle {
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 14px;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 14px 20px 14px 45px;
+            border: 2px solid #e9ecef;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            transition: var(--transition);
+            background-color: #f8f9fa;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            background-color: white;
+            outline: none;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 18px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .form-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .form-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        
+        .form-footer a:hover {
+            text-decoration: underline;
+            color: var(--secondary);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .divider::before, .divider::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .divider::before {
+            margin-right: 10px;
+        }
+        
+        .divider::after {
+            margin-left: 10px;
+        }
+        
+        .social-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            transition: var(--transition);
+        }
+        
+        .social-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .facebook { background: #3b5998; }
+        .twitter { background: #1da1f2; }
+        .google { background: #db4437; }
+        
+        /* تأثيرات خاصة */
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        /* للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .login-illustration {
+                padding: 30px 20px;
+            }
+            
+            .illustration-img {
+                width: 150px;
+            }
+            
+            .login-form {
+                padding: 40px 20px;
+            }
+        }
+        
+        /* رسائل الخطأ */
+        .error-message {
+            color: var(--danger);
+            font-size: 13px;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .has-error .form-control {
+            border-color: var(--danger);
+        }
+        
+        .has-error .input-icon {
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <!-- الجانب الرسومي -->
+        <div class="login-illustration">
+            <img src="https://cdn-icons-png.flaticon.com/512/3209/3209260.png" alt="تسجيل الدخول" class="illustration-img floating">
+            <h2 class="illustration-title">مرحباً بعودتك!</h2>
+            <p class="illustration-text">سجل دخولك للوصول إلى لوحة التحكم الخاصة بك وإدارة نظامك بكل سهولة</p>
+        </div>
+        
+        <!-- نموذج تسجيل الدخول -->
+        <div class="login-form">
+      <div class="form-header">
+    <div style="text-align: center; margin-bottom: 30px;">
+        {% if request.tenant.logo %}
+            <img src="{{ request.tenant.logo.url }}" alt="شعار {{ request.tenant.company_name }}"
+                 style="max-height: 120px; max-width: 100%; object-fit: contain; border-radius: 10px;">
+        {% else %}
+            <img src="{% static 'common/images/Mutazans.svg' %}" alt="شعار افتراضي"
+                 style="max-height: 120px; max-width: 100%; object-fit: contain; border-radius: 10px;">
+        {% endif %}
+    </div>
+
+    {% if request.tenant.company_name %}
+        <h1 class="form-title">{{ request.tenant.company_name }}</h1>
+        <p class="form-subtitle">تسجيل الدخول إلى نظام {{ request.tenant.company_name }}</p>
+    {% else %}
+        <h1 class="form-title">تسجيل الدخول</h1>
+        <p class="form-subtitle">أدخل بياناتك للوصول إلى حسابك</p>
+    {% endif %}
+</div>
+
+
+            
+            <form action="{{ app_path }}" method="post" id="login-form">
+                {% csrf_token %}
+                
+<div class="form-group {% if form.username.errors %}has-error{% endif %}">
+    <label for="id_username" class="form-label">اسم المستخدم</label>
+    <div class="input-group">
+        <i class="fas fa-user input-icon"></i>
+        <input type="text" name="username" class="form-control" id="id_username" placeholder="أدخل اسم المستخدم"
+               value="{{ form.username.value|default:'' }}">
+    </div>
+    {% if form.username.errors %}
+        <span class="error-message">{{ form.username.errors|join:", " }}</span>
+    {% endif %}
+</div>
+
+<div class="form-group {% if form.password.errors %}has-error{% endif %}">
+    <label for="id_password" class="form-label">كلمة المرور</label>
+    <div class="input-group">
+        <i class="fas fa-key input-icon"></i>
+        <input type="password" name="password" class="form-control" id="id_password" placeholder="••••••••">
+    </div>
+    {% if form.password.errors %}
+        <span class="error-message">{{ form.password.errors|join:", " }}</span>
+    {% endif %}
+</div>
+
+                
+                <div class="form-group">
+                    <button type="submit" class="btn">
+                        <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
+                    </button>
+                </div>
+                
+                {% comment %} <div class="form-footer">
+                    <a href="#" class="forgot-password">هل نسيت كلمة المرور؟</a>
+                </div>
+                
+                <div class="divider">أو</div>
+                
+                <div class="social-login">
+                    <a href="#" class="social-btn facebook" title="تسجيل الدخول عبر فيسبوك">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="social-btn twitter" title="تسجيل الدخول عبر تويتر">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-btn google" title="تسجيل الدخول عبر جوجل">
+                        <i class="fab fa-google"></i>
+                    </a>
+                </div> {% endcomment %}
+                
+                <input type="hidden" name="next" value="{{ next }}">
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // إضافة تأثيرات تفاعلية
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('.form-control');
+            
+            inputs.forEach(input => {
+                // تأثير عند التركيز على الحقل
+                input.addEventListener('focus', function() {
+                    this.parentElement.parentElement.classList.add('focused');
+                });
+                
+                // تأثير عند الخروج من الحقل
+                input.addEventListener('blur', function() {
+                    this.parentElement.parentElement.classList.remove('focused');
+                });
+                
+                // إضافة قيمة للحقول لتجربة أفضل
+                if(input.id === 'id_username' && !input.value) {
+                    input.value = 'admin';
+                }
+                
+                if(input.id === 'id_password' && !input.value) {
+                    input.value = '••••••••';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

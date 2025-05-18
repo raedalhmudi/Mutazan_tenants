@@ -88,6 +88,7 @@ class Company(TenantMixin):
         verbose_name="رقم الهاتف",
         validators=[RegexValidator(r'^\d+$', message="يجب أن يحتوي على أرقام فقط")]
     )
+    company_condition = models.BooleanField(default=True, verbose_name="الحالة", null=True, blank=True)
     email = models.EmailField(unique=True, verbose_name="البريد الإلكتروني")
     logo = models.ImageField(upload_to="company_logos/%Y/%m/%d", verbose_name="شعار الشركة")
     employees_count = models.PositiveIntegerField(verbose_name="عدد الموظفين")
@@ -95,34 +96,6 @@ class Company(TenantMixin):
     services_offered = models.TextField(verbose_name="الخدمات المقدمة")
     port_license_number = models.PositiveIntegerField(unique=True, verbose_name="تصريح العمل بالميناء")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ الإضافة")
-    
-    
-    #-------------essam_edit---------------
-    # ██████████████████████████████████████████████
-    # ⭐ الإضافات الجديدة المطلوبة للـ Multi-Tenancy
-    # ██████████████████████████████████████████████
-    
-#     # 1. حقل schema_name (مطلوب لـ TenantMixin)
-#     auto_create_schema = True  # ينشئ Schema تلقائيًا عند الإنشاء
-#     auto_drop_schema = True   # يحذف Schema عند حذف الشركة
-    
-#     # 2. إعدادات إضافية (اختيارية)
-#     class TenantMeta:
-#         verbose_name = "الشركة"
-#         verbose_name_plural = "الشركات"
-    
-#     # 3. دالة لحساب اسم الـ Schema (اختياري)
-#     def get_schema_name(self):
-#         return f"company_{self.id}"  # أو أي تسمية تفضلها
-
-#     def __str__(self):
-#         return self.company_name
-
-# class Domain(DomainMixin):
-#     pass
-
-
-#---------------essam_edit_end---------------
 
     # 🔥 المسؤول الإداري المرتبط بالشركة (يجب أن يكون موجودًا مسبقًا في النظام الرئيسي)
     admin_user = models.OneToOneField(
@@ -144,7 +117,9 @@ class Company(TenantMixin):
             raise ValidationError({"admin_user": "⚠️ المستخدم المختار لا يملك ملفًا شخصيًا. الرجاء إنشاء ملف شخصي أولاً."})
 
         # توليد اسم الأسكيما من اسم الشركة
-        self.schema_name = self.company_name.lower().replace(" ", "_")
+        if not self.pk:
+            self.schema_name = self.company_name.lower().replace(" ", "_")
+
 
         if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', self.schema_name):
             raise ValidationError("اسم الأسكيما غير صالح. يجب أن يحتوي على أحرف وأرقام فقط، ويبدأ بحرف.")
@@ -159,7 +134,9 @@ class Company(TenantMixin):
         if not is_new and self.pk:
             old_admin_user = Company.objects.get(pk=self.pk).admin_user
 
-        self.schema_name = self.company_name.lower().replace(" ", "_")
+        if not self.pk:
+            self.schema_name = self.company_name.lower().replace(" ", "_")
+
         self.full_clean()
         super().save(*args, **kwargs)
 
@@ -266,6 +243,10 @@ class Domain(DomainMixin):
     tenant = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="domains")
     domain = models.CharField(max_length=255, unique=True)
 
+    class Meta:
+        verbose_name = "النطاق"
+        verbose_name_plural = "النطاقات"
+
     def __str__(self):
         return self.domain
 
@@ -297,7 +278,8 @@ class ViolationsType(models.Model):
         verbose_name_plural = "أنواع المخالفات"
 
     def __str__(self):
-        return self.name
+        return f"{self.get_name_display()} "
+
 
 # -----------------------------------------------------------
 #  ---------------------------------------------------
@@ -336,27 +318,39 @@ class WeightCardMain(models.Model):
 
 
 # -----------------------------------------------------------
-#  ---------------------------------------------------
+#  -----------------------  سجل النشاطات----------------------------
 
+class ComActivityLog(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="المستخدم")
+    comactivity = models.ForeignKey(Company, null=True, blank=True, on_delete=models.SET_NULL, verbose_name="الشركه")
+    action = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    module = models.CharField(max_length=200, blank=True, help_text="اسم القسم الذي حدث فيه الإجراء (مثل الشاحنات، الوزن)")
+    extra_data = models.TextField(blank=True, null=True)
 
-# class ViolationRecord(models.Model):
-#     schema_name = models.CharField(max_length=50, verbose_name="اسم الـ Schema")
-#     plate_number_vio = models.CharField(max_length=255, verbose_name="رقم اللوحه", null=True, blank=True)
-#     violation_type = models.CharField("companies_manager.ViolationsType", on_delete=models.CASCADE, verbose_name=" نوع المخالفة")
-#     timestamp = models.DateTimeField(auto_now_add=True)
-#     device_vio = models.CharField(max_length=255, verbose_name="الكاميرا", null=True, blank=True)
-#     entry_exit_log = models.CharField(max_length=255, verbose_name="العمليه", null=True, blank=True)
-#     weight_card_vio = models.CharField(max_length=255, verbose_name="بطاقة الوزن", null=True, blank=True)
-#     image_violation = models.ImageField(upload_to="images_violation/%y/%m/%d", verbose_name="صور المخالفة")
+    class Meta:
+        verbose_name = " سجل النشاطات"
+        verbose_name_plural = "سجل النشاطات"
 
-#     class Meta:
-#         verbose_name = " المخالفه"
-#         verbose_name_plural = "المخالفات"
+    def __str__(self):
+        return f"{self.user} - {self.action} - {self.timestamp}"
+# -----------------------------------------------------------
+# -----------------------الوزن القانوني------------------------------------
 
-#     def __str__(self):
-#         return self.plate_number_vio
+class Legal_weight(models.Model):  # جدول الوزن القانوني
+    legal_weight_L_W = models.DecimalField(max_digits=10, decimal_places=5, default=0.00, verbose_name=" الوزن القانوني")
+    number_of_axes = models.PositiveIntegerField(verbose_name="عدد المحاور")
+    note = models.TextField(default="لا توجد بيانات", help_text="يرجى إدخال وصف المنتج بالتفصيل. ", verbose_name="ملاحظه")
+    registration_date = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ التسجيل")
 
+    class Meta:
+        verbose_name = "الوزن القانوني"
+        verbose_name_plural = " الوزن القانوني"
 
+    def __str__(self):
+        return f"{self.number_of_axes} محاور"
+# -----------------------------------------------------------
 
 
 

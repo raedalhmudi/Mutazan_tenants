@@ -21,7 +21,6 @@ from django.conf import settings
 from companies_manager.admin import tenant_admin_site
 from companies_manager.views import *
 from django.conf.urls.i18n import set_language
-from system_companies.views import InvoiceListView
 import debug_toolbar
 
 urlpatterns = [
@@ -33,21 +32,18 @@ urlpatterns = [
     path('', include('companies_manager.urls')),
     # path('users', include('user_management.urls')),
     path('set_language/', set_language, name='set_language'),
-    path('api/invoices/', InvoiceListView.as_view(), name='invoice-list'),
-    path('api/companies/', include('companies_manager.urls')),
-    path('api/violations/', include('system_companies.urls')),
-
 ]
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-import debug_toolbar
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += [
-        path('__debug__/', include(debug_toolbar.urls)),
+        path("__debug__/", include(debug_toolbar.urls)),
     ]
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+
 
 
 
