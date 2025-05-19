@@ -96,33 +96,7 @@ class Company(TenantMixin):
     port_license_number = models.PositiveIntegerField(unique=True, verbose_name="تصريح العمل بالميناء")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاريخ الإضافة")
     
-    
-    #-------------essam_edit---------------
-    # ██████████████████████████████████████████████
-    # ⭐ الإضافات الجديدة المطلوبة للـ Multi-Tenancy
-    # ██████████████████████████████████████████████
-    
-#     # 1. حقل schema_name (مطلوب لـ TenantMixin)
-#     auto_create_schema = True  # ينشئ Schema تلقائيًا عند الإنشاء
-#     auto_drop_schema = True   # يحذف Schema عند حذف الشركة
-    
-#     # 2. إعدادات إضافية (اختيارية)
-#     class TenantMeta:
-#         verbose_name = "الشركة"
-#         verbose_name_plural = "الشركات"
-    
-#     # 3. دالة لحساب اسم الـ Schema (اختياري)
-#     def get_schema_name(self):
-#         return f"company_{self.id}"  # أو أي تسمية تفضلها
 
-#     def __str__(self):
-#         return self.company_name
-
-# class Domain(DomainMixin):
-#     pass
-
-
-#---------------essam_edit_end---------------
 
     # 🔥 المسؤول الإداري المرتبط بالشركة (يجب أن يكون موجودًا مسبقًا في النظام الرئيسي)
     admin_user = models.OneToOneField(
@@ -333,43 +307,3 @@ class WeightCardMain(models.Model):
 
     def __str__(self):
         return f"{self.plate_number} - {self.schema_name}"
-
-
-# -----------------------------------------------------------
-#  ---------------------------------------------------
-
-
-# class ViolationRecord(models.Model):
-#     schema_name = models.CharField(max_length=50, verbose_name="اسم الـ Schema")
-#     plate_number_vio = models.CharField(max_length=255, verbose_name="رقم اللوحه", null=True, blank=True)
-#     violation_type = models.CharField("companies_manager.ViolationsType", on_delete=models.CASCADE, verbose_name=" نوع المخالفة")
-#     timestamp = models.DateTimeField(auto_now_add=True)
-#     device_vio = models.CharField(max_length=255, verbose_name="الكاميرا", null=True, blank=True)
-#     entry_exit_log = models.CharField(max_length=255, verbose_name="العمليه", null=True, blank=True)
-#     weight_card_vio = models.CharField(max_length=255, verbose_name="بطاقة الوزن", null=True, blank=True)
-#     image_violation = models.ImageField(upload_to="images_violation/%y/%m/%d", verbose_name="صور المخالفة")
-
-#     class Meta:
-#         verbose_name = " المخالفه"
-#         verbose_name_plural = "المخالفات"
-
-#     def __str__(self):
-#         return self.plate_number_vio
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

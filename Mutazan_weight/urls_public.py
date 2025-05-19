@@ -39,8 +39,8 @@ urlpatterns = [
 
 ]
 
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 import debug_toolbar
 
 if settings.DEBUG:
@@ -51,22 +51,4 @@ if settings.DEBUG:
 
 
 
-# from django.contrib import admin
-# from django.urls import path, include
-# from django.conf.urls.static import static
-# from django.conf import settings
-# from companies_manager.admin import tenant_admin_site
-# from companies_manager.views import *
-# from django.conf.urls.i18n import set_language
-
-# urlpatterns = [
-#     path('master-admin/', admin.site.urls),  # تغيير المسار للإدارة الرئيسية
-#     path('tenant-admin/', tenant_admin_site.urls),  # مسار إدارة المستأجرين
-#     path('accounts/', include('allauth.urls')),
-#     path('', include('companies_manager.urls')),
-#     path('set_language/', set_language, name='set_language'),
-# ]
-
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

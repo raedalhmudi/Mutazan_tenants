@@ -58,7 +58,7 @@ class LoginView(APIView):
                 'access': str(access_token),
             })
         else:
-            return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"detail": "user_name or password is wrong or doesn't exist"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class ProtectedView(APIView):
@@ -69,7 +69,9 @@ class ProtectedView(APIView):
         return Response({"message": "تم التحقق بنجاح!"})
     
 
+#---------نهاية كلاس التوكن-----------------------
     
+
 #----------------------كلاس الapi----------------------
 # عرض قائمة الشركات أو إضافة شركة جديدة
 class CompanyListAPIView(APIView):
