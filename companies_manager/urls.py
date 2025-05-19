@@ -1,7 +1,6 @@
 from django.urls import path
 from .views import *
 
-
 #--------api---------------
 from .views import CompanyListAPIView, CompanyDetailView, CustomTokenObtainPairView, LoginView
 from rest_framework.permissions import IsAuthenticated
@@ -37,6 +36,8 @@ urlpatterns = [
     path('companies/<int:company_id>/print-weight-cards/', print_weight_cards, name='print_weight_cards'),
     path('companies/<int:company_id>/', company_detail, name='company_detail'),
     path('companies/<int:company_id>/fetch-data/', fetch_company_data, name='fetch_company_data'),
+    path('logout/', logout_view, name='logout'),
+    path('logout_complete/', logout_complete, name='logout_complete'),
  #----------------api------------
     path('api/companies/', CompanyListAPIView.as_view(), name='company-list'),  # عرض أو إضافة الشركات)(keep)
     path('companies/<int:pk>/', CompanyDetailView.as_view(), name='company-detail'),  # تفاصيل الشركة أو تعديلها أو حذفها)(keep)
@@ -45,3 +46,8 @@ urlpatterns = [
     path('api/protected/', ProtectedView.as_view(), name='protected-view'),
 #----------------api_end------------    
 ] + router.urls
+
+    
+    
+    
+

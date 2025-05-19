@@ -114,6 +114,7 @@
                 <th>رقم اللوحة</th>
                 <th>اسم السائق</th>
                 <th>المادة</th>
+                <th>الكميه</th>
                 <th>الوزن الفارغ</th>
                 <th>الوزن المحمل</th>
                 <th>الوزن الصافي</th>
@@ -128,7 +129,16 @@
                     <td>{{ forloop.counter }}</td>
                     <td>{{ card.plate_number }}</td>
                     <td>{{ card.driver_name }}</td>
-                    <td>{{ card.material }}</td>
+                  <td>
+                    {% for mat in card.materials %}
+                      {{ mat }}<br>
+                    {% endfor %}
+                  </td>
+                  <td>
+                    {% for qty in card.quantities %}
+                      {{ qty }}<br>
+                    {% endfor %}
+                  </td>
                     <td>{{ card.empty_weight }}</td>
                     <td>{{ card.loaded_weight }}</td>
                     <td>{{ card.net_weight }}</td>
@@ -207,7 +217,7 @@
             {% endif %}
         </tbody>
     </table>
-    {% elif report_type == 'material' %}
+{% elif report_type == 'material' %}
     <table>
         <thead>
             <tr>
@@ -236,10 +246,107 @@
             {% endif %}
         </tbody>
     </table>
+{% elif report_type == 'trucks' %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>رقم اللوحه</th>
+                <th>عدد المحاور</th>
+                <th>نوع الشاحنه</th>
+                <th> الحاله</th>
+                <th> اسم السائق</th>
+                <th> تاريخ ووقت الاضافة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if trucks %}
+                {% for  truck in trucks %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ truck.plate_number }}</td>
+                    <td>{{ truck.number_of_axles }}</td>
+                    <td>{{ truck.truck_type }}</td>
+                    <td>{{ truck.condition }}</td>
+                    <td>{{ truck.driver_name }}</td>
+                    <td>{{ truck.registration_date|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="no-data">لا توجد بيانات</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+{% elif report_type == 'driverneme' %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>اسم السائق</th>
+                <th>رقم الهاتف</th>
+                <th>العنوان</th>
+                <th>رقم البطاقة</th>
+                <th>عدد الشاحنات</th>
+                <th>تاريخ الاضافة</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if driverneme %}
+                {% for  drivernemes in driverneme %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ drivernemes.driver_name }}</td>
+                    <td>{{ drivernemes.phone_number }}</td>
+                    <td>{{ drivernemes.address }}</td>
+                    <td>{{ drivernemes.card_number }}</td>
+                    <td>{{ drivernemes.number_of_trucks }}</td>
+                    <td>{{ drivernemes.date_of_registration|date:"Y-m-d H:i" }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="no-data">لا توجد بيانات</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+{% elif report_type == 'invoice' %}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>بطاقةالوزن</th>
+                <th>تاريخ الاضافة</th>
+                <th>الوزن الصافي</th>
+                <th>الماده</th>
+                <th>الكميه</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if invoice %}
+                {% for  invoices in invoice %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ invoices.weight_card }}</td>
+                    <td>{{ invoices.datetime|date:"Y-m-d H:i" }}</td>
+                    <td>{{ invoices.net_weight }}</td>
+                    <td>{{ invoices.material }}</td>
+                    <td>{{ invoices.quantity }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="6" class="no-data">لا توجد بيانات</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
 
 {% endif %}
 
-
+{% comment %} 
 <div class="no-print text-center mt-4">
     <button onclick="window.print()" class="btn btn-primary">
         <i class="fas fa-print"></i> طباعة
@@ -247,7 +354,7 @@
     <button onclick="window.close()" class="btn btn-secondary ml-2">
         <i class="fas fa-times"></i> إغلاق
     </button>
-</div>
+</div> {% endcomment %}
 
 
 {% endblock %}

@@ -1,0 +1,10 @@
+{% extends "admin/base_site.html" %}
+
+{% block bodyclass %}{{ block.super }} logout{% endblock %}
+
+{% block content %}
+<div class="logout-container">
+    <h2>تم تسجيل الخروج بنجاح</h2>
+    <p>تم تسجيل الخروج من الحساب. يمكنك <a href="{% url 'admin:login' %}">تسجيل الدخول مرة أخرى</a>.</p>
+</div>
+{% endblock %}

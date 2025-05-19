@@ -20,9 +20,62 @@
   --box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
+/* إضافة هذه الأنماط إلى قسم الـ style */
+.table-responsive {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+.table {
+  font-size: 0.85rem;
+  width: auto;
+  margin: 0 auto;
+}
+
+.table th, 
+.table td {
+  padding: 0.5rem 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.table td:hover {
+  overflow: visible;
+  white-space: normal;
+  position: relative;
+  z-index: 100;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.circular-logo {
+  width: 40px;
+  height: 40px;
+  transition: all 0.3s ease;
+}
+
+/* للجوالات */
+@media (max-width: 768px) {
+  .table {
+    font-size: 0.75rem;
+  }
+  
+  .table th, 
+  .table td {
+    padding: 0.3rem 0.5rem;
+    max-width: 100px;
+  }
+  
+  .circular-logo {
+    width: 30px;
+    height: 30px;
+  }
+}
 
 body {
-  font-family: 'Tajawal', sans-serif;
+  {% comment %} font-family: 'Tajawal', sans-serif; {% endcomment %}
   background-color: #f5f7fa;
   overflow-x: hidden;
 }
@@ -85,7 +138,7 @@ h2, h4 {
   background-color: var(--primary);
   color: white;
   font-weight: 700;
-  box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+  box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);    
 }
 
 /* القائمة المنسدلة للتقارير */
@@ -471,7 +524,254 @@ h2, h4 {
             font-size: 0.9rem;
         }
     }
+    {% comment %}  {% endcomment %}
+  /* إضافة هذه الأنماط إلى قسم الـ style */
+  .pagination-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+  }
+
+  .pagination {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .page-item {
+    list-style: none;
+  }
+
+  .page-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    color: var(--primary);
+    font-weight: 500;
+    text-decoration: none;
+    transition: var(--transition);
+  }
+
+  .page-link:hover {
+    background-color: #e9ecef;
+  }
+
+  .page-item.active .page-link {
+    background-color: var(--primary);
+    color: white;
+  }
+
+  .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: #f8f9fa;
+  }
+
+  .page-prev-next {
+    width: auto;
+    padding: 0 1rem;
+  }
+    {% comment %}  {% endcomment %}
+    .search-container {
+  display: flex;
+  align-items: center;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 30px;
+  padding: 5px 15px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: var(--transition);
+}
+
+.search-box:hover {
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.search-box input {
+  border: none;
+  padding: 8px 10px;
+  width: 250px;
+  background: transparent;
+  outline: none;
+  {% comment %} font-family: 'Tajawal', sans-serif; {% endcomment %}
+}
+
+.search-btn {
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-btn:hover {
+  background: var(--secondary);
+  transform: scale(1.05);
+}
+
+.no-results {
+  text-align: center;
+  padding: 20px;
+  color: var(--gray);
+  display: none;
+}
+    {% comment %}  {% endcomment %}
+{% comment %} /* أنماط التبويبات المخصصة */
+.nav-tabs {
+    border-bottom: none;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none; /* لإخفاء شريط التمرير في المتصفحات الحديثة */
+    -ms-overflow-style: none; /* لإخفاء شريط التمرير في IE */
+    white-space: nowrap;
+    padding-bottom: 5px;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(90deg, var(--primary-light) 0%, rgba(255,255,255,0) 100%);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.nav-tabs::-webkit-scrollbar {
+    display: none; /* لإخفاء شريط التمرير في Chrome/Safari */
+}
+
+.nav-item {
+    display: inline-block;
+    float: none;
+    margin-right: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-link {
+    border: none;
+    color: var(--gray);
+    font-weight: 600;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--border-radius);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    display: flex;
+    align-items: center;
+    background-color: rgba(255,255,255,0.7);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-link::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background-color: var(--primary);
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--primary);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+    background-color: white;
+}
+
+.nav-link:hover::before {
+    width: 100%;
+}
+
+.nav-link.active {
+    background-color: white;
+    color: var(--primary);
+    font-weight: 700;
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.2);
+}
+
+.nav-link.active::before {
+    width: 100%;
+}
+
+.nav-link i {
+    margin-left: 8px;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover i {
+    transform: scale(1.1);
+}
+
+/* تأثيرات للتبويب النشط */
+.nav-link.active i {
+    color: var(--primary);
+    animation: bounce 0.5s;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+}
+
+/* تنسيق للجوال */
+@media (max-width: 992px) {
+    .nav-link {
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
     
+    .nav-link i {
+        font-size: 1em;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-tabs {
+        padding-bottom: 3px;
+    }
+    
+    .nav-link {
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .nav-item {
+        margin-right: 0.3rem;
+    }
+} {% endcomment %}
+    {% comment %}  {% endcomment %}
+    
+        /* دوائر عدد المواد */
+    .material-count-badge {
+        position: absolute;
+        left: 5px;
+        top: 80%;
+        transform: translateY(-50%);
+        width: 22px;
+        height: 22px;
+        background-color:rgb(93, 122, 169);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 </style>
 {% endblock %}
 
@@ -533,38 +833,67 @@ h2, h4 {
   </div>
 
   <!-- تبويبات المحتوى -->
-  <ul class="nav nav-tabs" id="myTab" role="tablist">
+<ul class="nav nav-tabs" id="myTab" role="tablist">
     <li class="nav-item" role="presentation">
-      <a class="nav-link active" id="weight-cards-tab" data-toggle="tab" href="#weight-cards" role="tab">
-        <i class="fas fa-truck-loading"></i> بطاقات الوزن المنقولة
-      </a>
+        <a class="nav-link active" id="weight-cards-tab" data-toggle="tab" href="#weight-cards" role="tab">
+            <i class="fas fa-truck-loading"></i> 
+            <span>بطاقات الوزن المنقولة</span>
+        </a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="violations-tab" data-toggle="tab" href="#violations" role="tab">
-        <i class="fas fa-exclamation-triangle"></i> المخالفات
-      </a>
+        <a class="nav-link" id="violations-tab" data-toggle="tab" href="#violations" role="tab">
+            <i class="fas fa-exclamation-triangle"></i> 
+            <span>المخالفات</span>
+        </a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="entry_and_exit-tab" data-toggle="tab" href="#entry_and_exit" role="tab">
-        <i class="fas fa-sign-in-alt"></i> عمليات الدخول والخروج
-      </a>
+        <a class="nav-link" id="entry_and_exit-tab" data-toggle="tab" href="#entry_and_exit" role="tab">
+            <i class="fas fa-sign-in-alt"></i> 
+            <span>عمليات الدخول والخروج</span>
+        </a>
     </li>
     <li class="nav-item" role="presentation">
-      <a class="nav-link" id="material-tab" data-toggle="tab" href="#material" role="tab">
-        <i class="fas fa-box"></i>   المواد
-      </a>
+        <a class="nav-link" id="material-tab" data-toggle="tab" href="#material" role="tab">
+            <i class="fas fa-box"></i> 
+            <span>المواد</span>
+        </a>
     </li>
-  </ul>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="trucks-tab" data-toggle="tab" href="#trucks" role="tab">
+            <i class="fas fa-truck-moving"></i> 
+            <span>الشاحنات</span>
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="driverneme-tab" data-toggle="tab" href="#driverneme" role="tab">
+            <i class="fas fa-user-tie"></i> 
+            <span>السائقيين</span>
+        </a>
+    </li>
+    <li class="nav-item" role="presentation">
+        <a class="nav-link" id="invoice-tab" data-toggle="tab" href="#invoice" role="tab">
+            <i class="fas fa-file-invoice"></i> 
+            <span>الفواتير</span>
+        </a>
+    </li>
+</ul>
 
   <!-- محتوى التبويبات -->
   <div class="tab-content" id="myTabContent">
     <!-- تبويب بطاقات الوزن -->
     <div class="tab-pane fade show active" id="weight-cards" role="tabpanel">
       <div class="table-container">
-        <div class="table-header">
-          <h4><i class="fas fa-weight"></i> بطاقات الوزن</h4>
-          <span id="fetch-status" class="status-message"></span>
+      <div class="table-header">
+        <h4><i class="fas fa-weight"></i> بطاقات الوزن</h4>
+        <div class="search-container">
+          <div class="search-box">
+            <input type="text" id="search-input-weight" placeholder="ابحث برقم اللوحة أو اسم السائق أو المادة...">
+            <button class="search-btn" onclick="searchTable('weight-cards-body', [2,3,4], 'search-input-weight')">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
         </div>
+      </div>
         
         <div class="table-responsive">
           <table class="table table-striped">
@@ -574,6 +903,7 @@ h2, h4 {
                 <th>رقم اللوحة</th>
                 <th>اسم السائق</th>
                 <th>المادة</th>
+                <th>الكميه</th>
                 <th>الوزن الفارغ</th>
                 <th>الوزن المحمل</th>
                 <th>الوزن الصافي</th>
@@ -588,18 +918,31 @@ h2, h4 {
                   <td>{{ forloop.counter }}</td>
                   <td>{{ card.plate_number|default:"-" }}</td>
                   <td>{{ card.driver_name|default:"-" }}</td>
-                  <td>{{ card.material|default:"-" }}</td>
+                  <td >
+                      {% for mat in card.materials %}
+                      <span class="quantity-badge">{{ mat }}</span><br>
+                      {% endfor %}
+                      {% if card.materials %}
+                      <span class="material-count-badge">{{ card.materials|length }}</span>
+                      {% endif %}
+                  </td>
+                  <td>
+                      {% for qty in card.quantities %}  
+                          <span class="quantity-badge">{{ qty }}</span><br>
+                      {% endfor %}
+                      {% if card.quantities %}
+                      <span class="material-count-badge">{{ card.quantities|length }}</span>
+                      {% endif %}
+                  </td>
                   <td>{{ card.empty_weight|default:"-" }}</td>
                   <td>{{ card.loaded_weight|default:"-" }}</td>
                   <td>{{ card.net_weight|default:"-" }}</td>
                   <td>{{ card.entry_date|date:"Y-m-d H:i"|default:"-" }}</td>
                   <td>
                     {% if card.status == "complete" %}
-                      <span class="status-badge status-completed">{{ card.status }}</span>
-                    {% elif card.status == "incomplete" %}
-                      <span class="status-badge status-processing">{{ card.status }} </span>
+                      <span class="status-badge status-completed">مكتمل</span>
                     {% else %}
-                      <span class="status-badge status-pending">{{ card.status }}</span>
+                      <span class="status-badge status-pending">غير مكتمل </span>
                     {% endif %}
                   </td>
                 </tr>
@@ -639,9 +982,19 @@ h2, h4 {
     <div class="tab-pane fade" id="violations" role="tabpanel">
       <div class="table-container">
         <div class="table-header">
-          <h4><i class="fas fa-exclamation-circle"></i> المخالفات</h4>
-          <span id="fetch-status-violations" class="status-message"></span>
+          <div class="alert alert-info text-center my-3" role="alert" style="font-size: 18px;">
+            <strong>إجمالي الغرامات لهذا الشهر:</strong>
+            {{ total_monthly_penalty|floatformat:2 }} $
+          </div>
+          <div class="search-container">
+            <div class="search-box">
+              <input type="text" id="search-input-violations" placeholder="ابحث برقم اللوحة أو اسم السائق...">
+              <button class="search-btn" onclick="searchTable('weight-cards-body', [2,3,4], 'search-input-weight')">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
         </div>
+      </div>
         
         <div class="table-responsive">
           <table class="table table-striped">
@@ -650,7 +1003,8 @@ h2, h4 {
                 <th>#</th>
                 <th>الصورة</th>
                 <th>رقم اللوحة</th>
-                <th>السائق</th>
+                <th> قيمة الغرامه</th>
+                <th>ا لسائق</th>
                 <th>نوع المخالفة</th>
                 <th>تاريخ ووقت المخالفة</th>
                 <th>الكاميرا</th>
@@ -660,7 +1014,7 @@ h2, h4 {
             <tbody id="violations-body">
               {% for v in violations  %}
               <tr>
-                                <td>{{ forloop.counter }}</td>
+                <td>{{ forloop.counter }}</td>
                 <td>
                   {% if v.image_violation %}
                   <img class="circular-logo" src="{{ v.image_violation.url }}" alt="صورة">
@@ -670,7 +1024,8 @@ h2, h4 {
                 </td>
 
                 <td>{{ v.plate_number_vio|default:"-" }}</td>
-                <td>{{ v.driver_name|default:"-" }}</td>
+                <td>{{ v.penalty_amount_calculated }}</td>
+                <td>{{ v.get_driner_name|default:"-" }}</td>
                 <td>{{ v.violation_type|default:"-" }}</td>
                 <td>{{ v.timestamp|date:"Y-m-d H:i"|default:"-" }}</td>
                 <td>{{ v.device_vio|default:"-" }}</td>
@@ -713,7 +1068,17 @@ h2, h4 {
         <div class="table-header">
           <h4><i class="fas fa-sign-in-alt"></i> عمليات الدخول والخروج</h4>
           <span id="fetch-status-entry_and_exit" class="status-message"></span>
+          <div class="search-container">
+            <div class="search-box">
+              <input type="text" id="search-input-entry-exit" placeholder="ابحث برقم اللوحة أو اسم السائق أو المادة...">
+              <button class="search-btn" onclick="searchTable('weight-cards-body', [2,3,4], 'search-input-weight')">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
         </div>
+        
+        
         
         <div class="table-responsive">
           <table class="table table-striped">
@@ -727,6 +1092,7 @@ h2, h4 {
                 <th>رقم اللوحة</th>
                 <th>تاريخ الدخول</th>
                 <th>تاريخ الخروج</th>
+                <th>الحاله</th>
               </tr>
             </thead>
             <tbody id="entry_and_exit-body">
@@ -756,6 +1122,13 @@ h2, h4 {
                 <td>{{ e_and_e.plate_number_E_e|default:"-" }}</td>
                 <td>{{ e_and_e.entry_date|date:"Y-m-d H:i"|default:"-" }}</td>
                 <td>{{ e_and_e.exit_date|date:"Y-m-d H:i"|default:"-" }}</td>
+                <td>
+                    {% if e_and_e.pruss_status == "complete" %}
+                      <span class="status-badge status-completed">مكتمل</span>
+                    {% else %}
+                      <span class="status-badge status-pending">غير مكتمل </span>
+                    {% endif %}
+                  </td>
               </tr>
               {% empty %}
               <tr>
@@ -787,12 +1160,20 @@ h2, h4 {
         </div>
       </div>
     </div>
-    
+    <!-- المواد -->
     <div class="tab-pane fade" id="material" role="tabpanel">
       <div class="table-container">
         <div class="table-header">
           <h4><i class="fas fa-sign-in-alt"></i> المواد</h4>
           <span id="fetch-status-entry_and_exit" class="status-message"></span>
+          <div class="search-container">
+            <div class="search-box">
+              <input type="text" id="search-input-material" placeholder="ابحث برقم اللوحة أو اسم السائق أو المادة...">
+              <button class="search-btn" onclick="searchTable('weight-cards-body', [2,3,4], 'search-input-weight')">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
         </div>
         
         <div class="table-responsive">
@@ -814,6 +1195,223 @@ h2, h4 {
                 <td>{{ materia.description|default:"-" }}</td>
                 <td>{{ matera.unit|default:"-" }}</td>
                 <td>{{ materia.date_and_time|date:"Y-m-d H:i"|default:"-" }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="8" class="text-center py-4">لا توجد بيانات متاحة</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="pagination">
+          <ul class="pagination">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">السابق</a>
+            </li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">التالي</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- الشاحنات -->
+    <div class="tab-pane fade" id="trucks" role="tabpanel">
+      <div class="table-container">
+        <div class="table-header">
+          <h4><i class="fas fa-truck-moving"></i> المواد</h4>
+          <span id="fetch-status-entry_and_exit" class="status-message"></span>
+          <div class="search-container">
+            <div class="search-box">
+              <input type="text" id="search-input-trucks" placeholder="ابحث برقم اللوحة أو اسم السائق أو المادة...">
+              <button class="search-btn" onclick="searchTable('weight-cards-body', [2,3,4], 'search-input-weight')">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>رقم اللوحه</th>
+                <th>عدد المحاور </th>
+                <th> نوع الشاحنه</th>
+                <th> الحاله</th>
+                <th>اسم السائق</th>
+                <th> تاريخ الاضافة</th>
+              </tr>
+            </thead>
+            <tbody id="trucks-body">
+              {% for truck in trucks %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ truck.plate_number|default:"-" }}</td>
+                <td>{{ truck.number_of_axles|default:"-" }}</td>
+                <td>{{ truck.truck_type|default:"-" }}</td>
+                {% comment %} <td>{{ truck.condition|default:"-" }}</td> {% endcomment %}
+                <td>
+                    {% if truck.condition == True %}
+                      <span class="status-badge status-completed">نشط</span>
+                    {% else %}
+                      <span class="status-badge status-pending">غير نشط </span>
+                    {% endif %}
+                </td> 
+                <td>{{ truck.driver_name|default:"-" }}</td>
+                <td>{{ truck.registration_date|date:"Y-m-d H:i"|default:"-" }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="8" class="text-center py-4">لا توجد بيانات متاحة</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="pagination">
+          <ul class="pagination">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">السابق</a>
+            </li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">التالي</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- السائقيين -->
+    <div class="tab-pane fade" id="driverneme" role="tabpanel">
+      <div class="table-container">
+        <div class="table-header">
+          <h4><i class="fas fa-truck-moving"></i> المواد</h4>
+          <span id="fetch-status-entry_and_exit" class="status-message"></span>
+          <div class="search-container">
+            <div class="search-box">
+              <input type="text" id="search-input-driverneme" placeholder="ابحث برقم اللوحة أو اسم السائق أو المادة...">
+              <button class="search-btn" onclick="searchTable('weight-cards-body', [2,3,4], 'search-input-weight')">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>اسم السائق</th>
+                <th>رقم الهاتف</th>
+                <th>العنوان</th>
+                <th>رقم البطاقة</th>
+                <th>عدد الشاحنات</th>
+                <th>تاريخ الاضافة</th>
+              </tr>
+            </thead>
+            <tbody id="trucks-body">
+              {% for drivernemes in driverneme %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ drivernemes.driver_name|default:"-" }}</td>
+                <td>{{ drivernemes.phone_number|default:"-" }}</td>
+                <td>{{ drivernemes.address|default:"-" }}</td>
+                <td>{{ drivernemes.card_number|default:"-" }}</td>
+                <td>{{ drivernemes.number_of_trucks|default:"-" }}</td>
+                <td>{{ drivernemes.date_of_registration|date:"Y-m-d H:i"|default:"-" }}</td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="8" class="text-center py-4">لا توجد بيانات متاحة</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        
+        <div class="pagination">
+          <ul class="pagination">
+            <li class="page-item disabled">
+              <a class="page-link" href="#" tabindex="-1">السابق</a>
+            </li>
+            <li class="page-item active">
+              <a class="page-link" href="#">1</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">2</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">3</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="#">التالي</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!-- الفواتير -->
+    <div class="tab-pane fade" id="invoice" role="tabpanel">
+      <div class="table-container">
+        <div class="table-header">
+          <h4><i class="fas fa-file-invoice"></i> الفواتير</h4>
+          <span id="fetch-status-invoice" class="status-message"></span>
+          <div class="search-container">
+            <div class="search-box">
+              <input type="text" id="search-input-invoice" placeholder="ابحث برقم اللوحة أو اسم السائق أو المادة...">
+              <button class="search-btn" onclick="searchTable('weight-cards-body', [2,3,4], 'search-input-invoice')">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>بطاقةالوزن</th>
+                <th>تاريخ الاضافة</th>
+                <th>الوزن الصافي</th>
+                <th>الماده</th>
+                <th>الكميه</th>
+              </tr>
+            </thead>
+            <tbody id="invoice-body">
+              {% for invoices in invoice %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ invoices.weight_card|default:"-" }}</td>
+                <td>{{ drivernemes.datetime|date:"Y-m-d H:i"|default:"-" }}</td>
+                <td>{{ invoices.net_weight|default:"-" }}</td>
+                <td>{{ invoices.material|default:"-" }}</td>
+                <td>{{ invoices.quantity|default:"-" }}</td>
+
+                {% comment %} <td>{{ drivernemes.date_of_registration|date:"Y-m-d H:i"|default:"-" }}</td> {% endcomment %}
               </tr>
               {% empty %}
               <tr>
@@ -925,6 +1523,60 @@ h2, h4 {
       <tbody id="print-entry-exit-body"></tbody>
     </table>
   </div>
+  <div id="print-trucks">
+    <h3><i class="fas fa-truck-moving"></i>المواد</h3>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>#</th>
+          <th>رقم اللوحه</th>
+          <th>عدد المحاور</th>
+          <th>نوع الشاحنه</th>
+          <th> الحاله</th>
+          <th> اسم السائق</th>
+          <th> تاريخ ووقت الاضافة</th>
+        </tr>
+      </thead>    
+      <tbody id="print-trucks-body"></tbody>
+    </table>
+  </div>
+  <div id="print-driverneme">
+    <h3><i class="fas fa-truck-moving"></i>المواد</h3>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>#</th>
+          <th>اسم السائق</th>
+          <th>رقم الهاتف</th>
+          <th>العنوان</th>
+          <th>رقم البطاقة</th>
+          <th>عدد الشاحنات</th>
+          <th>تاريخ الاضافة</th>
+        </tr>
+      </thead>    
+      <tbody id="print-driverneme-body"></tbody>
+    </table>
+  </div>
+  <div id="print-invoice">
+    <h3><i class="fas fa-truck-moving"></i>المواد</h3>
+    <table class="print-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>#</th>
+          <th>بطاقةالوزن</th>
+          <th>تاريخ الاضافة</th>
+          <th>الوزن الصافي</th>
+          <th>الماده</th>
+          <th>الكميه</th>
+        </tr>
+      </thead>    
+      <tbody id="print-invoice-body"></tbody>
+    </table>
+  </div>
+  
   
   <div class="print-footer">
     <p>تم الإنشاء في: {% now "Y-m-d H:i" %}</p>
@@ -932,7 +1584,255 @@ h2, h4 {
 </div>
 
 <script>
+function searchTable(tableId, columns, inputId) {
+  const table = document.getElementById(tableId);
+  const input = document.getElementById(inputId);
+  const searchTerm = input.value.toLowerCase();
+  const rows = table.getElementsByTagName('tr');
+  let found = false;
+
+  // إخفاء رسالة "لا توجد نتائج" إذا كانت ظاهرة
+  const noResultsRow = table.querySelector('.no-results');
+  if (noResultsRow) noResultsRow.style.display = 'none';
+
+  // البحث في كل الصفوف
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    let rowMatches = false;
+
+    // البحث في الأعمدة المحددة
+    for (let j = 0; j < columns.length; j++) {
+      const colIndex = columns[j];
+      const cell = row.cells[colIndex];
+      if (cell && cell.textContent.toLowerCase().includes(searchTerm)) {
+        rowMatches = true;
+        found = true;
+        break;
+      }
+    }
+
+    // إظهار أو إخفاء الصفوف حسب نتيجة البحث
+    row.style.display = rowMatches ? '' : 'none';
+  }
+
+  // عرض رسالة إذا لم توجد نتائج
+  if (!found && searchTerm.length > 0) {
+    let noResults = table.querySelector('.no-results');
+    if (!noResults) {
+      noResults = document.createElement('tr');
+      noResults.className = 'no-results';
+      noResults.innerHTML = `<td colspan="20" class="text-center py-4">لا توجد نتائج مطابقة للبحث</td>`;
+      table.appendChild(noResults);
+    }
+    noResults.style.display = '';
+  }
+
+  // إعادة عرض جميع الصفوف إذا كان حقل البحث فارغاً
+  if (searchTerm.length === 0) {
+    for (let i = 0; i < rows.length; i++) {
+      rows[i].style.display = '';
+    }
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function() {
+
+  
+  {% comment %}  {% endcomment %}
+  // جدول بطاقات الوزن (الأعمدة: 2=رقم اللوحة, 3=اسم السائق, 4=المادة)
+  const weightSearchInput = document.getElementById('search-input-weight');
+  if (weightSearchInput) {
+    weightSearchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        searchTable('weight-cards-body', [1,2,3], 'search-input-weight');
+      }
+    });
+  }
+
+  // جدول المخالفات (الأعمدة: 3=رقم اللوحة, 5=اسم السائق, 6=نوع المخالفة)
+  const violationsSearchInput = document.getElementById('search-input-violations');
+  if (violationsSearchInput) {
+    violationsSearchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        searchTable('violations-body', [2,5,6], 'search-input-violations');
+      }
+    });
+  }
+
+  // جدول الدخول والخروج (الأعمدة: 6=رقم اللوحة)
+  const entryExitSearchInput = document.getElementById('search-input-entry-exit');
+  if (entryExitSearchInput) {
+    entryExitSearchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        searchTable('entry_and_exit-body', [5,6], 'search-input-entry-exit');
+      }
+    });
+  }
+
+  // جدول المواد (الأعمدة: 2=المادة, 3=الوصف)
+  const materialSearchInput = document.getElementById('search-input-material');
+  if (materialSearchInput) {
+    materialSearchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        searchTable('material-body', [2,3], 'search-input-material');
+      }
+    });
+  }
+    // جدول الشاحنات (الأعمدة: 2=المادة, 3=الوصف)
+  const trucksSearchInput = document.getElementById('search-input-trucks');
+  if (trucksSearchInput) {
+    trucksSearchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        searchTable('trucks-body', [1,3,5], 'search-input-trucks');
+      }
+    });
+  }
+  const drivernemeSearchInput = document.getElementById('search-input-driverneme');
+  if (drivernemeSearchInput) {
+    drivernemeSearchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        searchTable('driverneme-body', [1,3,5], 'search-input-driverneme');
+      }
+    });
+  }
+  const invoiceSearchInput = document.getElementById('search-input-invoice');
+  if (invoiceSearchInput) {
+    invoiceSearchInput.addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        searchTable('invoice-body', [1,3,5], 'search-input-invoice');
+      }
+    });
+  }
+  {% comment %}  {% endcomment %}
+    // تطبيق نظام الصفحات على جميع الجداول
+  setupTablePagination('weight-cards-body');
+  setupTablePagination('violations-body');
+  setupTablePagination('entry_and_exit-body');
+  setupTablePagination('material-body');
+  setupTablePagination('trucks-body');
+  setupTablePagination('driverneme-body');
+  setupTablePagination('invoice-body');
+
+  function setupTablePagination(tableBodyId) {
+    const tableBody = document.getElementById(tableBodyId);
+    if (!tableBody) return;
+
+    const rows = tableBody.querySelectorAll('tr');
+    if (rows.length <= 5) {
+      // إخفاء الـ Pagination إذا كانت الصفوف أقل من 5
+      tableBody.closest('.table-container').querySelector('.pagination').style.display = 'none';
+      return;
+    }
+
+    const totalPages = Math.ceil(rows.length / 5);
+    let currentPage = 0;
+    const paginationContainer = tableBody.closest('.table-container').querySelector('.pagination ul');
+    
+    // تحديث عناصر الـ Pagination
+    function updatePagination() {
+      paginationContainer.innerHTML = '';
+      
+      // زر السابق
+      const prevItem = document.createElement('li');
+      prevItem.className = `page-item ${currentPage === 0 ? 'disabled' : ''}`;
+      prevItem.innerHTML = `<a class="page-link page-prev-next" href="#" tabindex="-1">السابق</a>`;
+      prevItem.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage > 0) goToPage(currentPage - 1);
+      });
+      paginationContainer.appendChild(prevItem);
+      
+      // أرقام الصفحات
+      const maxVisiblePages = 5;
+      let startPage = Math.max(0, currentPage - Math.floor(maxVisiblePages / 2));
+      let endPage = Math.min(totalPages - 1, startPage + maxVisiblePages - 1);
+      
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(0, endPage - maxVisiblePages + 1);
+      }
+      
+      if (startPage > 0) {
+        const firstItem = document.createElement('li');
+        firstItem.className = 'page-item';
+        firstItem.innerHTML = `<a class="page-link" href="#">1</a>`;
+        firstItem.addEventListener('click', (e) => {
+          e.preventDefault();
+          goToPage(0);
+        });
+        paginationContainer.appendChild(firstItem);
+        
+        if (startPage > 1) {
+          const dotsItem = document.createElement('li');
+          dotsItem.className = 'page-item disabled';
+          dotsItem.innerHTML = `<span class="page-link">...</span>`;
+          paginationContainer.appendChild(dotsItem);
+        }
+      }
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const pageItem = document.createElement('li');
+        pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        pageItem.innerHTML = `<a class="page-link" href="#">${i + 1}</a>`;
+        pageItem.addEventListener('click', (e) => {
+          e.preventDefault();
+          goToPage(i);
+        });
+        paginationContainer.appendChild(pageItem);
+      }
+      
+      if (endPage < totalPages - 1) {
+        if (endPage < totalPages - 2) {
+          const dotsItem = document.createElement('li');
+          dotsItem.className = 'page-item disabled';
+          dotsItem.innerHTML = `<span class="page-link">...</span>`;
+          paginationContainer.appendChild(dotsItem);
+        }
+        
+        const lastItem = document.createElement('li');
+        lastItem.className = 'page-item';
+        lastItem.innerHTML = `<a class="page-link" href="#">${totalPages}</a>`;
+        lastItem.addEventListener('click', (e) => {
+          e.preventDefault();
+          goToPage(totalPages - 1);
+        });
+        paginationContainer.appendChild(lastItem);
+      }
+      
+      // زر التالي
+      const nextItem = document.createElement('li');
+      nextItem.className = `page-item ${currentPage === totalPages - 1 ? 'disabled' : ''}`;
+      nextItem.innerHTML = `<a class="page-link page-prev-next" href="#">التالي</a>`;
+      nextItem.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (currentPage < totalPages - 1) goToPage(currentPage + 1);
+      });
+      paginationContainer.appendChild(nextItem);
+    }
+    
+    // دالة للانتقال إلى صفحة محددة
+    function goToPage(page) {
+      if (page < 0 || page >= totalPages) return;
+      
+      currentPage = page;
+      const startIndex = page * 5;
+      const endIndex = Math.min(startIndex + 5, rows.length);
+      
+      // إخفاء جميع الصفوف
+      rows.forEach(row => row.style.display = 'none');
+      
+      // إظهار الصفوف في الصفحة الحالية
+      for (let i = startIndex; i < endIndex; i++) {
+        rows[i].style.display = '';
+      }
+      
+      // تحديث الـ Pagination
+      updatePagination();
+    }
+    
+    // التهيئة الأولية
+    goToPage(0);
+  }
+  {% comment %}  {% endcomment %}
   // متغير لتحديد نوع التقرير الحالي
   let currentReportType = 'daily';
   
@@ -972,32 +1872,47 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // حدث زر الطباعة المعدل
   document.getElementById("print-report").addEventListener("click", function() {
-      const reportType = getActiveReportType();
-      const reportTitle = getReportTitle(reportType);
-      const dateRange = getDateRange();
-      
-      // جلب محتوى التقرير
-      fetch(`/print_report/?report_type=${reportType}&title=${encodeURIComponent(reportTitle)}&date_range=${dateRange}`)
-          .then(response => response.text())
-          .then(html => {
-              // إنشاء نافذة الطباعة
-              const printWindow = window.open('', '_blank', 'width=800,height=600');
-              
-              // كتابة محتوى التقرير في النافذة الجديدة
-              printWindow.document.write(html);
-              printWindow.document.close();
-              
-              // تفعيل الطباعة بعد تحميل المحتوى
-              printWindow.onload = function() {
-                  printWindow.focus();
-                  printWindow.print();
-              };
-          })
-          .catch(error => {
-              console.error('Error:', error);
-              alert('حدث خطأ أثناء تحميل التقرير');
-          });
-  });
+    const reportType = getActiveReportType();
+    const reportTitle = getReportTitle(reportType);
+    const dateRange = getDateRange();
+    
+    // إنشاء iframe مخفي للطباعة
+    const printFrame = document.createElement('iframe');
+    printFrame.style.position = 'absolute';
+    printFrame.style.width = '0';
+    printFrame.style.height = '0';
+    printFrame.style.border = 'none';
+    printFrame.style.left = '-9999px';
+    document.body.appendChild(printFrame);
+    
+    // جلب محتوى التقرير
+    fetch(`/print_report/?report_type=${reportType}&title=${encodeURIComponent(reportTitle)}&date_range=${dateRange}`)
+        .then(response => response.text())
+        .then(html => {
+            // كتابة محتوى التقرير في الـ iframe
+            printFrame.contentDocument.open();
+            printFrame.contentDocument.write(html);
+            printFrame.contentDocument.close();
+            
+            // الانتظار حتى يتم تحميل المحتوى بالكامل
+            printFrame.onload = function() {
+                setTimeout(() => {
+                    printFrame.contentWindow.focus();
+                    printFrame.contentWindow.print();
+                    
+                    // إزالة الـ iframe بعد الطباعة
+                    setTimeout(() => {
+                        document.body.removeChild(printFrame);
+                    }, 1000);
+                }, 500);
+            };
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ أثناء تحميل التقرير');
+            document.body.removeChild(printFrame);
+        });
+});
 
   // دالة مساعدة لجلب نوع التقرير حسب التبويب النشط
   function getActiveReportType() {
@@ -1008,6 +1923,9 @@ document.addEventListener("DOMContentLoaded", function() {
     if (activeTab.id.includes('violations')) return 'violations';
     if (activeTab.id.includes('entry_and_exit')) return 'entry_and_exit';
     if (activeTab.id.includes('material')) return 'material';
+    if (activeTab.id.includes('trucks')) return 'trucks';
+    if (activeTab.id.includes('driverneme')) return 'driverneme';
+    if (activeTab.id.includes('invoice')) return 'invoice';
     return 'weight_cards';
   }
 
@@ -1017,7 +1935,10 @@ document.addEventListener("DOMContentLoaded", function() {
       'weight_cards': 'تقرير بطاقات الوزن',
       'violations': 'تقرير المخالفات',
       'entry_and_exit': 'تقرير الدخول والخروج',
-      'material': 'تقرير المواد'
+      'material': 'تقرير المواد',
+      'trucks': 'تقرير الشاحنات',
+      'driverneme': 'تقرير السائقيين',
+      'invoice': 'تقرير الفواتير'
     };
     return titles[reportType] || 'تقرير';
   }
@@ -1060,6 +1981,9 @@ document.addEventListener("DOMContentLoaded", function() {
     ];
     return months[parseInt(monthValue) - 1] || "";
   }
+
+  {% comment %}  {% endcomment %}
+  {% comment %}  {% endcomment %}
 });
 </script>
 {% endblock %}

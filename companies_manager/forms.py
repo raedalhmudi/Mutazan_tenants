@@ -1,25 +1,24 @@
-# from django import forms
-# from django.contrib.auth.forms import UserCreationForm
-# from django.contrib.auth.models import User
-# from .models import UserProfile
+from django import forms
+from django.utils.safestring import mark_safe
+from .models import Company
 
-# class CustomUserCreationForm(UserCreationForm):
-#     phone_number = forms.CharField(label="رقم الهاتف", required=False)
-#     address = forms.CharField(label="عنوان السكن", widget=forms.Textarea, required=False)
-#     profile_picture = forms.ImageField(label="صورة المستخدم", required=False)
+class CompanyAdminForm(forms.ModelForm):
+    logo = forms.ImageField(
+        label="شعار الشركة",
+        required=False,
+        widget=forms.FileInput(attrs={
+            'accept': 'image/*',  # بدون class
+        })
+    )
 
-#     class Meta:
-#         model = User
-#         fields = ("username", "email", "password1", "password2", "phone_number", "address", "profile_picture")
 
-#     def save(self, commit=True):
-#         user = super().save(commit=False)
-#         if commit:
-#             user.save()
-#             profile = UserProfile.objects.create(
-#                 user=user,
-#                 profile_picture=self.cleaned_data['profile_picture'],
-#                 phone_number=self.cleaned_data['phone_number'],
-#                 address=self.cleaned_data['address']
-#             )
-#         return user
+    class Meta:
+        model = Company
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.logo:
+            self.fields['logo'].help_text = mark_safe(
+                f'<img src="{self.instance.logo.url}" style="max-height: 100px; margin-top: 10px;" />'
+            )

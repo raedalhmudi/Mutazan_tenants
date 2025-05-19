@@ -1,0 +1,238 @@
+/* ===== الخطوط والأساس ===== */
+/* @font-face {
+    font-family: 'MyCustomFont';
+    src: url('/static/common/fonts/Khandevane.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+} */
+
+  body {
+    font-family: 'Cairo', sans-serif;
+  }
+
+
+
+/* ===== الهيكل الرئيسي ===== */
+.main-sidebar {
+    background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+    width: 280px;
+    position: fixed;
+    height: 100vh;
+    box-shadow: 5px 0 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border-right: 1px solid #eaeff5;
+    z-index: 1030;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ===== تعديلات الشعار كما طلبت (عرض كامل مع ثبات المساحة) ===== */
+.brand-link {
+    height: 70px; /* الحفاظ على نفس ارتفاع المساحة */
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+    background: #ffffff !important;
+    border-bottom: 1px solid #f0f4f9;
+    transition: all 0.3s ease;
+    overflow: hidden; /* لمنع تجاوز الشعار للمساحة المحددة */
+}
+
+.brand-link .brand-image {
+    float: left;
+    line-height: .8;
+    margin-left: .8rem;
+    margin-right: .5rem;
+    margin-top: 8px;
+    max-height: 173px;
+    width: auto;
+}
+[class*=sidebar-dark-] .nav-header {
+    color: rgb(56 56 56 / 39%);
+    margin-top: 1rem;
+}
+
+.elevation-3 {
+    box-shadow: 0 10px 20px rgb(255, 255, 255), 0 6px 6px rgb(255, 255, 255) !important;
+}
+/* ===== قسم المستخدم ===== */
+.user-panel {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #f0f4f9;
+    margin-bottom: 10px;
+}
+
+.user-panel img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.user-panel .info {
+    padding-left: 12px;
+}
+
+.user-panel .info .name {
+    font-weight: 600;
+    color: #2d3748;
+    font-size: 15px;
+    margin-bottom: 3px;
+}
+
+.user-panel .info .role {
+    font-size: 13px;
+    color: #718096;
+    font-weight: 500;
+}
+
+/* ===== عناصر القائمة مع اللون الجديد #4b6682 ===== */
+.nav-sidebar {
+    padding: 0 10px;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.nav-sidebar > .nav-item {
+    margin-bottom: 5px;
+}
+
+.nav-sidebar > .nav-item > .nav-link {
+    color: #4a5568 !important;
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    font-weight: 500;
+    font-size: 15px;
+    margin: 0 5px;
+}
+
+.nav-sidebar > .nav-item > .nav-link:hover {
+    background-color: rgba(75, 102, 130, 0.1) !important;
+    color: #4b6682 !important;
+    transform: translateX(3px);
+}
+
+.nav-sidebar > .nav-item > .nav-link.active {
+    background: linear-gradient(135deg, #4b6682 0%, #5a7a9a 100%) !important;
+    color: white !important;
+    box-shadow: 0 4px 6px rgba(75, 102, 130, 0.2);
+}
+
+.nav-sidebar > .nav-item > .nav-link.active .nav-icon {
+    color: white !important;
+}
+
+.nav-icon {
+    font-size: 18px;
+    margin-right: 12px;
+    width: 24px;
+    text-align: center;
+    color: #64748b;
+    transition: all 0.25s ease;
+}
+
+.nav-link:hover .nav-icon {
+    color: inherit;
+}
+
+/* ===== العناوين الفرعية ===== */
+.nav-header {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 15px 20px 5px;
+    margin-top: 10px;
+    opacity: 0.8;
+}
+
+/* ===== الحالة المغلقة ===== */
+.sidebar-collapse .main-sidebar {
+    width: 80px;
+}
+
+.sidebar-collapse .brand-link {
+    justify-content: center;
+    padding: 0;
+    height: 70px; /* الحفاظ على نفس الارتفاع */
+}
+
+.sidebar-collapse .brand-image {
+    max-height: 60%; /* تصغير الشعار في الحالة المغلقة */
+    max-width: 60%; /* تصغير الشعار في الحالة المغلقة */
+    margin: 0 auto;
+}
+
+.sidebar-collapse .user-panel {
+    justify-content: center;
+    padding: 15px 0;
+}
+
+.sidebar-collapse .user-panel .info,
+.sidebar-collapse .nav-link > p,
+.sidebar-collapse .nav-header {
+    display: none;
+}
+
+.sidebar-collapse .nav-link {
+    justify-content: center;
+    padding: 12px 0 !important;
+}
+
+.sidebar-collapse .nav-icon {
+    margin-right: 0;
+    font-size: 20px;
+}
+
+/* ===== التمرير ===== */
+.nav-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.nav-sidebar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.nav-sidebar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 3px;
+}
+
+/* ===== للشاشات الصغيرة ===== */
+@media (max-width: 767.98px) {
+    .main-sidebar {
+        transform: translateX(-100%);
+        box-shadow: none;
+    }
+    
+    .sidebar-open .main-sidebar {
+        transform: translateX(0);
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.15);
+    }
+}
+
+/* ===== تعديلات المحتوى عند تغيير العرض ===== */
+@media (min-width: 768px) {
+    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper,
+    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer,
+    body:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {
+        transition: margin-left 0.3s ease;
+        margin-left: 280px;
+    }
+    
+    .sidebar-collapse:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .content-wrapper,
+    .sidebar-collapse:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-footer,
+    .sidebar-collapse:not(.sidebar-mini-md):not(.sidebar-mini-xs):not(.layout-top-nav) .main-header {
+        margin-left: 80px;
+    }
+}

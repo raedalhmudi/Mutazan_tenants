@@ -1,0 +1,19 @@
+{% load static %}
+{% if request and request.tenant and request.tenant.schema_name != 'public' %}
+    <a href="{% url 'admin:index' %}" class="brand-link" style="display: flex; align-items: center;">
+        {% if request.tenant.logo %}
+            <img src="{{ request.tenant.logo.url }}"
+                 alt="{{ request.tenant.company_name }}"
+                 class="brand-image img-circle elevation-3"
+                 style="height: 40px; width: auto; object-fit: contain; margin-left: 10px;">
+        {% endif %}
+        <span class="brand-text font-weight-light" style="color: white; font-size: 1.1rem;">
+            {{ request.tenant.company_name }}
+        </span>
+    </a>
+{% else %}
+    <a href="{% url 'admin:index' %}" class="brand-link">
+        <img src="{% static 'admin/img/default-logo.png' %}" class="brand-image img-circle elevation-3" style="height: 40px;">
+        <span class="brand-text font-weight-light">لوحة الإدارة</span>
+    </a>
+{% endif %}

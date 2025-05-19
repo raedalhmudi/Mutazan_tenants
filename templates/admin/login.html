@@ -1,0 +1,39 @@
+{% extends "login_base.html" %}
+{% load i18n static %}
+
+{% block content %}
+    <div class="logo-container">
+    {% if request.tenant.logo %}
+        <img src="{{ request.tenant.logo.url }}" alt="شعار {{ request.tenant.company_name }}">
+    {% else %}
+        <img src="{% static 'admin/img/logo.png' %}" alt="الشعار الافتراضي">
+    {% endif %}
+    </div>
+
+    <div id="content-main">
+        {% if form.errors %}
+            <p class="errornote">
+                {% blocktranslate count counter=form.errors.items|length %}
+                    Please correct the error below.
+                {% plural %}
+                    Please correct the errors below.
+                {% endblocktranslate %}
+            </p>
+        {% endif %}
+
+        <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+            <div class="form-row">
+                {{ form.username.errors }}
+                {{ form.username.label_tag }} {{ form.username }}
+            </div>
+            <div class="form-row">
+                {{ form.password.errors }}
+                {{ form.password.label_tag }} {{ form.password }}
+                <input type="hidden" name="next" value="{{ next }}">
+            </div>
+            <div class="submit-row">
+                <input type="submit" value="{% translate 'Log in' %}">
+            </div>
+        </form>
+    </div>
+{% endblock %}

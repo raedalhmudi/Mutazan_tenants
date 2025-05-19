@@ -1,5 +1,15 @@
+from http import HTTPStatus
+
 from allauth.headless.adapter import get_adapter
 from allauth.headless.base.response import APIResponse
+
+
+def email_address_data(addr):
+    return {
+        "email": addr.email,
+        "verified": addr.verified,
+        "primary": addr.primary,
+    }
 
 
 class RequestEmailVerificationResponse(APIResponse):
@@ -8,11 +18,11 @@ class RequestEmailVerificationResponse(APIResponse):
 
 
 class VerifyEmailResponse(APIResponse):
-    def __init__(self, request, verification, stage):
+    def __init__(self, request, email_address, stage):
         adapter = get_adapter()
         data = {
-            "email": verification.email_address.email,
-            "user": adapter.serialize_user(verification.email_address.user),
+            "email": email_address.email,
+            "user": adapter.serialize_user(email_address.user),
         }
         meta = {
             "is_authenticating": stage is not None,
@@ -22,15 +32,13 @@ class VerifyEmailResponse(APIResponse):
 
 class EmailAddressesResponse(APIResponse):
     def __init__(self, request, email_addresses):
-        data = [
-            {
-                "email": addr.email,
-                "verified": addr.verified,
-                "primary": addr.primary,
-            }
-            for addr in email_addresses
-        ]
+        data = [email_address_data(addr) for addr in email_addresses]
         super().__init__(request, data=data)
+
+
+class PhoneNumbersResponse(APIResponse):
+    def __init__(self, request, phone_numbers, status=HTTPStatus.OK):
+        super().__init__(request, data=phone_numbers, status=status)
 
 
 class RequestPasswordResponse(APIResponse):

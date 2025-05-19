@@ -4,182 +4,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ report_title }}</title>
+    {% comment %} <title>{{ report_title }}</title> {% endcomment %}
     <style>
+        :root {
+            --primary:rgb(0, 0, 0);
+            --primary-light:rgb(0, 0, 0);
+            --dark: #1e293b;
+            --gray: #64748b;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+        }
+        
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Tajawal', sans-serif;
             margin: 0;
             padding: 20px;
-            color: #333;
+            color: var(--dark);
+            background-color: #fff;
+            line-height: 1.3;
         }
+        
         .header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
         }
+        
+        .company-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .company-logo {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            padding: 2px;
+        }
+        
+        .company-info {
+            text-align: right;
+        }
+        
         .company-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 3px;
         }
+        
+        .company-details {
+            font-size: 10px;
+            color: var(--gray);
+            line-height: 1.5;
+        }
+        
+        .report-header {
+            margin: 15px 0;
+            text-align: center;
+        }
+        
         .report-title {
-            font-size: 20px;
-            margin-top: 10px;
-            color: #3498db;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 5px;
         }
-        table {
+        
+        .report-meta {
+            font-size: 11px;
+            color: var(--gray);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 5px;
+            font-size: 11px;
+            margin: 10px 0;
         }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        .no-print {
-            margin-top: 20px;
-            text-align: center;
-        }
-        .print-button {
-            padding: 10px 20px;
-            margin: 0 10px;
-            background-color: #3498db;
+        
+        .data-table thead th {
+            background-color: var(--primary);
             color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            padding: 6px 4px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 10px;
+            border: 1px solid var(--primary-light);
         }
+        
+        .data-table tbody td {
+            padding: 5px 3px;
+            text-align: center;
+            border: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        
+        .data-table tbody tr:nth-child(even) {
+            background-color: var(--light);
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 10px;
+            font-size: 12px;
+            color: var(--gray);
+        }
+        
+        .footer {
+            margin-top: 20px;
+            padding-top: 8px;
+            font-size: 10px;
+            color: var(--gray);
+            text-align: center;
+            border-top: 1px solid var(--border);
+        }
+        
         @media print {
-            .no-print {
-                display: none;
-            }
             body {
-                padding: 0;
+                padding: 5px;
+            }
+            .data-table {
+                font-size: 10px;
             }
         }
-      </style>
-    </head>
-    <body>
-        <div class="header">
-            <div class="company-name">{{ company.company_name }}</div>
-            <div class="report-title">{{ report_title }}</div>
-            <div>تاريخ الطباعة: {% now "Y-m-d H:i" %}</div>
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="company-brand">
+            <img src="{{ company.logo.url }}" alt="شعار الشركة" class="company-logo">
+            <div class="company-info">
+                <div class="company-name">{{ company.company_name }}</div>
+                <div class="company-details">
+                    <div>السجل: {{ company.registration_number }}</div>
+                    <div> العنوان: {{ company.address }}</div>
+                    <div>رقم الهاتف: {{ company.phone_number }}</div>
+                    <div> البريد الالكتروني: {{ company.email }}</div>
+                </div>
+            </div>
         </div>
-    
-        <table>
-            <thead>
-                <tr>
-                    {% if data_type == 'weight_cards' %}
-                        <th>#</th>
-                        <th>رقم اللوحة</th>
-                        <th>الوزن الفارغ</th>
-                        <th>الوزن المحمل</th>
-                        <th>الوزن الصافي</th>
-                        <th>اسم السائق</th>
-                        <th>تاريخ الدخول</th>
-                        <th>تاريخ الخروج</th>
-                        <th>المادة</th>
-                        <th>الكميه</th>
-                        <th>الحالة</th>
-                    {% else %}
-                        <th>#</th>
-                        <th>رقم اللوحة</th>
-                        <th>نوع المخالفة</th>
-                        <th>تاريخ المخالفة</th>
-                        <th>الكاميرا</th>
-                        <th>العملية</th>
-                        <th>بطاقة الوزن</th>
-                        <th>الحالة</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for card in transferred_cards %}
-                <tr>
-                    {% if data_type == 'weight_cards' %}
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ card.plate_number|default:'' }}</td>
-                        <td>{{ card.empty_weight|default:'' }}</td>
-                        <td>{{ card.loaded_weight|default:'' }}</td>
-                        <td>{{ card.net_weight|default:'' }}</td>
-                        <td>{{ card.driver_name|default:'' }}</td>
-                        <td>
-                            {% if card.entry_date %}
-                                {{ card.entry_date|date:"Y-m-d H:i" }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if card.exit_date %}
-                                {{ card.exit_date|date:"Y-m-d H:i" }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>{{ card.material|default:'' }}</td>
-                        <td>{{ card.quantity|default:'' }}</td>
-                        <td>{{ card.status|default:'' }}</td>
-                    {% else %}
-                        <td>{{ forloop.counter }}</td>
-                        <td>{{ card.plate_number|default:'' }}</td>
-                        <td>{{ card.violation_type|default:'' }}</td>
-                        <td>
-                            {% if card.timestamp %}
-                                {{ card.timestamp|date:"Y-m-d H:i" }}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        <td>{{ card.device_vio|default:'' }}</td>
-                        <td>{{ card.entry_exit_log|default:'' }}</td>
-                        <td>{{ card.weight_card_vio|default:'' }}</td>
-                        <td>{{ card.status|default:'' }}</td>
-                    {% endif %}
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="{% if data_type == 'weight_cards' %}10{% else %}8{% endif %}" style="text-align: center;">
-                        لا توجد بيانات متاحة
+            <div class="report-header">
+        <h2 class="report-title">{{ report_title }}</h2>
+        <div class="report-meta">
+            <span>تاريخ: {% now "Y-m-d H:i" %}</span>
+            {% comment %} <span>رقم: {{ report_id }}</span> {% endcomment %}
+        </div>
+    </div>
+
+        <div class="company-details">
+            <div>نوع النشاظ : {{ company.business_type }}</div>
+            {% if company.port_license_number %}
+            <div>رقم الرخصه : {{ company.port_license_number }}</div>
+            {% endif %}
+            <div>الدوله : {{ company.country }}</div>
+        </div>
+    </div>
+
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                {% if data_type == 'weight_cards' %}
+                    <th width="25px">#</th>
+                    <th width="80px">رقم اللوحة</th>
+                    <th width="60px">الوزن الفارغ</th>
+                    <th width="60px">الوزن المحمل</th>
+                    <th width="60px">الوزن الصافي</th>
+                    <th width="90px">السائق</th>
+                    <th width="80px">دخول</th>
+                    <th width="80px">خروج</th>
+                    <th width="70px">المادة</th>
+                    <th width="60px">الحالة</th>
+                {% elif data_type == 'violations' %}
+                    <th width="25px">#</th>
+                    <th width="80px">رقم اللوحة</th>
+                    <th width="90px">نوع المخالفة</th>
+                    <th width="80px">تاريخ المخالفة</th>
+                    <th width="70px">الكاميرا</th>
+                    <th width="70px">العملية</th>
+                    <th width="80px">بطاقة الوزن</th>
+                    <th width="60px">الحالة</th>
+                {% elif data_type == 'entry_exit_logs' %}
+                    <th width="25px">#</th>
+                    <th width="80px">نوع العملية</th>
+                    <th width="90px">رقم اللوحة</th>
+                    <th width="60px">الكاميرا</th>
+                    <th width="80px">تاريخ الدخول</th>
+                    <th width="80px">تاريخ الخروج</th>
+                    <th width="60px">حالة العملية</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for card in transferred_cards %}
+            <tr>
+                {% if data_type == 'weight_cards' %}
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ card.plate_number|default:'' }}</td>
+                    <td>{{ card.empty_weight|default:'' }}</td>
+                    <td>{{ card.loaded_weight|default:'' }}</td>
+                    <td>{{ card.net_weight|default:'' }}</td>
+                    <td>{{ card.driver_name|default:'' }}</td>
+                    <td>
+                        {% if card.entry_date %}
+                            {{ card.entry_date|date:"Y-m-d H:i" }}
+                        {% else %}
+                            -
+                        {% endif %}
                     </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    
-        {% comment %} <div class="no-print">
-            <button class="print-button" onclick="window.print()">🖨 طباعة التقرير</button>
-            <button class="print-button" onclick="window.close()">إغلاق النافذة</button>
-        </div> {% endcomment %}
-    
-        <script>
-            {% comment %} window.onload = function() {
-                setTimeout(function() {
-                    window.print();
-                }, 500);
-            }; {% endcomment %}
-            window.onload = function() {
-                window.print();
-            };
-        </script>
-    </body>
-    </html>
+                    <td>
+                        {% if card.exit_date %}
+                            {{ card.exit_date|date:"Y-m-d H:i" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ card.material|default:'' }}</td>
+                    <td>{{ card.status|default:'' }}</td>
+                    
+                {% elif data_type == 'violations' %}
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ card.plate_number|default:'' }}</td>
+                    <td>{{ card.violation_type|default:'' }}</td>
+                    <td>
+                        {% if card.timestamp %}
+                            {{ card.timestamp|date:"Y-m-d H:i" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>{{ card.device_vio|default:'' }}</td>
+                    <td>{{ card.entry_exit_log|default:'' }}</td>
+                    <td>{{ card.weight_card_vio|default:'' }}</td>
+                    <td>{{ card.status|default:'' }}</td>
 
+                {% elif data_type == 'entry_exit_logs' %}
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ card.process_type|default:'' }}</td>
+                    <td>{{ card.plate_number|default:'' }}</td>
+                    <td>{{ card.camera|default:'' }}</td>
+                    <td>
+                        {% if card.entry_date %}
+                        {{ card.entry_date|date:"Y-m-d H:i" }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if card.exit_date %}
+                        {{ card.exit_date|date:"Y-m-d H:i" }}
+                        {% else %}
+                        -
+                        {% endif %}
+                    </td>
+                    <td>{{ card.process_status|default:'' }}</td>
+                    
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="{% if data_type == 'weight_cards' %}10{% else %}8{% endif %}" class="no-data">
+                    لا توجد بيانات متاحة
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
+    <div class="footer">
+        {{ company.company_name }} &copy; {% now "Y" %}
+    </div>
 
-
-
-
-
-
-
-
-
-
-
+    <script>
+        window.onload = function() {
+            window.print();
+        };
+    </script>
+</body>
+</html>

@@ -20,24 +20,19 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-rj#-z^kx3j+1ay397otg6j8m_8#v^$^$jys6&41vy^&6le)ezc'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-STATIC_URL = '/static/'
-
-STATICFILES_DIRS = [
-    BASE_DIR / "static",  # إذا عندك مجلد static في المشروع
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+INTERNAL_IPS = [
+    "127.0.0.1",
 ]
-
-STATIC_ROOT = BASE_DIR / "staticfiles"
-
-# STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-INTERNAL_IPS = type(str('c'), (), {'__contains__': lambda *a: True})()
 
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*']
@@ -70,9 +65,6 @@ SHARED_APPS = [
     # --------------api------------
     'rest_framework',
     'rest_framework_simplejwt',
-    'corsheaders',
-    
-
 ]
 
 TENANT_APPS = [
@@ -85,7 +77,6 @@ TENANT_APPS = [
     # 'user_management',
     
     'system_companies',
-    
     # 'companies_manager',
 ]
 #------api_classes---------
@@ -136,10 +127,10 @@ INSTALLED_APPS = SHARED_APPS + [
 SITE_ID = 1
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django_tenants.middleware.main.TenantMainMiddleware',
     'django_tenants.middleware.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -148,26 +139,25 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+    'system_companies.middleware.ThreadLocalMiddleware',
+    'companies_manager.middleware.ThreadLocalMiddlewareCompanies',
     'django_htmx.middleware.HtmxMiddleware',
-    #----------------api-------------
-    'corsheaders.middleware.CorsMiddleware',
-    #  'system_companies.middleware.DynamicSchemaMiddleware',
-    'system_companies.middleware.SchemaMiddleware',  # ← تأكد إنه في النهاية
-
 ]
-#هذا الكود تبع ملف اسمه routers.py في تطبيق الشركات
-# DATABASE_ROUTERS = ['path.to.routers.CompanySchemaRouter']
-# DATABASE_ROUTERS = ['system_companies.routers.CompanySchemaRouter']
 
-CORS_ALLOW_ALL_ORIGINS = True  # مؤقتاً أثناء التطوير
-#-----------------api_end---------------
 ROOT_URLCONF = 'Mutazan_weight.urls'
 PUBLIC_SCHEMA_URLCONF = 'Mutazan_weight.urls_public'
+
+# في ملف context_processors.py
+def company_context(request):
+    return {
+        "tenant": getattr(request, "tenant", None)
+    }
+
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [ BASE_DIR / 'templates' ],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -176,12 +166,16 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'companies_manager.context_processors.company_context',
             ],
         },
     },
 ]
 
+
 WSGI_APPLICATION = 'Mutazan_weight.wsgi.application'
+# settings.py
+LOGOUT_REDIRECT_URL = '/logout_complete/'  # تحديد URL لصفحة الخروج
 
 
 # Database
@@ -195,9 +189,6 @@ DATABASES = {
         'PORT': '5432',
         'USER': 'AdminMU',
         'PASSWORD':'raed@1234',
-        'OPTIONS': {
-            'options': '-c search_path=public',  # سيتغير ديناميكيًا
-        },
     }
 }
 
@@ -221,17 +212,28 @@ JAZZMIN_SETTINGS = {
         else "/static/default-avatar.png"
     ),
 
+    # "topmenu_links": [
+    #     {"name": "تتت", "url": "admin:index", "permissions": ["auth.view_user"], "icon": "fas fa-tachometer-alt"},
+    #     # أضف روابط إضافية هنا
+    # ],
+
+    # "show_breadcrumb": True,  # تأكد أنها مفعّلة
+
+    # # لتغيير اسم أو أيقونة الداشبورد في الشريط العلوي
+    # "changeform_format": "horizontal_tabs",  
+
 
     "site_title": "لوحة الإدارة",
     "site_header": "إدارة الشركات",
     "site_sidebar": "إدارة الشركات",
     # "site_logo": "/media/logos/company_logo.png",  # مسار شعار الشركة
-    "site_logo": "common/images/Mutazan.svg",  # مسار شعار الشركة
+    "site_logo": "common/images/Mutazans.svg",  # مسار شعار الشركة
     "site_icon": "common/images/mut.svg",  # مسار شعار الشركة
     "custom_css": "common/css/system_companies/custom.css",
     "custom_js": "common/js/system_companies/custom.js",
     "order_with_respect_to": ["companies_manager", "system_companies"],
-
+        
+    "site_logo_classes": "img-circle",      
 
         # تخصيص الأيقونات في الشريط الجانبي لكل جدول من الجداول في التطبيق
 
@@ -271,23 +273,29 @@ JAZZMIN_SETTINGS = {
     # ],
 
     "icons": {
-        "companies_manager.Company": "fas fa-building",
-        "companies_manager.Domain": "fas fa-building",
-        "system_companies.Entry_and_exit":"fas fa-sign-in-alt",
-        "system_companies.Devices":"fas fa-cogs",
-        "system_companies.Invoice":"fas fa-file-invoice",
-        "system_companies.WeightCard":"fas fa-weight-hanging",
-        "system_companies.Legal_weight":"fas fa-balance-scale",
-        "system_companies.Material":"fas fa-box",
-        "system_companies.Trucks":"fas fa-truck-moving",
-        "system_companies.TrucksTypes":"fas fa-truck",
-        "system_companies.DriverNeme":"fas fa-user-tie",
-        "system_companies.SystemCompany": "fas fa-cogs",
+        "companies_manager.Company": "fas fa-city",
+        "companies_manager.Domain": "fas fa-landmark",
+        "system_companies.Entry_and_exit": "fas fa-door-open",
+        "system_companies.Devices": "fas fa-tools",
+        "system_companies.Invoice": "fas fa-file-invoice-dollar",
+        "system_companies.WeightCard": "fas fa-balance-scale-left",
+        "companies_manager.Legal_weight": "fas fa-dumbbell",
+        "companies_manager.ComActivityLog": "fas fa-clipboard-list",
+        "companies_manager.ViolationsType": "fas fa-exclamation-triangle",  # نوع مخالفة
+        "system_companies.Material": "fas fa-cubes",
+        "system_companies.Trucks": "fas fa-truck-loading",
+        "system_companies.TrucksTypes": "fas fa-shuttle-van",
+        "system_companies.DriverNeme": "fas fa-id-card",
+        "system_companies.ActivityLog": "fas fa-clipboard-list",  # سجل النشاط
+        "system_companies.Attendance": "fas fa-user-check",  # الحضور
+        "system_companies.ViolationRecord": "fas fa-gavel",  # سجل المخالفات
+        "system_companies.SystemCompany": "fas fa-sliders-h",
         "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user",
+        "auth.user": "fas fa-user-shield",
         "auth.Group": "fas fa-users",
-        "mutazan.YourModel": "fas fa-box",
+        "mutazan.YourModel": "fas fa-warehouse",
     },
+
 
     # "hide_apps": ["companies_manager"],
     # "hide_models": ["auth.Group", "auth.User"],
@@ -302,9 +310,9 @@ JAZZMIN_SETTINGS = {
     # "search_model": ["auth.User", "mutazan.YourModel"],
 
     "topmenu_links": [
-        {"name": "الرئيسية", "url": "admin:index", "permissions": ["auth.view_user"]},
-        {"name": "الدعم الفني", "url": "https://support.example.com", "new_window": True},
-        {"model": "auth.User"},
+        # {"name": "الرئيسية", "url": "admin:index", "permissions": ["auth.view_user"]},
+        # {"name": "الدعم الفني", "url": "https://support.example.com", "new_window": True},
+        # {"model": "auth.User"},
         {"app": "mutazan"},
     ],
 
@@ -322,6 +330,7 @@ JAZZMIN_SETTINGS = {
         "companies_manager": "إدارة الشركات",
         "system_companies": "نظام الشركة",
     },
+    "show_sidebar_toggle": False,
 }
 
 JAZZMIN_UI_TWEAKS = {
@@ -338,9 +347,9 @@ JAZZMIN_UI_TWEAKS = {
     #     {"name": "الرسائل", "url": "/messages/", "icon": "fas fa-envelope"},
     #     {"name": "ملء الشاشة", "url": "#", "icon": "fas fa-expand-arrows-alt"},
     # ],
-    # "extrahead": [
-    #     '<link rel="stylesheet" href="{% static "css/custom_admin.css" %}">',
-    # ],
+    "extrahead": [
+        "<style>footer.main-footer { display: none !important; }</style>",
+    ],
 }
 
 
@@ -393,5 +402,6 @@ STATICFILES_DIRS = [
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media' 
+
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
