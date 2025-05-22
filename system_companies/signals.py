@@ -51,34 +51,34 @@ for model in TARGET_MODELS:
 # تسجيل الدخول
 
 
-@receiver(user_logged_out)
-def log_user_logout(sender, request, user, **kwargs):
-    if connection.schema_name == 'public':
-        return  # لا تسجل النشاط إذا كنا في public schema
+# @receiver(user_logged_out)
+# def log_user_logout(sender, request, user, **kwargs):
+#     if connection.schema_name == 'public':
+#         return  # لا تسجل النشاط إذا كنا في public schema
 
-    ip_address = request.META.get('REMOTE_ADDR')
-    ActivityLog.objects.create(
-        user=user,
-        action=f"تم تسجيل الخروج للمستخدم - {user.username}",
-        module="المستخدم",
-        ip_address=ip_address,
-        extra_data=""
-    )
+#     ip_address = request.META.get('REMOTE_ADDR')
+#     ActivityLog.objects.create(
+#         user=user,
+#         action=f"تم تسجيل الخروج للمستخدم - {user.username}",
+#         module="المستخدم",
+#         ip_address=ip_address,
+#         extra_data=""
+#     )
 
 
 # تسجيل الخروج
-@receiver(user_logged_out)
-def log_user_logout(sender, request, user, **kwargs):
-    if connection.schema_name == 'public':
-        return
-    ip_address = request.META.get('REMOTE_ADDR')
-    ActivityLog.objects.create(
-        user=user,
-        action=f"تم تسجيل الخروج للمستخدم - {user.username}",
-        module="المستخدم",
-        ip_address=ip_address,
-        extra_data=""
-    )
+# @receiver(user_logged_out)
+# def log_user_logout(sender, request, user, **kwargs):
+#     if connection.schema_name == 'public':
+#         return
+#     ip_address = request.META.get('REMOTE_ADDR')
+#     ActivityLog.objects.create(
+#         user=user,
+#         action=f"تم تسجيل الخروج للمستخدم - {user.username}",
+#         module="المستخدم",
+#         ip_address=ip_address,
+#         extra_data=""
+#     )
 # -----------------------------خصم الكميه من الماده--------------------
 
 # استرجاع الكمية عند الحذف

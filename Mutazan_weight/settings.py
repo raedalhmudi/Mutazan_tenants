@@ -39,12 +39,14 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', '*']
 
 CSRF_TRUSTED_ORIGINS = [ 'https://*' ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
 # settings.py
 # AUTH_USER_MODEL = 'companies_manager.CustomUser'
 
 SHARED_APPS = [
     'django_tenants',
-    'debug_toolbar',
+    # 'debug_toolbar',
     # 'admin_adminlte.apps.AdminAdminlteConfig',
     'jazzmin',
     # 'user_management',
@@ -127,10 +129,10 @@ INSTALLED_APPS = SHARED_APPS + [
 SITE_ID = 1
 
 MIDDLEWARE = [
-    'django_tenants.middleware.main.TenantMainMiddleware',
+    # 'django_tenants.middleware.main.TenantMainMiddleware',
     'django_tenants.middleware.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',

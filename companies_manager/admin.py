@@ -40,18 +40,17 @@ class BaseAdmin(admin.ModelAdmin):
         return super().formfield_for_foreignkey(db_field, request, **kwargs)
     
     def action_buttons(self, obj):
-        # رابط التعديل
-        edit_url = reverse('admin:{}_{}_change'.format(obj._meta.app_label, obj._meta.model_name), args=[obj.id])
-        # رابط الحذف
-        delete_url = reverse('admin:{}_{}_delete'.format(obj._meta.app_label, obj._meta.model_name), args=[obj.id])
-        
+        admin_site_name = self.admin_site.name
+        edit_url = reverse(f'{admin_site_name}:{obj._meta.app_label}_{obj._meta.model_name}_change', args=[obj.pk])
+        delete_url = reverse(f'{admin_site_name}:{obj._meta.app_label}_{obj._meta.model_name}_delete', args=[obj.pk])
+
         return format_html(
-            '<a href="{}" class="mr-2 btn-icon btn-icon-only btn btn-outline-info " style="margin-right: 5px;">'
-            '<i class="fas fa-edit"></i> </a>'
-            '<a href="{}" class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">'
-            '<i class="fas fa-trash"></i> </a>',
-            edit_url, delete_url
-        )
+        '<a href="{}" class="mr-2 btn-icon btn-icon-only btn btn-outline-info " style="margin-right: 5px;">'
+        '<i class="fas fa-edit"></i> </a>'
+        '<a href="{}" class="mr-2 btn-icon btn-icon-only btn btn-outline-danger">'
+        '<i class="fas fa-trash"></i> </a>',
+        edit_url, delete_url
+    )
 
     action_buttons.short_description = 'الإجراءات'  # عنوان العمود
     action_buttons.allow_tags = True  # السماح بعرض HTML
@@ -345,7 +344,7 @@ tenant_admin_site.register(Legal_weight, Legal_weightAdmin)
 
 
 
-from django.contrib import admin
+# from django.contrib import admin
 # from django.contrib.auth.models import User, Group, Permission # استيراد النماذج المدمجة
 # from .models import *  # استيراد باقي النماذج مثل Tenant و Domain
 # from django.utils.html import format_html
